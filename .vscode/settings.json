@@ -1,0 +1,45 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "prettier.prettierPath": "node_modules/prettier",
+  "editor.rulers": [120],
+  "files.eol": "\n",
+  "css.lint.unknownAtRules": "ignore",
+
+  "[csharp]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "csharpier.csharpier-vscode"
+  },
+  "[xml]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "csharpier.csharpier-vscode"
+  },
+  "files.associations": {
+    "*.{svg}": "html"
+  },
+
+  "eslint.workingDirectories": [{"directory": "ui", "changeProcessCWD": true}],
+  "eslint.validate": ["javascript", "typescript", "html"],
+  "editor.codeActionsOnSave": {"source.fixAll.eslint": "explicit"},
+
+  "tailwindCSS.experimental.configFile": {
+    "ui/app/src/styles.css": "ui/**"
+  },
+  "tailwindCSS.classAttributes": ["class", "className", "ngClass", "class:list"],
+  "tailwindCSS.classFunctions": ["clsx", "cva", "cx", "cn"],
+  "tailwindCSS.experimental.classRegex": [
+    ["\\.class\\s*\\(\\s*\\(\\s*\\)\\s*=>\\s*\\[([\\s\\S]*?)\\]\\s*\\)", "['\"`]([^'\"`]*)['\"`]"],
+    ["host:\\s*\\{([^}]*)\\}", "['\"`]([^'\"`]*)['\"`]"],
+    "(?:class|className)\\s*[=:]\\s*['\"`]([^'\"`]*)['\"`]",
+    "(?:cva|cn|cx|clsx)\\s*\\([^)]*['\"`]([^'\"`]*)['\"`]"
+  ],
+
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
+  "js/ts.preferences.importModuleSpecifier": "non-relative",
+
+  "sonarlint.connectedMode.project": {
+    "connectionId": "http-localhost-9000",
+    "projectKey": "dse"
+  },
+  "cSpell.words": ["ASPNETCORE", "esproj", "HOSTINGSTARTUPASSEMBLIES", "slnx"]
+}

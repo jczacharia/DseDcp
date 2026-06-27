@@ -1,0 +1,18 @@
+# Dependencies & package manager
+node_modules
+**/node_modules
+pnpm-lock.yaml
+package-lock.json
+
+# Build output
+**/dist
+**/bin
+**/obj
+**/coverage
+.angular
+
+# Generated code
+ui/src/app/api
+
+# Tooling
+.husky

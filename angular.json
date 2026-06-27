@@ -37,13 +37,13 @@
         }
       },
       "root": "",
-      "sourceRoot": "src",
+      "sourceRoot": "ui",
       "prefix": "dse",
       "architect": {
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "browser": "src/main.ts",
+            "browser": "ui/main.ts",
             "tsConfig": "tsconfig.app.json",
             "assets": [
               {
@@ -52,7 +52,7 @@
               }
             ],
             "styles": [
-              "src/styles.css"
+              "ui/styles.css"
             ]
           },
           "configurations": {

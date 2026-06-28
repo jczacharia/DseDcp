@@ -9,7 +9,9 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "fix": "dotnet tool restore && dotnet format Dse.slnx --no-restore --verbosity detailed --severity info && dotnet csharpier format . && eslint --fix . && prettier --write ."
+    "fix": "dotnet tool restore && dotnet format Dse.slnx --no-restore --verbosity detailed --severity info && dotnet csharpier format . && eslint --fix . && prettier --write .",
+    "openapi": "openapi-ts",
+    "prepare": "husky"
   },
   "dependencies": {
     "@angular/aria": "22.1.0-next.1",
@@ -61,6 +63,7 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/user-event": "^14.6.1",
     "@types/node": "^26.0.1",
+    "@vitest/browser-playwright": "^4.1.9",
     "@vitest/coverage-v8": "^4.1.9",
     "@vitest/eslint-plugin": "^1.6.20",
     "angular-eslint": "^22.0.0",
@@ -72,6 +75,7 @@
     "jsdom": "^22.1.0",
     "lint-staged": "^16.4.0",
     "monocart-coverage-reports": "^2.12.12",
+    "playwright": "^1.61.1",
     "pnpm": "^11.9.0",
     "postcss": "^8.5.15",
     "prettier": "^3.8.4",
@@ -80,9 +84,9 @@
     "tailwindcss": "^4.3.1",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.62.0",
-    "vite": "^7.3.6",
-    "vite-tsconfig-paths": "^4.3.2",
-    "vitest": "^4.1.9",
+    "vite": "^7.0.0",
+    "vite-tsconfig-paths": "^4.2.0",
+    "vitest": "^4.0.0",
     "vitest-sonar-reporter": "^3.0.0"
   }
 }

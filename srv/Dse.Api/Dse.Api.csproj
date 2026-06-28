@@ -1,13 +1,33 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
-    <PropertyGroup>
-        <TargetFramework>net10.0</TargetFramework>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
-    </PropertyGroup>
-
-    <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9"/>
-    </ItemGroup>
-
+  <PropertyGroup>
+    <OpenApiGenerateDocuments>true</OpenApiGenerateDocuments>
+    <OpenApiDocumentsDirectory>.</OpenApiDocumentsDirectory>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
+    <PackageReference Include="Microsoft.Extensions.ApiDescription.Server" Version="10.0.9">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Scalar.AspNetCore" Version="2.16.6" />
+    <PackageReference Include="ServiceScan.SourceGenerator" Version="3.1.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Dse.Confluence\Dse.Confluence.csproj" />
+    <ProjectReference Include="..\Dse.Core\Dse.Core.csproj" />
+    <ProjectReference Include="..\Dse.ServiceDefaults\Dse.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\Dse.SonarQube\Dse.SonarQube.csproj" />
+  </ItemGroup>
+  <Target Name="InstallUIDeps" BeforeTargets="Build" Condition="!Exists('$(SolutionDir)/node_modules')">
+    <Exec WorkingDirectory="$(SolutionDir)" Command="$(NodePrefix) pnpm i" />
+  </Target>
+  <Target Name="HeyApi" BeforeTargets="Build" Condition="!Exists('$(SolutionDir)/node_modules')">
+    <Exec WorkingDirectory="$(SolutionDir)" Command="$(NodePrefix) pnpm i" />
+  </Target>
+  <Target Name="UIOpenApi" BeforeTargets="Build">
+    <Exec WorkingDirectory="$(SolutionDir)" Command="$(NodePrefix) pnpm openapi" />
+  </Target>
 </Project>

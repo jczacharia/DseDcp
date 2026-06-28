@@ -11,8 +11,13 @@
     "isolatedModules": true,
     "experimentalDecorators": true,
     "importHelpers": true,
+    "verbatimModuleSyntax": true,
     "target": "ES2022",
-    "module": "preserve"
+    "module": "preserve",
+    "rootDir": ".",
+    "paths": {
+      "#api/*": ["./ui/api/*.ts"]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
@@ -25,5 +30,10 @@
     }
   },
   "files": [],
-  "references": [{"path": "./tsconfig.app.json"}, {"path": "./tsconfig.node.json"}]
+  "references": [
+    {"path": "./tsconfig.app.json"},
+    {"path": "./tsconfig.dev.json"},
+    {"path": "./tsconfig.node.json"},
+    {"path": "./tsconfig.spec.json"}
+  ]
 }

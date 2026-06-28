@@ -22,9 +22,7 @@
   "eslint.validate": ["javascript", "typescript", "html"],
   "editor.codeActionsOnSave": {"source.fixAll.eslint": "explicit"},
 
-  "tailwindCSS.experimental.configFile": {
-    "ui/app/src/styles.css": "ui/**"
-  },
+  "tailwindCSS.experimental.configFile": "ui",
   "tailwindCSS.classAttributes": ["class", "className", "ngClass", "class:list"],
   "tailwindCSS.classFunctions": ["clsx", "cva", "cx", "cn"],
   "tailwindCSS.experimental.classRegex": [
@@ -41,5 +39,5 @@
     "connectionId": "http-localhost-9000",
     "projectKey": "dse"
   },
-  "cSpell.words": ["ASPNETCORE", "esproj", "HOSTINGSTARTUPASSEMBLIES", "slnx"]
+  "cSpell.words": ["ASPNETCORE", "esproj", "HOSTINGSTARTUPASSEMBLIES", "Qube", "slnx"]
 }

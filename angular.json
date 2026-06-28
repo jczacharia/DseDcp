@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "DseDcp": {
+    "ui": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -51,12 +51,15 @@
                 "input": "public"
               }
             ],
-            "styles": [
-              "ui/styles.css"
-            ]
+            "styles": ["ui/styles.css"],
+            "outputPath": {
+              "base": "./srv/Dse.Api/wwwroot",
+              "browser": ""
+            }
           },
           "configurations": {
             "production": {
+              "tsConfig": "tsconfig.app.json",
               "budgets": [
                 {
                   "type": "initial",
@@ -72,9 +75,28 @@
               "outputHashing": "all"
             },
             "development": {
+              "tsConfig": "tsconfig.dev.json",
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": {
+                "hidden": false,
+                "scripts": true,
+                "sourcesContent": true,
+                "styles": true,
+                "vendor": true
+              }
+            },
+            "test": {
+              "tsConfig": "tsconfig.spec.json",
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": {
+                "hidden": false,
+                "scripts": true,
+                "sourcesContent": true,
+                "styles": true,
+                "vendor": true
+              }
             }
           },
           "defaultConfiguration": "production"
@@ -83,13 +105,19 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "DseDcp:build:production"
+              "buildTarget": "ui:build:production"
             },
             "development": {
-              "buildTarget": "DseDcp:build:development"
+              "buildTarget": "ui:build:development"
+            },
+            "options": {
+              "proxyConfig": "proxy.conf.cjs"
             }
           },
           "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@analogjs/vitest-angular:test"
         }
       }
     }

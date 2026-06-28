@@ -11,7 +11,7 @@
     <AnalysisMode>Default</AnalysisMode>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
-    <SpaRoot>$(MSBuildThisFileDirectory)/ui</SpaRoot>
+    <UIRoot>$(MSBuildThisFileDirectory)/ui</UIRoot>
     <NodePrefix>npx --yes -p node@26.3.0 -p pnpm@11.9.0</NodePrefix>
   </PropertyGroup>
 

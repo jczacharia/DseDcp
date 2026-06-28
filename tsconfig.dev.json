@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "sourceMap": true,
+    "inlineSources": true
+  },
+  "angularCompilerOptions": {
+    "extendedDiagnostics": {
+      "defaultCategory": "warning"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/spec",
+    "sourceMap": true,
+    "inlineSources": true,
+    "noUncheckedIndexedAccess": false,
+    "types": ["vitest/globals", "@testing-library/jest-dom"]
+  },
+  "include": ["ui/**/*.ts"],
+  "angularCompilerOptions": {
+    "extendedDiagnostics": {
+      "defaultCategory": "warning"
+    }
+  }
+}

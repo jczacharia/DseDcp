@@ -1,0 +1,25 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "DSE",
+    "description": "Enterprise Search",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/me": {
+      "get": {
+        "tags": ["Api"],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Api"
+    }
+  ]
+}

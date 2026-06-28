@@ -223,7 +223,7 @@ dotnet_diagnostic.CA2016.severity = warning    # Forward CancellationToken
 dotnet_diagnostic.CA2026.severity = warning    # JsonElement.Parse over JsonDocument.Parse().RootElement (.NET 10)
 dotnet_diagnostic.CA2201.severity = warning    # Do not raise reserved exception types
 dotnet_diagnostic.CA2208.severity = warning    # Instantiate argument exceptions correctly
-dotnet_diagnostic.IDE0130.severity = suggestion
+dotnet_diagnostic.IDE0130.severity = none
 
 
 # ── License header ────────────────────────────────────────────────────────────

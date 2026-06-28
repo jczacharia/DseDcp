@@ -11,5 +11,7 @@
     <Project Path="srv/Dse.Confluence/Dse.Confluence.csproj" />
     <Project Path="srv/Dse.SonarQube/Dse.SonarQube.csproj" />
   </Folder>
-  <Folder Name="/Tests/" />
+  <Folder Name="/Tests/">
+    <Project Path="srv/Dse.Tests/Dse.Tests.csproj" />
+  </Folder>
 </Solution>

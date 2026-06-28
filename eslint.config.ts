@@ -140,7 +140,10 @@ export default defineConfig([
     plugins: {
       vitest,
     },
-    rules: vitest.configs.recommended.rules,
+    rules: {
+      ...vitest.configs.recommended.rules,
+      'vitest/valid-title': 'off',
+    },
     settings: {
       vitest: {
         typecheck: true,

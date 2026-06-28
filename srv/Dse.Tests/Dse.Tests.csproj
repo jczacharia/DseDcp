@@ -31,4 +31,10 @@
   <ItemGroup>
     <ProjectReference Include="..\Dse.Api\Dse.Api.csproj" />
   </ItemGroup>
+
+  <Target Name="UIRunTests" AfterTargets="VSTest" Condition="'$(Configuration)' == 'Release'">
+    <Message Importance="high" Text="Running UI Tests..." />
+    <Exec WorkingDirectory="$(SolutionDir)" Command="$(NodePrefix) pnpm test:ci" />
+    <Exec WorkingDirectory="$(SolutionDir)" Command="$(NodePrefix) pnpm e2e" />
+  </Target>
 </Project>

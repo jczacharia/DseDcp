@@ -1,5 +1,6 @@
 // Copyright (c) PNC Financial Services. All rights reserved.
 
+using Dse.Api;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -19,9 +20,6 @@ namespace Dse.ServiceDefaults;
 // To learn more about using this project, see https://aka.ms/aspire/service-defaults
 public static class ServiceExtensions
 {
-    private const string HealthEndpointPath = "/health";
-    private const string AlivenessEndpointPath = "/health/alive";
-
     extension<TBuilder>(TBuilder builder)
         where TBuilder : IHostApplicationBuilder
     {
@@ -66,10 +64,8 @@ public static class ServiceExtensions
                         .AddSource(builder.Environment.ApplicationName)
                         .AddAspNetCoreInstrumentation(t =>
                             t.Filter = context =>
-                                !context.Request.Path.StartsWithSegments(HealthEndpointPath)
-                                && !context.Request.Path.StartsWithSegments(AlivenessEndpointPath)
+                                !context.Request.Path.StartsWithSegments(HealthCheckEndpoints.HealthEndpointPath)
                         )
-                        .AddGrpcClientInstrumentation()
                         .AddHttpClientInstrumentation();
                 });
 

@@ -1,10 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
+    <SpaRoot>$(SolutionDir)</SpaRoot>
+    <SpaDistFiles>$(SpaRoot)dist/ui/browser</SpaDistFiles>
+    <SpaProxyServerUrl>http://localhost:4200</SpaProxyServerUrl>
+    <SpaProxyLaunchCommand>npm run start</SpaProxyLaunchCommand>
     <OpenApiGenerateDocuments>true</OpenApiGenerateDocuments>
     <OpenApiDocumentsDirectory>.</OpenApiDocumentsDirectory>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="10.0.9" />
     <PackageReference Include="Microsoft.Extensions.ApiDescription.Server" Version="10.0.9">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -21,13 +26,18 @@
     <ProjectReference Include="..\Dse.ServiceDefaults\Dse.ServiceDefaults.csproj" />
     <ProjectReference Include="..\Dse.SonarQube\Dse.SonarQube.csproj" />
   </ItemGroup>
-  <Target Name="InstallUIDeps" BeforeTargets="Build" Condition="!Exists('$(SolutionDir)/node_modules')">
-    <Exec WorkingDirectory="$(SolutionDir)" Command="$(NodePrefix) pnpm i" />
+  <Target Name="UIInstallDeps" BeforeTargets="BeforeBuild;PublishAngular" Condition="!Exists('$(SpaRoot)node_modules')">
+    <Exec WorkingDirectory="$(SpaRoot)" Command="$(NodePrefix) pnpm i" />
   </Target>
-  <Target Name="HeyApi" BeforeTargets="Build" Condition="!Exists('$(SolutionDir)/node_modules')">
-    <Exec WorkingDirectory="$(SolutionDir)" Command="$(NodePrefix) pnpm i" />
-  </Target>
-  <Target Name="UIOpenApi" BeforeTargets="Build">
-    <Exec WorkingDirectory="$(SolutionDir)" Command="$(NodePrefix) pnpm openapi" />
+  <Target Name="UIPublish" AfterTargets="ComputeFilesToPublish">
+    <Exec WorkingDirectory="$(SpaRoot)" Command="$(NodePrefix) pnpm build" />
+    <ItemGroup>
+      <DistFiles Include="$(SpaDistFiles)/**" />
+      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+        <RelativePath>wwwroot/%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      </ResolvedFileToPublish>
+    </ItemGroup>
   </Target>
 </Project>

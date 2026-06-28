@@ -1,8 +1,9 @@
 // Copyright (c) PNC Financial Services. All rights reserved.
 
-using System.Net;
 using Dse;
+using Dse.Api;
 using Dse.Api.Scanning;
+using Dse.Confluence;
 using Dse.Extensions;
 using Dse.ServiceDefaults;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -29,7 +30,7 @@ builder.Services.AddOpenApi(opts =>
 {
     opts.OpenApiVersion = OpenApiSpecVersion.OpenApi3_1;
     opts.MapVogenTypesInDse();
-    opts.AddComponentsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
+    opts.AddComponentsFromAssemblies([.. AppDomain.CurrentDomain.GetAssemblies(), typeof(ConfluenceDoc).Assembly]);
     opts.AddDocumentTransformer(
         static (doc, _, _) =>
         {
@@ -53,11 +54,10 @@ app.UseOpenshiftIntegration();
 app.UseExceptionHandler();
 app.UseStatusCodePages();
 
+app.MapDseHealthChecks();
+
 app.MapOpenApi();
 app.MapScalarApiReference();
-
-app.UseDefaultFiles();
-app.UseStaticFiles();
 
 // app.UseAuthentication();
 // app.UseAuthorization();
@@ -70,7 +70,11 @@ foreach (WebAppExtender reg in app.Services.GetServices<WebAppExtender>())
     reg.Register(app);
 }
 
-app.MapFallback((HttpContext context) => context.ProblemHttpResult(HttpStatusCode.NotFound, "Endpoint not found."));
-app.MapFallbackToFile("index.html").AllowAnonymous();
+if (CoreEnvironment.ServesSpa)
+{
+    app.UseDefaultFiles();
+    app.UseStaticFiles();
+    app.MapFallbackToFile("index.html").AllowAnonymous();
+}
 
 await app.RunAsync();

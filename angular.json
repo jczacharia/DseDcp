@@ -51,11 +51,7 @@
                 "input": "public"
               }
             ],
-            "styles": ["ui/styles.css"],
-            "outputPath": {
-              "base": "./srv/Dse.Api/wwwroot",
-              "browser": ""
-            }
+            "styles": ["ui/styles.css"]
           },
           "configurations": {
             "production": {

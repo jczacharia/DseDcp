@@ -6,7 +6,8 @@ using Microsoft.OpenApi;
 
 namespace Dse;
 
-public interface IOpenApiComponent;
+[AttributeUsage(AttributeTargets.Class)]
+public sealed class OpenApiComponentAttribute : Attribute;
 
 public static class OpenApiComponentExtensions
 {
@@ -21,15 +22,11 @@ public static class OpenApiComponentExtensions
                             .SelectMany(a => a.GetTypes())
                             .Where(type =>
                                 type is { IsAbstract: false, IsInterface: false }
-                                && type.IsAssignableTo(typeof(IOpenApiComponent))
+                                && type.GetCustomAttribute<OpenApiComponentAttribute>() is not null
                             )
                     )
                     {
-                        OpenApiSchema schema = await context.GetOrCreateSchemaAsync(
-                            type,
-                            parameterDescription: null,
-                            cancellationToken
-                        );
+                        OpenApiSchema schema = await context.GetOrCreateSchemaAsync(type, null, cancellationToken);
                         document.AddComponent(type.Name, schema);
                     }
                 }

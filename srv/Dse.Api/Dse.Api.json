@@ -17,6 +17,156 @@
       }
     }
   },
+  "components": {
+    "schemas": {
+      "ConfluenceDoc": {
+        "required": [
+          "id",
+          "type",
+          "title",
+          "body",
+          "space",
+          "versionNumber",
+          "versionWhen",
+          "versionBy",
+          "createdDate",
+          "createdBy",
+          "ancestors",
+          "labels"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "hash": {
+            "type": ["null", "string"]
+          },
+          "type": {
+            "type": ["null", "string"]
+          },
+          "title": {
+            "type": ["null", "string"]
+          },
+          "body": {
+            "type": ["null", "string"]
+          },
+          "space": {
+            "required": ["id", "key", "name", "link"],
+            "type": "object",
+            "properties": {
+              "id": {
+                "pattern": "^-?(?:0|[1-9]\\d*)$",
+                "type": ["integer", "string"],
+                "format": "int64"
+              },
+              "key": {
+                "type": "string"
+              },
+              "name": {
+                "type": ["null", "string"]
+              },
+              "link": {
+                "type": ["null", "string"]
+              }
+            }
+          },
+          "versionNumber": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": ["integer", "string"],
+            "format": "int64"
+          },
+          "versionWhen": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "versionBy": {
+            "required": ["username", "userKey", "displayName", "profilePicturePath"],
+            "type": "object",
+            "properties": {
+              "username": {
+                "type": ["null", "string"]
+              },
+              "userKey": {
+                "type": ["null", "string"]
+              },
+              "displayName": {
+                "type": ["null", "string"]
+              },
+              "profilePicturePath": {
+                "type": ["null", "string"]
+              }
+            }
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createdBy": {
+            "required": ["username", "userKey", "displayName", "profilePicturePath"],
+            "type": "object",
+            "properties": {
+              "username": {
+                "type": ["null", "string"]
+              },
+              "userKey": {
+                "type": ["null", "string"]
+              },
+              "displayName": {
+                "type": ["null", "string"]
+              },
+              "profilePicturePath": {
+                "type": ["null", "string"]
+              }
+            }
+          },
+          "ancestors": {
+            "type": "array",
+            "items": {
+              "required": ["id", "type", "title", "link"],
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": ["null", "string"]
+                },
+                "title": {
+                  "type": ["null", "string"]
+                },
+                "link": {
+                  "type": ["null", "string"]
+                }
+              }
+            }
+          },
+          "labels": {
+            "type": "array",
+            "items": {
+              "required": ["id", "name", "prefix"],
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": ["null", "string"]
+                },
+                "prefix": {
+                  "type": ["null", "string"]
+                }
+              }
+            }
+          },
+          "batchIndexDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  },
   "tags": [
     {
       "name": "Api"

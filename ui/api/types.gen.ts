@@ -4,6 +4,47 @@ export type ClientOptions = {
   baseUrl: `${string}://${string}` | (string & {});
 };
 
+export type ConfluenceDoc = {
+  id: string;
+  hash?: null | string;
+  type: null | string;
+  title: null | string;
+  body: null | string;
+  space: {
+    id: bigint | string;
+    key: string;
+    name: null | string;
+    link: null | string;
+  };
+  versionNumber: bigint | string;
+  versionWhen: Date;
+  versionBy: {
+    username: null | string;
+    userKey: null | string;
+    displayName: null | string;
+    profilePicturePath: null | string;
+  };
+  createdDate: Date;
+  createdBy: {
+    username: null | string;
+    userKey: null | string;
+    displayName: null | string;
+    profilePicturePath: null | string;
+  };
+  ancestors: Array<{
+    id: string;
+    type: null | string;
+    title: null | string;
+    link: null | string;
+  }>;
+  labels: Array<{
+    id: string;
+    name: null | string;
+    prefix: null | string;
+  }>;
+  batchIndexDate?: Date;
+};
+
 export type GetApiMeData = {
   body?: never;
   path?: never;

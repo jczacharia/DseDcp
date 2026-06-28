@@ -11,8 +11,5 @@ package-lock.json
 **/coverage
 .angular
 
-# Generated code
-ui/src/app/api
-
 # Tooling
 .husky

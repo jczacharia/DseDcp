@@ -3,7 +3,7 @@
 namespace Dse;
 
 [AttributeUsage(AttributeTargets.Class)]
-public class OptionsAttribute : Attribute
+public sealed class OptionsAttribute : Attribute
 {
     public string? Name { get; init; }
     public string? Path { get; init; }

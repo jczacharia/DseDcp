@@ -1,5 +1,3 @@
-/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
-/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
 {
   "compileOnSave": false,
   "compilerOptions": {
@@ -16,7 +14,26 @@
     "module": "preserve",
     "rootDir": ".",
     "paths": {
-      "#api/*": ["./ui/api/*.ts"]
+      "#api/*": ["./ui/api/*.ts"],
+      "#core/*": ["./ui/core/*.ts"],
+      "#shared/*": ["./ui/shared/*.ts"],
+      "#features/*": ["./ui/features/*.ts"],
+      "#sources/*": ["./ui/sources/*.ts"],
+      "#ui/button": ["./ui/ui/button/src/index.ts"],
+      "#ui/dropdown-menu": ["./ui/ui/dropdown-menu/src/index.ts"],
+      "#ui/field": ["./ui/ui/field/src/index.ts"],
+      "#ui/input": ["./ui/ui/input/src/index.ts"],
+      "#ui/input-group": ["./ui/ui/input-group/src/index.ts"],
+      "#ui/kbd": ["./ui/ui/kbd/src/index.ts"],
+      "#ui/sidebar": ["./ui/ui/sidebar/src/index.ts"],
+      "#ui/skeleton": ["./ui/ui/skeleton/src/index.ts"],
+      "#ui/spinner": ["./ui/ui/spinner/src/index.ts"],
+      "#ui/utils": ["./ui/ui/utils/src/index.ts"],
+      "#ui/label": ["./ui/ui/label/src/index.ts"],
+      "#ui/separator": ["./ui/ui/separator/src/index.ts"],
+      "#ui/textarea": ["./ui/ui/textarea/src/index.ts"],
+      "#ui/sheet": ["./ui/ui/sheet/src/index.ts"],
+      "#ui/tooltip": ["./ui/ui/tooltip/src/index.ts"]
     }
   },
   "angularCompilerOptions": {
@@ -31,9 +48,17 @@
   },
   "files": [],
   "references": [
-    {"path": "./tsconfig.app.json"},
-    {"path": "./tsconfig.dev.json"},
-    {"path": "./tsconfig.node.json"},
-    {"path": "./tsconfig.spec.json"}
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.dev.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
   ]
 }

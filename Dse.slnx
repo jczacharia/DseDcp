@@ -4,8 +4,6 @@
   </Folder>
   <Folder Name="/Hosting/">
     <Project Path="srv/Dse.Api/Dse.Api.csproj" />
-    <Project Path="srv/Dse.AppHost/Dse.AppHost.csproj" />
-    <Project Path="srv/Dse.ServiceDefaults/Dse.ServiceDefaults.csproj" />
   </Folder>
   <Folder Name="/Sources/">
     <Project Path="srv/Dse.Confluence/Dse.Confluence.csproj" />

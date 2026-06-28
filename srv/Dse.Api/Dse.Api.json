@@ -6,6 +6,151 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/health": {
+      "get": {
+        "tags": ["Health"],
+        "summary": "Full health report",
+        "description": "Every registered check.",
+        "responses": {
+          "200": {
+            "description": "The service is serving traffic — overall status is Healthy or Degraded (see the body's status field).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DseHealthReport"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The service or an upstream dependency is unhealthy.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DseHealthReport"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health/startup": {
+      "get": {
+        "tags": ["Health"],
+        "summary": "Full health report",
+        "description": "Every registered check.",
+        "responses": {
+          "200": {
+            "description": "The service is serving traffic — overall status is Healthy or Degraded (see the body's status field).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DseHealthReport"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The service or an upstream dependency is unhealthy.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DseHealthReport"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health/live": {
+      "get": {
+        "tags": ["Health"],
+        "summary": "Liveness probe",
+        "description": "Process is up — no dependency checks run.",
+        "responses": {
+          "200": {
+            "description": "The service is serving traffic — overall status is Healthy or Degraded (see the body's status field).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DseHealthReport"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The service or an upstream dependency is unhealthy.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DseHealthReport"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "tags": ["Health"],
+        "summary": "Readiness probe",
+        "description": "Process and its ready-tagged dependencies are reachable.",
+        "responses": {
+          "200": {
+            "description": "The service is serving traffic — overall status is Healthy or Degraded (see the body's status field).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DseHealthReport"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The service or an upstream dependency is unhealthy.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DseHealthReport"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health/elastic": {
+      "get": {
+        "tags": ["Health"],
+        "summary": "Health: elastic",
+        "description": "The 'elastic' check in isolation.",
+        "responses": {
+          "200": {
+            "description": "The service is serving traffic — overall status is Healthy or Degraded (see the body's status field).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DseHealthReport"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The service or an upstream dependency is unhealthy.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DseHealthReport"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/me": {
       "get": {
         "tags": ["Api"],
@@ -164,10 +309,63 @@
             "format": "date-time"
           }
         }
+      },
+      "DseHealthReport": {
+        "required": ["status", "totalDuration", "checks"],
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Overall status — `Healthy`, `Degraded`, or `Unhealthy`."
+          },
+          "totalDuration": {
+            "type": "string",
+            "description": "Wall-clock time taken to evaluate every check."
+          },
+          "checks": {
+            "type": "array",
+            "items": {
+              "required": ["name", "status", "duration", "description", "exception", "data"],
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The check's registration name (e.g. `elastic`, `self`)."
+                },
+                "status": {
+                  "type": "string",
+                  "description": "This check's status."
+                },
+                "duration": {
+                  "type": "string",
+                  "description": "How long this check took."
+                },
+                "description": {
+                  "type": ["null", "string"],
+                  "description": "Human-readable detail the check chose to report, if any."
+                },
+                "exception": {
+                  "type": ["null", "string"],
+                  "description": "The failure message when the check threw, if any."
+                },
+                "data": {
+                  "type": "object",
+                  "description": "Free-form diagnostic data the check attached."
+                }
+              },
+              "description": "The result of a single registered health check."
+            },
+            "description": "One entry per registered health check."
+          }
+        },
+        "description": "Aggregated health of the service: overall status, total evaluation time, and a per-check breakdown."
       }
     }
   },
   "tags": [
+    {
+      "name": "Health"
+    },
     {
       "name": "Api"
     }

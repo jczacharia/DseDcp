@@ -1,11 +1,9 @@
 // Copyright (c) PNC Financial Services. All rights reserved.
 
 using Dse;
-using Dse.Api;
 using Dse.Api.Scanning;
 using Dse.Confluence;
 using Dse.Extensions;
-using Dse.ServiceDefaults;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -13,17 +11,24 @@ using Microsoft.OpenApi;
 using Scalar.AspNetCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-builder.AddServiceDefaults();
-builder.Services.AddOpenshiftIntegration();
 
+builder.Configuration.AddUserSecrets("dse");
 builder.Services.AddDseOptions();
 builder.Services.AddDseValidators();
+builder.Services.AddOpenShiftIntegration();
+builder.AddRegistrations();
 
 builder.Services.AddProblemDetails(static s => s.ApplyCoreCustomization());
 builder.Services.AddScoped<ProblemDetailsFactory, DefaultProblemDetailsFactory>();
 builder.Services.ConfigureHttpClientDefaults(static o => o.RemoveAllLoggers());
 builder.Services.AddMemoryCache();
 builder.Services.AddHttpContextAccessor();
+
+builder.Host.UseDefaultServiceProvider(static options =>
+{
+    options.ValidateScopes = true;
+    options.ValidateOnBuild = true;
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi(opts =>
@@ -41,15 +46,18 @@ builder.Services.AddOpenApi(opts =>
     );
 });
 
+builder.Services.RemoveWindowsEventLogProvider();
+
 if (CoreEnvironment.IsDocumentGenerationBuild)
 {
-    // Don't validate when generating OpenAPI documents; else with throw
+    // Remove all startup services when document generation build.
     builder.Services.RemoveAll<IStartupValidator>();
+    builder.Services.RemoveAll<IHostedService>();
 }
 
 WebApplication app = builder.Build();
 
-app.UseOpenshiftIntegration();
+app.UseOpenShiftIntegration();
 
 app.UseExceptionHandler();
 app.UseStatusCodePages();

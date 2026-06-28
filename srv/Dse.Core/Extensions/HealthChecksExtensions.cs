@@ -2,8 +2,8 @@
 
 using System.Globalization;
 using System.Reflection;
-using Dse;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +11,14 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
 
-namespace Dse.Api;
+namespace Dse.Extensions;
+
+public static class HealthCheckDefaults
+{
+    // Shared readiness-probe budget. Evaluated at health-check registration time (before options bind), so it is a
+    // constant rather than a per-environment config knob — a probe timeout is not an operational dial.
+    public static readonly TimeSpan ReadinessTimeout = TimeSpan.FromSeconds(8);
+}
 
 /// <summary>Aggregated health of the service: overall status, total evaluation time, and a per-check breakdown.</summary>
 /// <param name="Status">Overall status — <c>Healthy</c>, <c>Degraded</c>, or <c>Unhealthy</c>.</param>
@@ -78,27 +85,39 @@ public static class HealthCheckEndpoints
             RouteGroupBuilder group = endpoints.MapGroup(HealthEndpointPath).WithTags("Health");
 
             group
-                .MapHealthChecks("", new() { ResponseWriter = WriteHealthReportAsync })
+                .MapHealthChecks("", new HealthCheckOptions { ResponseWriter = WriteHealthReportAsync })
                 .ApplyDefaults("Full health report", "Every registered check.");
 
             group
                 .MapHealthChecks(
                     "startup",
-                    new() { Predicate = static r => r.Tags.Contains("startup"), ResponseWriter = WriteHealthReportAsync }
+                    new HealthCheckOptions
+                    {
+                        Predicate = static r => r.Tags.Contains("startup"),
+                        ResponseWriter = WriteHealthReportAsync,
+                    }
                 )
                 .ApplyDefaults("Full health report", "Every registered check.");
 
             group
                 .MapHealthChecks(
                     "live",
-                    new() { Predicate = static r => r.Tags.Contains("live"), ResponseWriter = WriteHealthReportAsync }
+                    new HealthCheckOptions
+                    {
+                        Predicate = static r => r.Tags.Contains("live"),
+                        ResponseWriter = WriteHealthReportAsync,
+                    }
                 )
                 .ApplyDefaults("Liveness probe", "Process is up — no dependency checks run.");
 
             group
                 .MapHealthChecks(
                     "ready",
-                    new() { Predicate = static r => r.Tags.Contains("ready"), ResponseWriter = WriteHealthReportAsync }
+                    new HealthCheckOptions
+                    {
+                        Predicate = static r => r.Tags.Contains("ready"),
+                        ResponseWriter = WriteHealthReportAsync,
+                    }
                 )
                 .ApplyDefaults("Readiness probe", "Process and its ready-tagged dependencies are reachable.");
 
@@ -111,7 +130,7 @@ public static class HealthCheckEndpoints
                 group
                     .MapHealthChecks(
                         $"{name}",
-                        new() { Predicate = r => r.Name == name, ResponseWriter = WriteHealthReportAsync }
+                        new HealthCheckOptions { Predicate = r => r.Name == name, ResponseWriter = WriteHealthReportAsync }
                     )
                     .ApplyDefaults($"Health: {name}", $"The '{name}' check in isolation.");
             }
@@ -131,7 +150,7 @@ public static class HealthCheckEndpoints
 
                         ctx.Document!.AddComponent(
                             nameof(DseHealthReport),
-                            await ctx.GetOrCreateSchemaAsync(typeof(DseHealthReport), null, ct)
+                            await ctx.GetOrCreateSchemaAsync(typeof(DseHealthReport), parameterDescription: null, ct)
                         );
                         var schemaRef = new OpenApiSchemaReference(nameof(DseHealthReport), ctx.Document);
 

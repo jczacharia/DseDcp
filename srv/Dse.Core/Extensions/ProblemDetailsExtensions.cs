@@ -27,6 +27,39 @@ public static class ProblemDetailsExtensions
         return message.ToString();
     }
 
+    private static bool TryApplyPresetProblem(ProblemDetailsContext context)
+    {
+        if (context.HttpContext.Items[HttpContextKey] is not ProblemDetails setProblem)
+        {
+            return false;
+        }
+
+        context.ProblemDetails = setProblem;
+        if (setProblem.Status is { } status && !context.HttpContext.Response.HasStarted)
+        {
+            context.HttpContext.Response.StatusCode = status;
+        }
+
+        return true;
+    }
+
+    private static void ApplyExceptionDetail(ProblemDetailsContext context, Exception ex) =>
+        context.ProblemDetails.Detail = context.HttpContext.RequestServices.GetRequiredService<IHostEnvironment>().IsProduction()
+            ? "An exception occurred while processing your request."
+                + " Please try again later or contact the DSE team if the problem persists."
+            : BuildExceptionChainMessage(ex);
+
+    private static void ApplyNotFoundDetail(ProblemDetailsContext context)
+    {
+        if (context.HttpContext.Response is not { StatusCode: StatusCodes.Status404NotFound, HasStarted: false })
+        {
+            return;
+        }
+
+        context.ProblemDetails.Detail = "The requested resource was not found.";
+        context.ProblemDetails.Extensions["Path"] = context.HttpContext.Request.Path;
+    }
+
     extension(ProblemDetailsOptions setup)
     {
         public void ApplyCoreCustomization() =>
@@ -55,41 +88,6 @@ public static class ProblemDetailsExtensions
 
                 ApplyNotFoundDetail(context);
             };
-    }
-
-    private static bool TryApplyPresetProblem(ProblemDetailsContext context)
-    {
-        if (context.HttpContext.Items[HttpContextKey] is not ProblemDetails setProblem)
-        {
-            return false;
-        }
-
-        context.ProblemDetails = setProblem;
-        if (setProblem.Status is { } status && !context.HttpContext.Response.HasStarted)
-        {
-            context.HttpContext.Response.StatusCode = status;
-        }
-
-        return true;
-    }
-
-    private static void ApplyExceptionDetail(ProblemDetailsContext context, Exception ex)
-    {
-        context.ProblemDetails.Detail = context.HttpContext.RequestServices.GetRequiredService<IHostEnvironment>().IsProduction()
-            ? "An exception occurred while processing your request."
-                + " Please try again later or contact the DSE team if the problem persists."
-            : BuildExceptionChainMessage(ex);
-    }
-
-    private static void ApplyNotFoundDetail(ProblemDetailsContext context)
-    {
-        if (context.HttpContext.Response is not { StatusCode: StatusCodes.Status404NotFound, HasStarted: false })
-        {
-            return;
-        }
-
-        context.ProblemDetails.Detail = "The requested resource was not found.";
-        context.ProblemDetails.Extensions["Path"] = context.HttpContext.Request.Path;
     }
 
     extension(HttpContext httpContext)

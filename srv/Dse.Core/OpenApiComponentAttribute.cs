@@ -9,7 +9,7 @@ namespace Dse;
 [AttributeUsage(AttributeTargets.Class)]
 public sealed class OpenApiComponentAttribute : Attribute;
 
-public static class OpenApiComponentExtensions
+public static class OpenApiComponentAttributeExtensions
 {
     extension(OpenApiOptions options)
     {
@@ -26,7 +26,11 @@ public static class OpenApiComponentExtensions
                             )
                     )
                     {
-                        OpenApiSchema schema = await context.GetOrCreateSchemaAsync(type, null, cancellationToken);
+                        OpenApiSchema schema = await context.GetOrCreateSchemaAsync(
+                            type,
+                            parameterDescription: null,
+                            cancellationToken
+                        );
                         document.AddComponent(type.Name, schema);
                     }
                 }

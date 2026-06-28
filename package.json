@@ -8,9 +8,9 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "fix:srv": "dotnet tool restore && dotnet format Dse.slnx --no-restore --verbosity detailed --severity info && dotnet csharpier format srv",
+    "fix:srv": "dotnet tool restore && dotnet format style --verbosity detailed --severity info && dotnet csharpier format srv",
     "fix:ui": "eslint --fix ui && prettier --write ui",
-    "fix": "dotnet tool restore && dotnet format Dse.slnx --no-restore --verbosity detailed --severity info && dotnet csharpier format . && eslint --fix . && prettier --write .",
+    "fix": "dotnet tool restore && dotnet format style --verbosity detailed --severity info && dotnet csharpier format . && eslint --fix . && prettier --write .",
     "openapi": "openapi-ts",
     "prepare": "husky"
   },

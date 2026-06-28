@@ -15,7 +15,7 @@ public static partial class ServiceCollectionExtensions
     private static void AddOption<TOptions>(IServiceCollection services)
         where TOptions : class
     {
-        OptionsAttribute? attr = typeof(TOptions).GetCustomAttribute<OptionsAttribute>();
+        var attr = typeof(TOptions).GetCustomAttribute<OptionsAttribute>();
         OptionsBuilder<TOptions> builder = services.AddOptions<TOptions>(attr?.Name).ValidateDataAnnotations().ValidateOnStart();
         builder.Services.AddSingleton<IValidateOptions<TOptions>>(s => new FluentValidateOptions<TOptions>(s, builder.Name));
 
@@ -41,7 +41,7 @@ public static partial class ServiceCollectionExtensions
             string type = options.GetType().Name;
             IEnumerable<IValidator<T>> validators = scope.ServiceProvider.GetServices<IValidator<T>>();
 
-            var errors = validators
+            List<string> errors = validators
                 .SelectMany(validator =>
                 {
                     if (validator.Validate(options) is not { IsValid: false } result)

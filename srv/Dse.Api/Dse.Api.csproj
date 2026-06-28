@@ -23,7 +23,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Dse.Confluence\Dse.Confluence.csproj" />
     <ProjectReference Include="..\Dse.Core\Dse.Core.csproj" />
-    <ProjectReference Include="..\Dse.ServiceDefaults\Dse.ServiceDefaults.csproj" />
     <ProjectReference Include="..\Dse.SonarQube\Dse.SonarQube.csproj" />
   </ItemGroup>
   <Target Name="UIInstallDeps" BeforeTargets="BeforeBuild;PublishAngular" Condition="!Exists('$(SpaRoot)node_modules')">

@@ -29,13 +29,9 @@ public static class OpenApiComponentAttributeExtensions
                             )
                     )
                     {
-                        OpenApiComponentAttribute attr = type.GetCustomAttribute<OpenApiComponentAttribute>()!;
-                        OpenApiSchema schema = await context.GetOrCreateSchemaAsync(
-                            type,
-                            parameterDescription: null,
-                            cancellationToken
-                        );
-                        _ = document.AddComponent(attr.Name ?? type.Name, schema);
+                        var attr = type.GetCustomAttribute<OpenApiComponentAttribute>()!;
+                        OpenApiSchema schema = await context.GetOrCreateSchemaAsync(type, null, cancellationToken);
+                        document.AddComponent(attr.Name ?? type.Name, schema);
                     }
                 }
             );

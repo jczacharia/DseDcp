@@ -10,9 +10,9 @@ public sealed record Page<T>(IReadOnlyList<T> Items, string? ContinuationToken)
 public abstract class Paginator<T>(string initialToken) : IAsyncEnumerable<T>
     where T : class
 {
-    public async IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken ct = default)
+    public async IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = default)
     {
-        await foreach (Page<T> page in AsPages(ct).ConfigureAwait(false))
+        await foreach (Page<T> page in AsPages(cancellationToken).ConfigureAwait(false))
         {
             foreach (T item in page.Items)
             {

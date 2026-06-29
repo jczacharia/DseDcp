@@ -152,9 +152,9 @@ public static class HealthCheckEndpoints
                         operation.Summary = summary;
                         operation.Description = description;
 
-                        _ = ctx.Document!.AddComponent(
+                        ctx.Document!.AddComponent(
                             nameof(DseHealthReport),
-                            await ctx.GetOrCreateSchemaAsync(typeof(DseHealthReport), parameterDescription: null, ct)
+                            await ctx.GetOrCreateSchemaAsync(typeof(DseHealthReport), null, ct)
                         );
                         var schemaRef = new OpenApiSchemaReference(nameof(DseHealthReport), ctx.Document);
 

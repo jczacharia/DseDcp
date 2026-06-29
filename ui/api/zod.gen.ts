@@ -94,22 +94,9 @@ export const zDseHealthReport = z.object({
 /**
  * Returns information about the currently authenticated user.
  */
-export const zResponse = z.object({
-  name: z.string().nullable(),
-  claims: z.array(zClaimDto),
-});
-
-/**
- * Returns information about the currently authenticated user.
- */
 export const zUserInfoResponse = z.object({
   name: z.string().nullable(),
-  claims: z.array(
-    z.object({
-      type: z.string(),
-      value: z.string(),
-    }),
-  ),
+  claims: z.array(zClaimDto),
 });
 
 /**
@@ -140,4 +127,4 @@ export const zGetHealthElasticResponse = zDseHealthReport;
 /**
  * OK
  */
-export const zGetApiMeResponse = zResponse;
+export const zGetApiUserinfoResponse = zUserInfoResponse;

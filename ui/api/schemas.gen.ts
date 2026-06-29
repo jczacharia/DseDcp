@@ -214,25 +214,6 @@ export const DseHealthReportSchema = {
   description: 'Aggregated health of the service: overall status, total evaluation time, and a per-check breakdown.',
 } as const;
 
-export const ResponseSchema = {
-  required: ['name', 'claims'],
-  type: 'object',
-  properties: {
-    name: {
-      type: ['null', 'string'],
-      description: "Current user's name.",
-    },
-    claims: {
-      type: 'array',
-      items: {
-        $ref: '#/components/schemas/ClaimDto',
-      },
-      description: "Current user's claims.",
-    },
-  },
-  description: 'Returns information about the currently authenticated user.',
-} as const;
-
 export const UserInfoResponseSchema = {
   required: ['name', 'claims'],
   type: 'object',
@@ -244,19 +225,7 @@ export const UserInfoResponseSchema = {
     claims: {
       type: 'array',
       items: {
-        required: ['type', 'value'],
-        type: 'object',
-        properties: {
-          type: {
-            type: 'string',
-            description: 'Claim type.',
-          },
-          value: {
-            type: 'string',
-            description: 'Claim value.',
-          },
-        },
-        description: 'Represents a claim associated with a user.',
+        $ref: '#/components/schemas/ClaimDto',
       },
       description: "Current user's claims.",
     },

@@ -3,8 +3,8 @@
 import type {Client, ClientMeta, Options as Options2, RequestResult, TDataShape} from './client';
 import {client} from './client.gen';
 import type {
-  GetApiMeData,
-  GetApiMeResponses,
+  GetApiUserinfoData,
+  GetApiUserinfoResponses,
   GetHealthData,
   GetHealthElasticData,
   GetHealthElasticErrors,
@@ -102,7 +102,7 @@ export const getHealthElastic = <ThrowOnError extends boolean = true>(
     ...options,
   });
 
-export const getApiMe = <ThrowOnError extends boolean = true>(
-  options?: Options<GetApiMeData, ThrowOnError>,
-): RequestResult<GetApiMeResponses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<GetApiMeResponses, unknown, ThrowOnError>({url: '/api/me', ...options});
+export const getApiUserinfo = <ThrowOnError extends boolean = true>(
+  options?: Options<GetApiUserinfoData, ThrowOnError>,
+): RequestResult<GetApiUserinfoResponses, unknown, ThrowOnError> =>
+  (options?.client ?? client).get<GetApiUserinfoResponses, unknown, ThrowOnError>({url: '/api/userinfo', ...options});

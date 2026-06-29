@@ -21,7 +21,7 @@ public static class LoggingExtensions
                     .ToList()
             )
             {
-                _ = services.Remove(descriptor);
+                services.Remove(descriptor);
             }
         }
     }

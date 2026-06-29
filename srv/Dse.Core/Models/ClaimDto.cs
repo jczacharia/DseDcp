@@ -3,7 +3,7 @@
 namespace Dse.Models;
 
 /// <summary>
-/// Represents a claim associated with a user.
+///     Represents a claim associated with a user.
 /// </summary>
 /// <param name="Type">Claim type.</param>
 /// <param name="Value">Claim value.</param>

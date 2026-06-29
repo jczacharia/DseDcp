@@ -54,10 +54,16 @@ public sealed class ElasticOptions
     /// <summary>Per-request timeout. A large bulk to a busy cluster can exceed the default under load.</summary>
     public TimeSpan RequestTimeout { get; set; } = TimeSpan.FromSeconds(60);
 
-    /// <summary>Overall retry budget across attempts for a single call (a static node otherwise caps this at the request timeout).</summary>
+    /// <summary>
+    ///     Overall retry budget across attempts for a single call (a static node otherwise caps this at the request
+    ///     timeout).
+    /// </summary>
     public TimeSpan MaxRetryTimeout { get; set; } = TimeSpan.FromSeconds(180);
 
-    /// <summary>Transport-level retries for a transient or occasionally-slow node. The default covers all five production nodes.</summary>
+    /// <summary>
+    ///     Transport-level retries for a transient or occasionally-slow node. The default covers all five production
+    ///     nodes.
+    /// </summary>
     public int MaximumRetries { get; set; } = 4;
 
     /// <summary>
@@ -111,5 +117,5 @@ public sealed class ElasticOptions
 public sealed class ElasticOptionsValidator : AbstractValidator<ElasticOptions>
 {
     public ElasticOptionsValidator() =>
-        _ = RuleFor(x => x.BaseAddress).Must(url => Uri.IsWellFormedUriString(url, UriKind.Absolute));
+        RuleFor(x => x.BaseAddress).Must(url => Uri.IsWellFormedUriString(url, UriKind.Absolute));
 }

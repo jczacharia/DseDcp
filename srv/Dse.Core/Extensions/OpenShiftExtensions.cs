@@ -28,15 +28,15 @@ public static class OpenShiftExtensions
         public void UseOpenShiftIntegration()
         {
             // must run before anything that reads scheme/host
-            _ = app.UseForwardedHeaders();
+            app.UseForwardedHeaders();
 
             if (app.Environment.IsProduction())
             {
-                _ = app.UseHsts();
+                app.UseHsts();
             }
 
             // Authenticated requests must not be cached so that, after a Ping logout, the browser can't redisplay them from cache.
-            _ = app.Use(
+            app.Use(
                 (context, next) =>
                 {
                     context.Response.OnStarting(

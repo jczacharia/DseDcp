@@ -21,7 +21,7 @@ public static class ProblemDetailsExtensions
         StringBuilder message = new($"{ex.GetType().Name}: {ex.Message} {ex.StackTrace}");
         for (Exception? inner = ex.InnerException; inner is not null; inner = inner.InnerException)
         {
-            _ = message.Append(CultureInfo.InvariantCulture, $" {inner.Message}");
+            message.Append(CultureInfo.InvariantCulture, $" {inner.Message}");
         }
 
         return message.ToString();

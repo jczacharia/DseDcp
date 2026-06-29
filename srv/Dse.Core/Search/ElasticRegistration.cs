@@ -14,20 +14,20 @@ public sealed class ElasticRegistration : IRegistration
 {
     public static void Register(IHostApplicationBuilder builder)
     {
-        _ = builder.Services.AddSingleton(BuildTransport);
+        builder.Services.AddSingleton(BuildTransport);
 
-        _ = builder.Services.AddSingleton<ElasticStartupService>();
-        _ = builder.Services.AddHostedService(static sp => sp.GetRequiredService<ElasticStartupService>());
+        builder.Services.AddSingleton<ElasticStartupService>();
+        builder.Services.AddHostedService(static sp => sp.GetRequiredService<ElasticStartupService>());
 
-        _ = builder.Services.AddSingleton<ITransport>(static sp =>
+        builder.Services.AddSingleton<ITransport>(static sp =>
             sp.GetRequiredService<DistributedTransport<IElasticsearchClientSettings>>()
         );
 
-        _ = builder.Services.AddSingleton(static sp => new ElasticsearchClient(
+        builder.Services.AddSingleton(static sp => new ElasticsearchClient(
             sp.GetRequiredService<DistributedTransport<IElasticsearchClientSettings>>()
         ));
 
-        _ = builder
+        builder
             .Services.AddHealthChecks()
             .AddCheck<ElasticHealthCheck>(
                 "elastic",
@@ -39,7 +39,7 @@ public sealed class ElasticRegistration : IRegistration
 
     private static DistributedTransport<IElasticsearchClientSettings> BuildTransport(IServiceProvider sp)
     {
-        IHostEnvironment env = sp.GetRequiredService<IHostEnvironment>();
+        var env = sp.GetRequiredService<IHostEnvironment>();
         ElasticOptions opts = sp.GetRequiredService<IOptions<ElasticOptions>>().Value;
         var es = new ElasticsearchClientSettings(new SingleNodePool(new Uri(opts.BaseAddress)));
 

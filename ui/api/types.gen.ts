@@ -107,20 +107,6 @@ export type DseHealthReport = {
 /**
  * Returns information about the currently authenticated user.
  */
-export type Response = {
-  /**
-   * Current user's name.
-   */
-  name: null | string;
-  /**
-   * Current user's claims.
-   */
-  claims: Array<ClaimDto>;
-};
-
-/**
- * Returns information about the currently authenticated user.
- */
 export type UserInfoResponse = {
   /**
    * Current user's name.
@@ -129,16 +115,7 @@ export type UserInfoResponse = {
   /**
    * Current user's claims.
    */
-  claims: Array<{
-    /**
-     * Claim type.
-     */
-    type: string;
-    /**
-     * Claim value.
-     */
-    value: string;
-  }>;
+  claims: Array<ClaimDto>;
 };
 
 export type GetHealthData = {
@@ -266,18 +243,18 @@ export type GetHealthElasticResponses = {
 
 export type GetHealthElasticResponse = GetHealthElasticResponses[keyof GetHealthElasticResponses];
 
-export type GetApiMeData = {
+export type GetApiUserinfoData = {
   body?: never;
   path?: never;
   query?: never;
-  url: '/api/me';
+  url: '/api/userinfo';
 };
 
-export type GetApiMeResponses = {
+export type GetApiUserinfoResponses = {
   /**
    * OK
    */
-  200: Response;
+  200: UserInfoResponse;
 };
 
-export type GetApiMeResponse = GetApiMeResponses[keyof GetApiMeResponses];
+export type GetApiUserinfoResponse = GetApiUserinfoResponses[keyof GetApiUserinfoResponses];

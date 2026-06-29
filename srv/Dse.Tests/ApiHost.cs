@@ -18,8 +18,8 @@ public sealed class ApiHost(ITestOutputHelper outputHelper, Action<IWebHostBuild
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         UseKestrel(0);
-        _ = builder.UseEnvironment("Test");
-        _ = builder.ConfigureAppConfiguration(sources =>
+        builder.UseEnvironment("Test");
+        builder.ConfigureAppConfiguration(sources =>
         {
             for (int i = sources.Sources.Count - 1; i >= 0; i--)
             {
@@ -29,10 +29,10 @@ public sealed class ApiHost(ITestOutputHelper outputHelper, Action<IWebHostBuild
                 }
             }
         });
-        _ = builder.ConfigureLogging(logging =>
+        builder.ConfigureLogging(logging =>
         {
-            _ = logging.ClearProviders();
-            _ = logging.AddXUnit(outputHelper);
+            logging.ClearProviders();
+            logging.AddXUnit(outputHelper);
         });
         configure?.Invoke(builder);
     }

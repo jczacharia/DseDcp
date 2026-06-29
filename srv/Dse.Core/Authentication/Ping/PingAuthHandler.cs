@@ -21,7 +21,7 @@ public sealed class PingAuthHandler(
     IOptionsMonitor<PingAuthOptions> options,
     ILoggerFactory logger,
     UrlEncoder encoder,
-    IHttpClientFactory httpClientFactory,
+    IPingAuthClient client,
     IMemoryCache cache
 ) : AuthenticationHandler<PingAuthOptions>(options, logger, encoder)
 {
@@ -29,7 +29,6 @@ public sealed class PingAuthHandler(
     private const string IsMemberOfClaim = "isMemberOf";
     private const string UidClaim = "uid";
     private const string ReAuthHeader = "X-Re-Auth-Required";
-    private const string UserInfoPath = "/idp/userinfo.openid?schema=openid&access_token=";
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
@@ -53,9 +52,9 @@ public sealed class PingAuthHandler(
         }
 
         string cacheKey = $"ping-userinfo:{Fingerprint(accessToken)}";
-        if (!cache.TryGetValue(cacheKey, out IReadOnlyDictionary<string, string?>? userInfo))
+        if (!cache.TryGetValue(cacheKey, out IReadOnlyDictionary<string, string>? userInfo))
         {
-            userInfo = await FetchUserInfoAsync(accessToken);
+            userInfo = await client.DecodeAccessTokenAsync(accessToken, Context.RequestAborted);
             if (userInfo is null)
             {
                 return AuthenticateResult.Fail("User info could not be resolved.");
@@ -76,29 +75,29 @@ public sealed class PingAuthHandler(
             {
                 foreach (
                     string role in value.Split(
-                        separator: '^',
+                        '^',
                         StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
                     )
                 )
                 {
-                    identity.AddClaim(new(ClaimTypes.Role, role));
+                    identity.AddClaim(new Claim(ClaimTypes.Role, role));
                 }
             }
             else
             {
-                identity.AddClaim(new(type, value));
+                identity.AddClaim(new Claim(type, value));
             }
         }
 
-        return AuthenticateResult.Success(new(new(identity), Scheme.Name));
+        return AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(identity), Scheme.Name));
     }
 
-    private void SetInCache(string cacheKey, DateTime expiresUtc, IReadOnlyDictionary<string, string?> userInfo)
+    private void SetInCache(string cacheKey, DateTime expiresUtc, IReadOnlyDictionary<string, string> userInfo)
     {
         if (Options.CacheDuration > TimeSpan.Zero)
         {
             TimeSpan ttl = expiresUtc - DateTime.UtcNow;
-            _ = cache.Set(cacheKey, userInfo, ttl < Options.CacheDuration ? ttl : Options.CacheDuration);
+            cache.Set(cacheKey, userInfo, ttl < Options.CacheDuration ? ttl : Options.CacheDuration);
         }
     }
 
@@ -107,19 +106,6 @@ public sealed class PingAuthHandler(
     {
         Response.Headers[ReAuthHeader] = "true";
         return base.HandleChallengeAsync(properties);
-    }
-
-    private async Task<IReadOnlyDictionary<string, string?>?> FetchUserInfoAsync(string accessToken)
-    {
-        HttpClient client = httpClientFactory.CreateClient(PingAuthDefaults.HttpClientName);
-        using HttpResponseMessage response = await client.GetAsync(
-            $"{UserInfoPath}{Uri.EscapeDataString(accessToken)}",
-            Context.RequestAborted
-        );
-
-        return response.IsSuccessStatusCode
-            ? await response.Content.ReadFromJsonAsync<Dictionary<string, string?>>(Context.RequestAborted)
-            : null;
     }
 
     private bool TryGetEnvelope([MaybeNullWhen(false)] out string envelope)

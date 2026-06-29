@@ -9,25 +9,27 @@ using Microsoft.AspNetCore.Routing;
 namespace Dse.Authentication;
 
 /// <summary>
-/// Represents an endpoint that returns information about the currently authenticated user.
+///     Returns information about the currently authenticated user.
+/// </summary>
+/// <param name="Name">Current user's name.</param>
+/// <param name="Claims">Current user's claims.</param>
+public sealed record UserInfoResponse(string? Name, IReadOnlyList<ClaimDto> Claims);
+
+/// <summary>
+///     Represents an endpoint that returns information about the currently authenticated user.
 /// </summary>
 public sealed class UserInfoEndpoint : IEndpoint
 {
-    /// <summary>
-    /// Returns information about the currently authenticated user.
-    /// </summary>
-    /// <param name="Name">Current user's name.</param>
-    /// <param name="Claims">Current user's claims.</param>
-    [OpenApiComponent(Name = "UserInfoResponse")]
-    public sealed record Response(string? Name, IReadOnlyList<ClaimDto> Claims);
-
     public static void MapEndpoint(IEndpointRouteBuilder builder) =>
         builder
             .MapGet(
-                "/me",
+                "/userinfo",
                 (ClaimsPrincipal user) =>
                     TypedResults.Ok(
-                        new Response(user.Identity?.Name, [.. user.Claims.Select(c => new ClaimDto(c.Type, c.Value))])
+                        new UserInfoResponse(
+                            user.Identity?.Name,
+                            [.. user.Claims.Select(c => new ClaimDto(c.Type, c.Value))]
+                        )
                     )
             )
             .RequireAuthorization();

@@ -11,20 +11,21 @@ public sealed class PingAuthRegistration : IRegistration
 {
     public static void Register(IHostApplicationBuilder builder)
     {
-        _ = builder
+        builder
             .Services.AddAuthentication()
             .AddScheme<PingAuthOptions, PingAuthHandler>(PingAuthDefaults.AuthenticationScheme, static _ => { });
 
-        _ = builder.Services.AddMemoryCache();
+        builder.Services.AddMemoryCache();
+        builder.Services.AddTransient<IPingAuthClient, PingAuthClient>();
 
-        _ = builder
+        builder
             .Services.AddHttpClient(PingAuthDefaults.HttpClientName)
             .ConfigureHttpClient(
                 static (sp, client) =>
                 {
                     PingAuthOptions options = sp.GetRequiredService<IOptionsMonitor<PingAuthOptions>>()
                         .Get(PingAuthDefaults.AuthenticationScheme);
-                    client.BaseAddress = new(options.BaseAddress);
+                    client.BaseAddress = new Uri(options.BaseAddress);
                 }
             )
             .ConfigurePrimaryHttpMessageHandler(static sp =>

@@ -43,9 +43,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi(opts =>
 {
     opts.OpenApiVersion = OpenApiSpecVersion.OpenApi3_1;
-    _ = opts.MapVogenTypesInDse();
+    opts.MapVogenTypesInDse();
     opts.AddComponentsFromAssemblies([.. AppDomain.CurrentDomain.GetAssemblies(), typeof(ConfluenceDoc).Assembly]);
-    _ = opts.AddDocumentTransformer(
+    opts.AddDocumentTransformer(
         static (doc, _, _) =>
         {
             doc.Info.Title = "DSE";
@@ -60,8 +60,8 @@ builder.Services.RemoveWindowsEventLogProvider();
 if (CoreEnvironment.IsDocumentGenerationBuild)
 {
     // Remove all startup services when document generation build.
-    _ = builder.Services.RemoveAll<IStartupValidator>();
-    _ = builder.Services.RemoveAll<IHostedService>();
+    builder.Services.RemoveAll<IStartupValidator>();
+    builder.Services.RemoveAll<IHostedService>();
 }
 
 WebApplication app = builder.Build();
@@ -89,9 +89,9 @@ foreach (WebAppExtender reg in app.Services.GetServices<WebAppExtender>())
 
 if (CoreEnvironment.ServesSpa)
 {
-    _ = app.UseDefaultFiles();
-    _ = app.UseStaticFiles();
-    _ = app.MapFallbackToFile("index.html").AllowAnonymous();
+    app.UseDefaultFiles();
+    app.UseStaticFiles();
+    app.MapFallbackToFile("index.html").AllowAnonymous();
 }
 
 await app.RunAsync();

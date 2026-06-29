@@ -19,19 +19,19 @@ public static partial class ServiceCollectionExtensions
     private static void AddOption<TOptions>(IServiceCollection services)
         where TOptions : class
     {
-        OptionsAttribute? attr = typeof(TOptions).GetCustomAttribute<OptionsAttribute>();
+        var attr = typeof(TOptions).GetCustomAttribute<OptionsAttribute>();
         OptionsBuilder<TOptions> builder = services
             .AddOptions<TOptions>(attr?.Name)
             .ValidateDataAnnotations()
             .ValidateOnStart();
-        _ = builder.Services.AddSingleton<IValidateOptions<TOptions>>(s => new FluentValidateOptions<TOptions>(
+        builder.Services.AddSingleton<IValidateOptions<TOptions>>(s => new FluentValidateOptions<TOptions>(
             s,
             builder.Name
         ));
 
         if (attr?.Path is { } path)
         {
-            _ = builder.BindConfiguration(path);
+            builder.BindConfiguration(path);
         }
     }
 

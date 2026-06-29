@@ -35,7 +35,7 @@ public sealed class ElasticStartupService(
 
     private async Task ProbeClusterAsync(CancellationToken ct)
     {
-        NodesInfoResponse response = await client.Nodes.InfoAsync(nodeId: null, Metrics.All, ct);
+        NodesInfoResponse response = await client.Nodes.InfoAsync(null, Metrics.All, ct);
         if (!response.IsValidResponse)
         {
             throw new InvalidOperationException($"Nodes info failed: {response.DebugInformation}");
@@ -86,11 +86,8 @@ public sealed class ElasticStartupService(
         // The write pool caps what the cluster can absorb; MaxExportConcurrency caps what a single (possibly
         // single-core) client can actually drive. The smaller wins. Core count is deliberately not a factor —
         // this export path is I/O-bound, not CPU-bound.
-        int clusterCeiling = Math.Max(val1: 2, (int)(writePoolCapacity * options.CurrentValue.NodeUtilization));
-        int maxChannelConcurrency = Math.Min(
-            clusterCeiling,
-            Math.Max(val1: 2, options.CurrentValue.MaxExportConcurrency)
-        );
+        int clusterCeiling = Math.Max(2, (int)(writePoolCapacity * options.CurrentValue.NodeUtilization));
+        int maxChannelConcurrency = Math.Min(clusterCeiling, Math.Max(2, options.CurrentValue.MaxExportConcurrency));
 
         logger.LogInformation(
             "Cluster sizing: {@ClusterSizing}",

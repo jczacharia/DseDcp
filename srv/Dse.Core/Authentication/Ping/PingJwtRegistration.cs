@@ -3,23 +3,25 @@
 using System.Net;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Dse.Authentication.Ping;
 
+/// Validates the PingAccess gateway identity JWT (the PA.* cookie). The gateway authenticates the user against
+/// the SSO session and forwards a signed JWT; this app independently verifies signature, issuer, audience and
+/// expiry against the gateway's JWKS — it never trusts that the gateway already did so.
 public sealed class PingJwtRegistration : IRegistration
 {
     public static void Register(IHostApplicationBuilder builder)
     {
         builder
             .Services.AddHttpClient(PingJwtDefaults.HttpClientName)
-            .ConfigurePrimaryHttpMessageHandler(sp =>
+            .ConfigurePrimaryHttpMessageHandler(static sp =>
             {
                 PingJwtOptions options = sp.GetRequiredService<IOptions<PingJwtOptions>>().Value;
                 bool useProxy = !string.IsNullOrWhiteSpace(options.ProxyAddress);
@@ -32,40 +34,53 @@ public sealed class PingJwtRegistration : IRegistration
             .AddStandardResilienceHandler();
 
         builder.Services.AddTransient<JwksConfigurationRetriever>();
-        builder.Services.AddAuthentication().AddJwtBearer(PingJwtDefaults.AuthenticationScheme);
+
+        builder
+            .Services.AddAuthentication(PingJwtDefaults.AuthenticationScheme)
+            .AddJwtBearer(PingJwtDefaults.AuthenticationScheme);
+        builder.Services.AddAuthorization();
 
         builder
             .Services.AddOptions<JwtBearerOptions>(PingJwtDefaults.AuthenticationScheme)
-            .BindConfiguration(PingJwtDefaults.OptionsPath)
             .Configure<IServiceProvider>(
-                (jwt, sp) =>
+                static (jwt, sp) =>
                 {
-                    var ping = sp.GetRequiredService<IOptions<PingJwtOptions>>().Value;
+                    PingJwtOptions ping = sp.GetRequiredService<IOptions<PingJwtOptions>>().Value;
                     var httpClientFactory = sp.GetRequiredService<IHttpClientFactory>();
 
+                    jwt.RequireHttpsMetadata = ping.RequireHttpsMetadata;
+                    jwt.MapInboundClaims = false;
+
+                    // PingAccess publishes a raw JWKS, not an OIDC discovery document, so drive a ConfigurationManager
+                    // over the JWKS directly. It caches keys and refreshes on rollover.
                     jwt.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
-                        jwt.MetadataAddress,
+                        ping.JwksUri,
                         sp.GetRequiredService<JwksConfigurationRetriever>(),
                         new HttpDocumentRetriever(httpClientFactory.CreateClient(PingJwtDefaults.HttpClientName))
+                        {
+                            RequireHttps = ping.RequireHttpsMetadata,
+                        }
                     );
 
-                    jwt.TokenValidationParameters.TransformBeforeSignatureValidation = (token, _) =>
+                    jwt.TokenValidationParameters = new TokenValidationParameters
                     {
-                        if (
-                            token is JsonWebToken outer
-                            && outer.TryGetPayloadValue<string>(ping.AccessTokenClaim, out string? inner)
-                            && !string.IsNullOrEmpty(inner)
-                        )
-                        {
-                            return new JsonWebToken(inner);
-                        }
-
-                        return token;
+                        ValidateIssuer = true,
+                        ValidIssuer = ping.Issuer,
+                        ValidateAudience = true,
+                        ValidAudience = ping.Audience,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        RequireSignedTokens = true,
+                        RequireExpirationTime = true,
+                        NameClaimType = ping.NameClaimType,
+                        RoleClaimType = ClaimTypes.Role,
+                        ClockSkew = TimeSpan.FromSeconds(30),
                     };
 
                     jwt.Events = new JwtBearerEvents
                     {
-                        // The gateway delivers the JWT in the PA.* cookie; fall back to a header if one is configured.
+                        // The gateway delivers the JWT in the PA.* cookie; fall back to a configured header. When neither
+                        // is present the handler's default Authorization: Bearer extraction runs (local/API-client use).
                         OnMessageReceived = context =>
                         {
                             if (
@@ -75,16 +90,13 @@ public sealed class PingJwtRegistration : IRegistration
                             {
                                 context.Token = cookie;
                             }
-                            else if (context.HttpContext.Request.Headers.Authorization.FirstOrDefault() is { } raw)
+                            else if (
+                                !string.IsNullOrEmpty(ping.HeaderName)
+                                && context.Request.Headers.TryGetValue(ping.HeaderName, out var header)
+                                && header.FirstOrDefault() is { Length: > 0 } headerToken
+                            )
                             {
-                                string token = raw.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)
-                                    ? raw["Bearer ".Length..].Trim()
-                                    : raw;
-
-                                if (!string.IsNullOrEmpty(token))
-                                {
-                                    context.Token = token;
-                                }
+                                context.Token = headerToken;
                             }
 
                             return Task.CompletedTask;
@@ -98,16 +110,12 @@ public sealed class PingJwtRegistration : IRegistration
                             return Task.CompletedTask;
                         },
 
+                        // isMemberOf is a single caret-delimited string; expand it into role claims for authorization.
                         OnTokenValidated = context =>
                         {
                             if (context.Principal?.Identity is not ClaimsIdentity identity)
                             {
                                 return Task.CompletedTask;
-                            }
-
-                            if (identity.FindFirst(ping.NameClaimType)?.Value is { Length: > 0 } uid)
-                            {
-                                identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, uid));
                             }
 
                             if (identity.FindFirst(ping.IsMemberOfClaim)?.Value is { Length: > 0 } memberOf)

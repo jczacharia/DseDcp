@@ -37,7 +37,7 @@ export default async function globalTeardown(): Promise<void> {
   if (existsSync(lcovFile)) {
     const kept = readFileSync(lcovFile, 'utf8')
       .split('end_of_record\n')
-      .filter((record) => /^SF:src\//m.test(record))
+      .filter((record) => /^SF:ui\//m.test(record))
       .join('end_of_record\n');
     writeFileSync(lcovFile, kept ? `${kept}end_of_record\n` : '');
   }

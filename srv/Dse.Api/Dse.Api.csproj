@@ -28,6 +28,9 @@
   <Target Name="UIInstallDeps" BeforeTargets="BeforeBuild;PublishAngular" Condition="!Exists('$(SpaRoot)node_modules')">
     <Exec WorkingDirectory="$(SpaRoot)" Command="$(NodePrefix) pnpm i" />
   </Target>
+  <Target Name="UIOpenApi" AfterTargets="Build">
+    <Exec WorkingDirectory="$(SpaRoot)" Command="$(NodePrefix) pnpm openapi" />
+  </Target>
   <Target Name="UIPublish" AfterTargets="ComputeFilesToPublish">
     <Exec WorkingDirectory="$(SpaRoot)" Command="$(NodePrefix) pnpm build" />
     <ItemGroup>

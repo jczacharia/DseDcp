@@ -4,6 +4,20 @@ export type ClientOptions = {
   baseUrl: `${string}://${string}` | (string & {});
 };
 
+/**
+ * Represents a claim associated with a user.
+ */
+export type ClaimDto = {
+  /**
+   * Claim type.
+   */
+  type: string;
+  /**
+   * Claim value.
+   */
+  value: string;
+};
+
 export type ConfluenceDoc = {
   id: string;
   hash?: null | string;
@@ -45,6 +59,213 @@ export type ConfluenceDoc = {
   batchIndexDate?: Date;
 };
 
+/**
+ * Aggregated health of the service: overall status, total evaluation time, and a per-check breakdown.
+ */
+export type DseHealthReport = {
+  /**
+   * Overall status — `Healthy`, `Degraded`, or `Unhealthy`.
+   */
+  status: string;
+  /**
+   * Wall-clock time taken to evaluate every check.
+   */
+  totalDuration: string;
+  /**
+   * One entry per registered health check.
+   */
+  checks: Array<{
+    /**
+     * The check's registration name (e.g. `elastic`, `self`).
+     */
+    name: string;
+    /**
+     * This check's status.
+     */
+    status: string;
+    /**
+     * How long this check took.
+     */
+    duration: string;
+    /**
+     * Human-readable detail the check chose to report, if any.
+     */
+    description: null | string;
+    /**
+     * The failure message when the check threw, if any.
+     */
+    exception: null | string;
+    /**
+     * Free-form diagnostic data the check attached.
+     */
+    data: {
+      [key: string]: unknown;
+    };
+  }>;
+};
+
+/**
+ * Returns information about the currently authenticated user.
+ */
+export type Response = {
+  /**
+   * Current user's name.
+   */
+  name: null | string;
+  /**
+   * Current user's claims.
+   */
+  claims: Array<ClaimDto>;
+};
+
+/**
+ * Returns information about the currently authenticated user.
+ */
+export type UserInfoResponse = {
+  /**
+   * Current user's name.
+   */
+  name: null | string;
+  /**
+   * Current user's claims.
+   */
+  claims: Array<{
+    /**
+     * Claim type.
+     */
+    type: string;
+    /**
+     * Claim value.
+     */
+    value: string;
+  }>;
+};
+
+export type GetHealthData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/health';
+};
+
+export type GetHealthErrors = {
+  /**
+   * The service or an upstream dependency is unhealthy.
+   */
+  503: DseHealthReport;
+};
+
+export type GetHealthError = GetHealthErrors[keyof GetHealthErrors];
+
+export type GetHealthResponses = {
+  /**
+   * The service is serving traffic — overall status is Healthy or Degraded (see the body's status field).
+   */
+  200: DseHealthReport;
+};
+
+export type GetHealthResponse = GetHealthResponses[keyof GetHealthResponses];
+
+export type GetHealthStartupData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/health/startup';
+};
+
+export type GetHealthStartupErrors = {
+  /**
+   * The service or an upstream dependency is unhealthy.
+   */
+  503: DseHealthReport;
+};
+
+export type GetHealthStartupError = GetHealthStartupErrors[keyof GetHealthStartupErrors];
+
+export type GetHealthStartupResponses = {
+  /**
+   * The service is serving traffic — overall status is Healthy or Degraded (see the body's status field).
+   */
+  200: DseHealthReport;
+};
+
+export type GetHealthStartupResponse = GetHealthStartupResponses[keyof GetHealthStartupResponses];
+
+export type GetHealthLiveData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/health/live';
+};
+
+export type GetHealthLiveErrors = {
+  /**
+   * The service or an upstream dependency is unhealthy.
+   */
+  503: DseHealthReport;
+};
+
+export type GetHealthLiveError = GetHealthLiveErrors[keyof GetHealthLiveErrors];
+
+export type GetHealthLiveResponses = {
+  /**
+   * The service is serving traffic — overall status is Healthy or Degraded (see the body's status field).
+   */
+  200: DseHealthReport;
+};
+
+export type GetHealthLiveResponse = GetHealthLiveResponses[keyof GetHealthLiveResponses];
+
+export type GetHealthReadyData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/health/ready';
+};
+
+export type GetHealthReadyErrors = {
+  /**
+   * The service or an upstream dependency is unhealthy.
+   */
+  503: DseHealthReport;
+};
+
+export type GetHealthReadyError = GetHealthReadyErrors[keyof GetHealthReadyErrors];
+
+export type GetHealthReadyResponses = {
+  /**
+   * The service is serving traffic — overall status is Healthy or Degraded (see the body's status field).
+   */
+  200: DseHealthReport;
+};
+
+export type GetHealthReadyResponse = GetHealthReadyResponses[keyof GetHealthReadyResponses];
+
+export type GetHealthElasticData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/health/elastic';
+};
+
+export type GetHealthElasticErrors = {
+  /**
+   * The service or an upstream dependency is unhealthy.
+   */
+  503: DseHealthReport;
+};
+
+export type GetHealthElasticError = GetHealthElasticErrors[keyof GetHealthElasticErrors];
+
+export type GetHealthElasticResponses = {
+  /**
+   * The service is serving traffic — overall status is Healthy or Degraded (see the body's status field).
+   */
+  200: DseHealthReport;
+};
+
+export type GetHealthElasticResponse = GetHealthElasticResponses[keyof GetHealthElasticResponses];
+
 export type GetApiMeData = {
   body?: never;
   path?: never;
@@ -56,5 +277,7 @@ export type GetApiMeResponses = {
   /**
    * OK
    */
-  200: unknown;
+  200: Response;
 };
+
+export type GetApiMeResponse = GetApiMeResponses[keyof GetApiMeResponses];

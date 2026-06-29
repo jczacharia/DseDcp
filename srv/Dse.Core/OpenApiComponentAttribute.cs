@@ -7,7 +7,10 @@ using Microsoft.OpenApi;
 namespace Dse;
 
 [AttributeUsage(AttributeTargets.Class)]
-public sealed class OpenApiComponentAttribute : Attribute;
+public sealed class OpenApiComponentAttribute : Attribute
+{
+    public string? Name { get; init; }
+}
 
 public static class OpenApiComponentAttributeExtensions
 {
@@ -26,12 +29,13 @@ public static class OpenApiComponentAttributeExtensions
                             )
                     )
                     {
+                        OpenApiComponentAttribute attr = type.GetCustomAttribute<OpenApiComponentAttribute>()!;
                         OpenApiSchema schema = await context.GetOrCreateSchemaAsync(
                             type,
                             parameterDescription: null,
                             cancellationToken
                         );
-                        document.AddComponent(type.Name, schema);
+                        document.AddComponent(attr.Name ?? type.Name, schema);
                     }
                 }
             );

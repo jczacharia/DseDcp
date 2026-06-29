@@ -2,6 +2,14 @@
 
 import * as z from 'zod';
 
+/**
+ * Represents a claim associated with a user.
+ */
+export const zClaimDto = z.object({
+  type: z.string(),
+  value: z.string(),
+});
+
 export const zConfluenceDoc = z.object({
   id: z.string(),
   hash: z.string().nullish(),
@@ -64,3 +72,72 @@ export const zConfluenceDoc = z.object({
   ),
   batchIndexDate: z.iso.datetime().optional(),
 });
+
+/**
+ * Aggregated health of the service: overall status, total evaluation time, and a per-check breakdown.
+ */
+export const zDseHealthReport = z.object({
+  status: z.string(),
+  totalDuration: z.string(),
+  checks: z.array(
+    z.object({
+      name: z.string(),
+      status: z.string(),
+      duration: z.string(),
+      description: z.string().nullable(),
+      exception: z.string().nullable(),
+      data: z.record(z.string(), z.unknown()),
+    }),
+  ),
+});
+
+/**
+ * Returns information about the currently authenticated user.
+ */
+export const zResponse = z.object({
+  name: z.string().nullable(),
+  claims: z.array(zClaimDto),
+});
+
+/**
+ * Returns information about the currently authenticated user.
+ */
+export const zUserInfoResponse = z.object({
+  name: z.string().nullable(),
+  claims: z.array(
+    z.object({
+      type: z.string(),
+      value: z.string(),
+    }),
+  ),
+});
+
+/**
+ * The service is serving traffic — overall status is Healthy or Degraded (see the body's status field).
+ */
+export const zGetHealthResponse = zDseHealthReport;
+
+/**
+ * The service is serving traffic — overall status is Healthy or Degraded (see the body's status field).
+ */
+export const zGetHealthStartupResponse = zDseHealthReport;
+
+/**
+ * The service is serving traffic — overall status is Healthy or Degraded (see the body's status field).
+ */
+export const zGetHealthLiveResponse = zDseHealthReport;
+
+/**
+ * The service is serving traffic — overall status is Healthy or Degraded (see the body's status field).
+ */
+export const zGetHealthReadyResponse = zDseHealthReport;
+
+/**
+ * The service is serving traffic — overall status is Healthy or Degraded (see the body's status field).
+ */
+export const zGetHealthElasticResponse = zDseHealthReport;
+
+/**
+ * OK
+ */
+export const zGetApiMeResponse = zResponse;

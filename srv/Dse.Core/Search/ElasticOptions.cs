@@ -110,8 +110,5 @@ public sealed class ElasticOptions
 
 public sealed class ElasticOptionsValidator : AbstractValidator<ElasticOptions>
 {
-    public ElasticOptionsValidator() =>
-        RuleFor(x => x.BaseAddress)
-            .Must(url => Uri.IsWellFormedUriString(url, UriKind.Absolute))
-            .WithMessage("BaseAddress must be a valid absolute URL.");
+    public ElasticOptionsValidator() => RuleFor(x => x.BaseAddress).Must(url => Uri.IsWellFormedUriString(url, UriKind.Absolute));
 }

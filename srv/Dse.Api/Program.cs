@@ -2,8 +2,10 @@
 
 using Dse;
 using Dse.Api.Scanning;
+using Dse.Authentication.Ping;
 using Dse.Confluence;
 using Dse.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -13,6 +15,8 @@ using Scalar.AspNetCore;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddUserSecrets("dse");
+
+// Source Generated Registrations
 builder.Services.AddDseOptions();
 builder.Services.AddDseValidators();
 builder.Services.AddOpenShiftIntegration();
@@ -23,6 +27,9 @@ builder.Services.AddScoped<ProblemDetailsFactory, DefaultProblemDetailsFactory>(
 builder.Services.ConfigureHttpClientDefaults(static o => o.RemoveAllLoggers());
 builder.Services.AddMemoryCache();
 builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddAuthentication(PingJwtDefaults.AuthenticationScheme);
+builder.Services.AddAuthorizationBuilder().SetDefaultPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
 
 builder.Host.UseDefaultServiceProvider(static options =>
 {
@@ -67,8 +74,8 @@ app.MapDseHealthChecks();
 app.MapOpenApi();
 app.MapScalarApiReference();
 
-// app.UseAuthentication();
-// app.UseAuthorization();
+app.UseAuthentication();
+app.UseAuthorization();
 
 RouteGroupBuilder api = app.MapGroup("api").WithTags("Api").RequireAuthorization();
 api.MapApiEndpoints();

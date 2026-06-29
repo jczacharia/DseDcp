@@ -27,7 +27,7 @@ public sealed class UserInfoEndpoint : IEndpoint
                 "/me",
                 (ClaimsPrincipal user) =>
                     TypedResults.Ok(
-                        new Response(user.Identity?.Name, user.Claims.Select(c => new ClaimDto(c.Type, c.Value)).ToList())
+                        new Response(user.Identity?.Name, [.. user.Claims.Select(c => new ClaimDto(c.Type, c.Value))])
                     )
             )
             .RequireAuthorization();

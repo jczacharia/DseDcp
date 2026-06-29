@@ -52,9 +52,9 @@ public static class OpenShiftExtensions
                                 || ctx.Response.ContentType?.Contains("text/html", StringComparison.OrdinalIgnoreCase) is true
                             )
                             {
-                                const string noStore =
+                                const string NoStore =
                                     "max-age=0, no-cache, no-store, must-revalidate, private, proxy-revalidate, no-transform";
-                                ctx.Response.Headers.CacheControl = noStore;
+                                ctx.Response.Headers.CacheControl = NoStore;
                             }
 
                             return Task.CompletedTask;

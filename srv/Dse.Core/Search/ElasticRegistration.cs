@@ -17,13 +17,13 @@ public sealed class ElasticRegistration : IRegistration
         builder.Services.AddSingleton(BuildTransport);
 
         builder.Services.AddSingleton<ElasticStartupService>();
-        builder.Services.AddHostedService<ElasticStartupService>(static sp => sp.GetRequiredService<ElasticStartupService>());
+        builder.Services.AddHostedService(static sp => sp.GetRequiredService<ElasticStartupService>());
 
         builder.Services.AddSingleton<ITransport>(static sp =>
             sp.GetRequiredService<DistributedTransport<IElasticsearchClientSettings>>()
         );
 
-        builder.Services.AddSingleton<ElasticsearchClient>(static sp => new ElasticsearchClient(
+        builder.Services.AddSingleton(static sp => new ElasticsearchClient(
             sp.GetRequiredService<DistributedTransport<IElasticsearchClientSettings>>()
         ));
 
@@ -35,7 +35,7 @@ public sealed class ElasticRegistration : IRegistration
     private static DistributedTransport<IElasticsearchClientSettings> BuildTransport(IServiceProvider sp)
     {
         var env = sp.GetRequiredService<IHostEnvironment>();
-        ElasticOptions opts = sp.GetRequiredService<IOptions<ElasticOptions>>().Value;
+        var opts = sp.GetRequiredService<IOptions<ElasticOptions>>().Value;
         var es = new ElasticsearchClientSettings(new SingleNodePool(new Uri(opts.BaseAddress)));
 
         if (!string.IsNullOrWhiteSpace(opts.ApiKey))

@@ -21,7 +21,7 @@ public sealed class ApiHost(ITestOutputHelper outputHelper, Action<IWebHostBuild
         builder.UseEnvironment("Test");
         builder.ConfigureAppConfiguration(sources =>
         {
-            for (int i = sources.Sources.Count - 1; i >= 0; i--)
+            for (var i = sources.Sources.Count - 1; i >= 0; i--)
             {
                 if (sources.Sources[i] is EnvironmentVariablesConfigurationSource)
                 {

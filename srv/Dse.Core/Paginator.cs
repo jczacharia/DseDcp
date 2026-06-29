@@ -12,9 +12,9 @@ public abstract class Paginator<T>(string initialToken) : IAsyncEnumerable<T>
 {
     public async IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken ct = default)
     {
-        await foreach (Page<T> page in AsPages(ct).ConfigureAwait(false))
+        await foreach (var page in AsPages(ct).ConfigureAwait(false))
         {
-            foreach (T item in page.Items)
+            foreach (var item in page.Items)
             {
                 yield return item;
             }
@@ -25,11 +25,11 @@ public abstract class Paginator<T>(string initialToken) : IAsyncEnumerable<T>
 
     public async IAsyncEnumerable<Page<T>> AsPages([EnumeratorCancellation] CancellationToken ct = default)
     {
-        string token = initialToken;
+        var token = initialToken;
 
         while (true)
         {
-            Page<T> page = await FetchPageAsync(token, ct).ConfigureAwait(false);
+            var page = await FetchPageAsync(token, ct).ConfigureAwait(false);
             yield return page;
 
             if (page.ContinuationToken is null)

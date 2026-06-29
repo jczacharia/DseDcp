@@ -11,11 +11,11 @@ public static class LoggingExtensions
     {
         public void RemoveWindowsEventLogProvider()
         {
-            const string eventLogProvider = "Microsoft.Extensions.Logging.EventLog.EventLogLoggerProvider";
+            const string EventLogProvider = "Microsoft.Extensions.Logging.EventLog.EventLogLoggerProvider";
 
             foreach (
-                ServiceDescriptor descriptor in services
-                    .Where(d => d.ServiceType == typeof(ILoggerProvider) && d.ImplementationType?.FullName == eventLogProvider)
+                var descriptor in services
+                    .Where(d => d.ServiceType == typeof(ILoggerProvider) && d.ImplementationType?.FullName == EventLogProvider)
                     .ToList()
             )
             {

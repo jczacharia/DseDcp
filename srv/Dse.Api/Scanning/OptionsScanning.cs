@@ -16,7 +16,7 @@ public static partial class ServiceCollectionExtensions
         where TOptions : class
     {
         var attr = typeof(TOptions).GetCustomAttribute<OptionsAttribute>();
-        OptionsBuilder<TOptions> builder = services.AddOptions<TOptions>(attr?.Name).ValidateDataAnnotations().ValidateOnStart();
+        var builder = services.AddOptions<TOptions>(attr?.Name).ValidateDataAnnotations().ValidateOnStart();
         builder.Services.AddSingleton<IValidateOptions<TOptions>>(s => new FluentValidateOptions<TOptions>(s, builder.Name));
 
         if (attr?.Path is { } path)
@@ -37,12 +37,13 @@ public static partial class ServiceCollectionExtensions
 
             ArgumentNullException.ThrowIfNull(options);
 
-            using IServiceScope scope = sp.CreateScope();
-            string type = options.GetType().Name;
-            IEnumerable<IValidator<T>> validators = scope.ServiceProvider.GetServices<IValidator<T>>();
+            using var scope = sp.CreateScope();
+            var type = options.GetType().Name;
+            var validators = scope.ServiceProvider.GetServices<IValidator<T>>();
 
-            List<string> errors = validators
-                .SelectMany(validator =>
+            List<string> errors =
+            [
+                .. validators.SelectMany(validator =>
                 {
                     if (validator.Validate(options) is not { IsValid: false } result)
                     {
@@ -52,8 +53,8 @@ public static partial class ServiceCollectionExtensions
                     return result.Errors.Select(failure =>
                         $"Validation failed for {type}.{failure.PropertyName} with the error: {failure.ErrorMessage}"
                     );
-                })
-                .ToList();
+                }),
+            ];
 
             if (errors.Count > 0)
             {

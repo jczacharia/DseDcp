@@ -82,7 +82,7 @@ public static class HealthCheckEndpoints
     {
         public void MapDseHealthChecks()
         {
-            RouteGroupBuilder group = endpoints.MapGroup(HealthEndpointPath).WithTags("Health");
+            var group = endpoints.MapGroup(HealthEndpointPath).WithTags("Health");
 
             group
                 .MapHealthChecks("", new HealthCheckOptions { ResponseWriter = WriteHealthReportAsync })
@@ -122,7 +122,7 @@ public static class HealthCheckEndpoints
                 .ApplyDefaults("Readiness probe", "Process and its ready-tagged dependencies are reachable.");
 
             foreach (
-                string name in endpoints
+                var name in endpoints
                     .Services.GetRequiredService<IOptions<HealthCheckServiceOptions>>()
                     .Value.Registrations.Select(r => r.Name)
             )

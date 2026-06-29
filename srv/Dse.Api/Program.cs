@@ -12,7 +12,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
 using Scalar.AspNetCore;
 
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddUserSecrets("dse");
 
@@ -28,7 +28,7 @@ builder.Services.ConfigureHttpClientDefaults(static o => o.RemoveAllLoggers());
 builder.Services.AddMemoryCache();
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddAuthentication(PingJwtDefaults.AuthenticationScheme);
+builder.Services.AddAuthentication(PingAuthDefaults.AuthenticationScheme);
 builder.Services.AddAuthorizationBuilder().SetDefaultPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
 
 builder.Host.UseDefaultServiceProvider(static options =>
@@ -62,7 +62,7 @@ if (CoreEnvironment.IsDocumentGenerationBuild)
     builder.Services.RemoveAll<IHostedService>();
 }
 
-WebApplication app = builder.Build();
+var app = builder.Build();
 
 app.UseOpenShiftIntegration();
 
@@ -77,10 +77,10 @@ app.MapScalarApiReference();
 app.UseAuthentication();
 app.UseAuthorization();
 
-RouteGroupBuilder api = app.MapGroup("api").WithTags("Api").RequireAuthorization();
+var api = app.MapGroup("api").WithTags("Api").RequireAuthorization();
 api.MapApiEndpoints();
 
-foreach (WebAppExtender reg in app.Services.GetServices<WebAppExtender>())
+foreach (var reg in app.Services.GetServices<WebAppExtender>())
 {
     reg.Register(app);
 }

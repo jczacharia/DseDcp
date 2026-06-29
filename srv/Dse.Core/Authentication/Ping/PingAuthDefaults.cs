@@ -2,9 +2,8 @@
 
 namespace Dse.Authentication.Ping;
 
-public static class PingJwtDefaults
+public static class PingAuthDefaults
 {
-    public const string OptionsPath = "Ping";
     public const string HttpClientName = "ping";
     public const string AuthenticationScheme = "Ping";
 }

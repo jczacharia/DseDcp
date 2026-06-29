@@ -19,7 +19,8 @@ public static class CoreEnvironment
     public static readonly bool IsDebug = !IsRelease;
 
     public static readonly bool IsDocumentGenerationBuild =
-        Assembly.GetEntryAssembly()?.GetName().Name?.Equals("GetDocument.Insider", StringComparison.OrdinalIgnoreCase) is true;
+        Assembly.GetEntryAssembly()?.GetName().Name?.Equals("GetDocument.Insider", StringComparison.OrdinalIgnoreCase)
+        is true;
 
     public static readonly bool IsSpaProxyEnabled =
         Environment

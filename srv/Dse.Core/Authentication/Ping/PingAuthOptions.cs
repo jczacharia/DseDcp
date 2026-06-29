@@ -39,10 +39,10 @@ public sealed class PingAuthOptionsValidator : AbstractValidator<PingAuthOptions
 {
     public PingAuthOptionsValidator()
     {
-        RuleFor(x => x.CookieName).NotEmpty();
-        RuleFor(x => x.BaseAddress).NotEmpty().Must(url => Uri.IsWellFormedUriString(url, UriKind.Absolute));
-        RuleFor(x => x.CacheDuration).GreaterThanOrEqualTo(TimeSpan.Zero);
-        RuleFor(x => x.ProxyAddress)
+        _ = RuleFor(x => x.CookieName).NotEmpty();
+        _ = RuleFor(x => x.BaseAddress).NotEmpty().Must(url => Uri.IsWellFormedUriString(url, UriKind.Absolute));
+        _ = RuleFor(x => x.CacheDuration).GreaterThanOrEqualTo(TimeSpan.Zero);
+        _ = RuleFor(x => x.ProxyAddress)
             .Must(url => Uri.IsWellFormedUriString(url, UriKind.Absolute))
             .When(x => !string.IsNullOrWhiteSpace(x.ProxyAddress));
     }

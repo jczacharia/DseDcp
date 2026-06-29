@@ -2,6 +2,7 @@
 
 using System.Globalization;
 using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch.Nodes;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -34,19 +35,19 @@ public sealed class ElasticStartupService(
 
     private async Task ProbeClusterAsync(CancellationToken ct)
     {
-        var response = await client.Nodes.InfoAsync(nodeId: null, Metrics.All, ct);
+        NodesInfoResponse response = await client.Nodes.InfoAsync(nodeId: null, Metrics.All, ct);
         if (!response.IsValidResponse)
         {
             throw new InvalidOperationException($"Nodes info failed: {response.DebugInformation}");
         }
 
-        var dataNodeCount = 0;
-        var writePoolCapacity = 0;
-        var bulkMaxByteSize = long.MaxValue;
+        int dataNodeCount = 0;
+        int writePoolCapacity = 0;
+        long bulkMaxByteSize = long.MaxValue;
 
-        foreach (var (_, node) in response.Nodes)
+        foreach ((string _, NodeInfo node) in response.Nodes)
         {
-            var isDataNode = node.Roles.Any(r => r.ToString().StartsWith("data", StringComparison.OrdinalIgnoreCase));
+            bool isDataNode = node.Roles.Any(r => r.ToString().StartsWith("data", StringComparison.OrdinalIgnoreCase));
 
             if (!isDataNode)
             {
@@ -55,7 +56,11 @@ public sealed class ElasticStartupService(
 
             dataNodeCount++;
 
-            if (node.ThreadPool is { } pools && pools.TryGetValue("write", out var write) && write.Size is { } size)
+            if (
+                node.ThreadPool is { } pools
+                && pools.TryGetValue("write", out NodeThreadPoolInfo? write)
+                && write.Size is { } size
+            )
             {
                 writePoolCapacity += size;
             }
@@ -81,8 +86,11 @@ public sealed class ElasticStartupService(
         // The write pool caps what the cluster can absorb; MaxExportConcurrency caps what a single (possibly
         // single-core) client can actually drive. The smaller wins. Core count is deliberately not a factor —
         // this export path is I/O-bound, not CPU-bound.
-        var clusterCeiling = Math.Max(val1: 2, (int)(writePoolCapacity * options.CurrentValue.NodeUtilization));
-        var maxChannelConcurrency = Math.Min(clusterCeiling, Math.Max(val1: 2, options.CurrentValue.MaxExportConcurrency));
+        int clusterCeiling = Math.Max(val1: 2, (int)(writePoolCapacity * options.CurrentValue.NodeUtilization));
+        int maxChannelConcurrency = Math.Min(
+            clusterCeiling,
+            Math.Max(val1: 2, options.CurrentValue.MaxExportConcurrency)
+        );
 
         logger.LogInformation(
             "Cluster sizing: {@ClusterSizing}",

@@ -11,27 +11,27 @@ public sealed class PingAuthRegistration : IRegistration
 {
     public static void Register(IHostApplicationBuilder builder)
     {
-        builder
+        _ = builder
             .Services.AddAuthentication()
             .AddScheme<PingAuthOptions, PingAuthHandler>(PingAuthDefaults.AuthenticationScheme, static _ => { });
 
-        builder.Services.AddMemoryCache();
+        _ = builder.Services.AddMemoryCache();
 
-        builder
+        _ = builder
             .Services.AddHttpClient(PingAuthDefaults.HttpClientName)
             .ConfigureHttpClient(
                 static (sp, client) =>
                 {
-                    var options = sp.GetRequiredService<IOptionsMonitor<PingAuthOptions>>()
+                    PingAuthOptions options = sp.GetRequiredService<IOptionsMonitor<PingAuthOptions>>()
                         .Get(PingAuthDefaults.AuthenticationScheme);
                     client.BaseAddress = new(options.BaseAddress);
                 }
             )
             .ConfigurePrimaryHttpMessageHandler(static sp =>
             {
-                var options = sp.GetRequiredService<IOptionsMonitor<PingAuthOptions>>()
+                PingAuthOptions options = sp.GetRequiredService<IOptionsMonitor<PingAuthOptions>>()
                     .Get(PingAuthDefaults.AuthenticationScheme);
-                var useProxy = !string.IsNullOrWhiteSpace(options.ProxyAddress);
+                bool useProxy = !string.IsNullOrWhiteSpace(options.ProxyAddress);
                 return new HttpClientHandler
                 {
                     Proxy = useProxy ? new WebProxy(options.ProxyAddress) : null,

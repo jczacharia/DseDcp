@@ -19,9 +19,9 @@ public static class ProblemDetailsExtensions
     private static string BuildExceptionChainMessage(Exception ex)
     {
         StringBuilder message = new($"{ex.GetType().Name}: {ex.Message} {ex.StackTrace}");
-        for (var inner = ex.InnerException; inner is not null; inner = inner.InnerException)
+        for (Exception? inner = ex.InnerException; inner is not null; inner = inner.InnerException)
         {
-            message.Append(CultureInfo.InvariantCulture, $" {inner.Message}");
+            _ = message.Append(CultureInfo.InvariantCulture, $" {inner.Message}");
         }
 
         return message.ToString();
@@ -43,13 +43,13 @@ public static class ProblemDetailsExtensions
         return true;
     }
 
-    private static void ApplyExceptionDetail(ProblemDetailsContext context, Exception ex)
-    {
-        context.ProblemDetails.Detail = context.HttpContext.RequestServices.GetRequiredService<IHostEnvironment>().IsProduction()
+    private static void ApplyExceptionDetail(ProblemDetailsContext context, Exception ex) =>
+        context.ProblemDetails.Detail = context
+            .HttpContext.RequestServices.GetRequiredService<IHostEnvironment>()
+            .IsProduction()
             ? "An exception occurred while processing your request."
                 + " Please try again later or contact the DSE team if the problem persists."
             : BuildExceptionChainMessage(ex);
-    }
 
     private static void ApplyNotFoundDetail(ProblemDetailsContext context)
     {
@@ -64,8 +64,7 @@ public static class ProblemDetailsExtensions
 
     extension(ProblemDetailsOptions setup)
     {
-        public void ApplyCoreCustomization()
-        {
+        public void ApplyCoreCustomization() =>
             setup.CustomizeProblemDetails = context =>
             {
                 if (TryApplyPresetProblem(context))
@@ -91,31 +90,21 @@ public static class ProblemDetailsExtensions
 
                 ApplyNotFoundDetail(context);
             };
-        }
     }
 
     extension(HttpContext httpContext)
     {
-        public void SetProblem(ProblemDetails problem)
-        {
-            httpContext.Items[HttpContextKey] = problem;
-        }
+        public void SetProblem(ProblemDetails problem) => httpContext.Items[HttpContextKey] = problem;
 
-        public void SetProblem(HttpStatusCode statusCode, string detail)
-        {
+        public void SetProblem(HttpStatusCode statusCode, string detail) =>
             httpContext.SetProblem(httpContext.BuildProblemDetails(statusCode, detail));
-        }
 
-        public ProblemDetails BuildProblemDetails(HttpStatusCode statusCode, string detail)
-        {
-            return httpContext
+        public ProblemDetails BuildProblemDetails(HttpStatusCode statusCode, string detail) =>
+            httpContext
                 .RequestServices.GetRequiredService<ProblemDetailsFactory>()
                 .CreateProblemDetails(httpContext, (int)statusCode, detail);
-        }
 
-        public ProblemHttpResult ProblemHttpResult(HttpStatusCode statusCode, string detail)
-        {
-            return TypedResults.Problem(httpContext.BuildProblemDetails(statusCode, detail));
-        }
+        public ProblemHttpResult ProblemHttpResult(HttpStatusCode statusCode, string detail) =>
+            TypedResults.Problem(httpContext.BuildProblemDetails(statusCode, detail));
     }
 }

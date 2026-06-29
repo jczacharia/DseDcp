@@ -4,7 +4,8 @@
     <UserSecretsId>dse</UserSecretsId>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <LangVersion>14</LangVersion>
+    <LangVersion>latest</LangVersion>
+    <WarningsAsErrors>CS8600;CS8601;CS8602;CS8604;CS8618;CS8625</WarningsAsErrors>
     <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
     <Deterministic>true</Deterministic>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>

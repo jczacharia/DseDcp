@@ -28,15 +28,15 @@ public static class OpenShiftExtensions
         public void UseOpenShiftIntegration()
         {
             // must run before anything that reads scheme/host
-            app.UseForwardedHeaders();
+            _ = app.UseForwardedHeaders();
 
             if (app.Environment.IsProduction())
             {
-                app.UseHsts();
+                _ = app.UseHsts();
             }
 
             // Authenticated requests must not be cached so that, after a Ping logout, the browser can't redisplay them from cache.
-            app.Use(
+            _ = app.Use(
                 (context, next) =>
                 {
                     context.Response.OnStarting(
@@ -49,7 +49,8 @@ public static class OpenShiftExtensions
 
                             if (
                                 ctx.Request.Path.StartsWithSegments("/api")
-                                || ctx.Response.ContentType?.Contains("text/html", StringComparison.OrdinalIgnoreCase) is true
+                                || ctx.Response.ContentType?.Contains("text/html", StringComparison.OrdinalIgnoreCase)
+                                    is true
                             )
                             {
                                 const string NoStore =

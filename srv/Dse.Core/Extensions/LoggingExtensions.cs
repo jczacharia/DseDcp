@@ -14,12 +14,14 @@ public static class LoggingExtensions
             const string EventLogProvider = "Microsoft.Extensions.Logging.EventLog.EventLogLoggerProvider";
 
             foreach (
-                var descriptor in services
-                    .Where(d => d.ServiceType == typeof(ILoggerProvider) && d.ImplementationType?.FullName == EventLogProvider)
+                ServiceDescriptor descriptor in services
+                    .Where(d =>
+                        d.ServiceType == typeof(ILoggerProvider) && d.ImplementationType?.FullName == EventLogProvider
+                    )
                     .ToList()
             )
             {
-                services.Remove(descriptor);
+                _ = services.Remove(descriptor);
             }
         }
     }

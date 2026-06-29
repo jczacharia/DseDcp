@@ -17,7 +17,7 @@ public static class AsyncExtensions
         [EnumeratorCancellation] CancellationToken ct = default
     )
     {
-        await using var enumerator = source.GetAsyncEnumerator(ct);
+        await using IAsyncEnumerator<T> enumerator = source.GetAsyncEnumerator(ct);
         while (true)
         {
             if (!await ready(ct))

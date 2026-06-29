@@ -1,6 +1,7 @@
 // Copyright (c) PNC Financial Services. All rights reserved.
 
 using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch.Cluster;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using HealthStatus = Elastic.Clients.Elasticsearch.HealthStatus;
 
@@ -15,7 +16,7 @@ public sealed class ElasticHealthCheck(ElasticsearchClient elastic) : IHealthChe
     {
         try
         {
-            var cluster = await elastic.Cluster.HealthAsync(cancellationToken);
+            HealthResponse cluster = await elastic.Cluster.HealthAsync(cancellationToken);
 
             if (cluster is { IsValidResponse: false })
             {

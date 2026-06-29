@@ -14,7 +14,10 @@ public sealed class HealthCheckTests(ITestOutputHelper outputHelper) : ApiTest(o
     [InlineData("/health/startup")]
     public async Task Health_endpoints_are_healthy(string url)
     {
-        var response = await Client.GetFromJsonAsync<DseHealthReport>(url, TestContext.Current.CancellationToken);
-        response.Should().BeAssignableTo<DseHealthReport>();
+        DseHealthReport? response = await Client.GetFromJsonAsync<DseHealthReport>(
+            url,
+            TestContext.Current.CancellationToken
+        );
+        _ = response.Should().BeAssignableTo<DseHealthReport>();
     }
 }

@@ -82,7 +82,7 @@ public static class HealthCheckEndpoints
     {
         public void MapDseHealthChecks()
         {
-            var group = endpoints.MapGroup(HealthEndpointPath).WithTags("Health");
+            RouteGroupBuilder group = endpoints.MapGroup(HealthEndpointPath).WithTags("Health");
 
             group
                 .MapHealthChecks("", new HealthCheckOptions { ResponseWriter = WriteHealthReportAsync })
@@ -122,7 +122,7 @@ public static class HealthCheckEndpoints
                 .ApplyDefaults("Readiness probe", "Process and its ready-tagged dependencies are reachable.");
 
             foreach (
-                var name in endpoints
+                string name in endpoints
                     .Services.GetRequiredService<IOptions<HealthCheckServiceOptions>>()
                     .Value.Registrations.Select(r => r.Name)
             )
@@ -130,7 +130,11 @@ public static class HealthCheckEndpoints
                 group
                     .MapHealthChecks(
                         $"{name}",
-                        new HealthCheckOptions { Predicate = r => r.Name == name, ResponseWriter = WriteHealthReportAsync }
+                        new HealthCheckOptions
+                        {
+                            Predicate = r => r.Name == name,
+                            ResponseWriter = WriteHealthReportAsync,
+                        }
                     )
                     .ApplyDefaults($"Health: {name}", $"The '{name}' check in isolation.");
             }
@@ -148,7 +152,7 @@ public static class HealthCheckEndpoints
                         operation.Summary = summary;
                         operation.Description = description;
 
-                        ctx.Document!.AddComponent(
+                        _ = ctx.Document!.AddComponent(
                             nameof(DseHealthReport),
                             await ctx.GetOrCreateSchemaAsync(typeof(DseHealthReport), parameterDescription: null, ct)
                         );

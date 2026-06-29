@@ -9,19 +9,29 @@ namespace Dse.Api.Scanning;
 
 public static partial class ServiceCollectionExtensions
 {
-    [ScanForTypes(AttributeFilter = typeof(OptionsAttribute), Handler = nameof(AddOption), AssemblyNameFilter = "Dse.*")]
+    [ScanForTypes(
+        AttributeFilter = typeof(OptionsAttribute),
+        Handler = nameof(AddOption),
+        AssemblyNameFilter = "Dse.*"
+    )]
     public static partial IServiceCollection AddDseOptions(this IServiceCollection services);
 
     private static void AddOption<TOptions>(IServiceCollection services)
         where TOptions : class
     {
-        var attr = typeof(TOptions).GetCustomAttribute<OptionsAttribute>();
-        var builder = services.AddOptions<TOptions>(attr?.Name).ValidateDataAnnotations().ValidateOnStart();
-        builder.Services.AddSingleton<IValidateOptions<TOptions>>(s => new FluentValidateOptions<TOptions>(s, builder.Name));
+        OptionsAttribute? attr = typeof(TOptions).GetCustomAttribute<OptionsAttribute>();
+        OptionsBuilder<TOptions> builder = services
+            .AddOptions<TOptions>(attr?.Name)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+        _ = builder.Services.AddSingleton<IValidateOptions<TOptions>>(s => new FluentValidateOptions<TOptions>(
+            s,
+            builder.Name
+        ));
 
         if (attr?.Path is { } path)
         {
-            builder.BindConfiguration(path);
+            _ = builder.BindConfiguration(path);
         }
     }
 
@@ -37,9 +47,9 @@ public static partial class ServiceCollectionExtensions
 
             ArgumentNullException.ThrowIfNull(options);
 
-            using var scope = sp.CreateScope();
-            var type = options.GetType().Name;
-            var validators = scope.ServiceProvider.GetServices<IValidator<T>>();
+            using IServiceScope scope = sp.CreateScope();
+            string type = options.GetType().Name;
+            IEnumerable<IValidator<T>> validators = scope.ServiceProvider.GetServices<IValidator<T>>();
 
             List<string> errors =
             [

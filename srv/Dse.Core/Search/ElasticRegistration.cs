@@ -14,28 +14,33 @@ public sealed class ElasticRegistration : IRegistration
 {
     public static void Register(IHostApplicationBuilder builder)
     {
-        builder.Services.AddSingleton(BuildTransport);
+        _ = builder.Services.AddSingleton(BuildTransport);
 
-        builder.Services.AddSingleton<ElasticStartupService>();
-        builder.Services.AddHostedService(static sp => sp.GetRequiredService<ElasticStartupService>());
+        _ = builder.Services.AddSingleton<ElasticStartupService>();
+        _ = builder.Services.AddHostedService(static sp => sp.GetRequiredService<ElasticStartupService>());
 
-        builder.Services.AddSingleton<ITransport>(static sp =>
+        _ = builder.Services.AddSingleton<ITransport>(static sp =>
             sp.GetRequiredService<DistributedTransport<IElasticsearchClientSettings>>()
         );
 
-        builder.Services.AddSingleton(static sp => new ElasticsearchClient(
+        _ = builder.Services.AddSingleton(static sp => new ElasticsearchClient(
             sp.GetRequiredService<DistributedTransport<IElasticsearchClientSettings>>()
         ));
 
-        builder
+        _ = builder
             .Services.AddHealthChecks()
-            .AddCheck<ElasticHealthCheck>("elastic", HealthStatus.Unhealthy, ["ready"], HealthCheckDefaults.ReadinessTimeout);
+            .AddCheck<ElasticHealthCheck>(
+                "elastic",
+                HealthStatus.Unhealthy,
+                ["ready"],
+                HealthCheckDefaults.ReadinessTimeout
+            );
     }
 
     private static DistributedTransport<IElasticsearchClientSettings> BuildTransport(IServiceProvider sp)
     {
-        var env = sp.GetRequiredService<IHostEnvironment>();
-        var opts = sp.GetRequiredService<IOptions<ElasticOptions>>().Value;
+        IHostEnvironment env = sp.GetRequiredService<IHostEnvironment>();
+        ElasticOptions opts = sp.GetRequiredService<IOptions<ElasticOptions>>().Value;
         var es = new ElasticsearchClientSettings(new SingleNodePool(new Uri(opts.BaseAddress)));
 
         if (!string.IsNullOrWhiteSpace(opts.ApiKey))

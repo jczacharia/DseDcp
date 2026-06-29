@@ -12,7 +12,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
 using Scalar.AspNetCore;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddUserSecrets("dse");
 
@@ -29,7 +29,9 @@ builder.Services.AddMemoryCache();
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddAuthentication(PingAuthDefaults.AuthenticationScheme);
-builder.Services.AddAuthorizationBuilder().SetDefaultPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
+builder
+    .Services.AddAuthorizationBuilder()
+    .SetDefaultPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
 
 builder.Host.UseDefaultServiceProvider(static options =>
 {
@@ -41,9 +43,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi(opts =>
 {
     opts.OpenApiVersion = OpenApiSpecVersion.OpenApi3_1;
-    opts.MapVogenTypesInDse();
+    _ = opts.MapVogenTypesInDse();
     opts.AddComponentsFromAssemblies([.. AppDomain.CurrentDomain.GetAssemblies(), typeof(ConfluenceDoc).Assembly]);
-    opts.AddDocumentTransformer(
+    _ = opts.AddDocumentTransformer(
         static (doc, _, _) =>
         {
             doc.Info.Title = "DSE";
@@ -58,11 +60,11 @@ builder.Services.RemoveWindowsEventLogProvider();
 if (CoreEnvironment.IsDocumentGenerationBuild)
 {
     // Remove all startup services when document generation build.
-    builder.Services.RemoveAll<IStartupValidator>();
-    builder.Services.RemoveAll<IHostedService>();
+    _ = builder.Services.RemoveAll<IStartupValidator>();
+    _ = builder.Services.RemoveAll<IHostedService>();
 }
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 app.UseOpenShiftIntegration();
 
@@ -77,19 +79,19 @@ app.MapScalarApiReference();
 app.UseAuthentication();
 app.UseAuthorization();
 
-var api = app.MapGroup("api").WithTags("Api").RequireAuthorization();
+RouteGroupBuilder api = app.MapGroup("api").WithTags("Api").RequireAuthorization();
 api.MapApiEndpoints();
 
-foreach (var reg in app.Services.GetServices<WebAppExtender>())
+foreach (WebAppExtender reg in app.Services.GetServices<WebAppExtender>())
 {
     reg.Register(app);
 }
 
 if (CoreEnvironment.ServesSpa)
 {
-    app.UseDefaultFiles();
-    app.UseStaticFiles();
-    app.MapFallbackToFile("index.html").AllowAnonymous();
+    _ = app.UseDefaultFiles();
+    _ = app.UseStaticFiles();
+    _ = app.MapFallbackToFile("index.html").AllowAnonymous();
 }
 
 await app.RunAsync();

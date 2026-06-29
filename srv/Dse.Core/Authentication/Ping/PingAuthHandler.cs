@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace Dse.Authentication.Ping;
@@ -32,16 +33,16 @@ public sealed class PingAuthHandler(
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        if (!TryGetEnvelope(out var envelope))
+        if (!TryGetEnvelope(out string? envelope))
         {
             return AuthenticateResult.NoResult();
         }
 
-        var accessToken = UnwrapAccessToken(envelope);
+        string accessToken = UnwrapAccessToken(envelope);
 
         // userinfo is the trust anchor, but reading the expiry locally lets us skip the round-trip for dead
         // tokens and cap the cache lifetime so a revoked group can't outlive the token.
-        if (!TryGetExpiry(accessToken, out var expiresUtc))
+        if (!TryGetExpiry(accessToken, out DateTime expiresUtc))
         {
             return AuthenticateResult.Fail("Access token is malformed.");
         }
@@ -51,7 +52,7 @@ public sealed class PingAuthHandler(
             return AuthenticateResult.Fail("Access token has expired.");
         }
 
-        var cacheKey = $"ping-userinfo:{Fingerprint(accessToken)}";
+        string cacheKey = $"ping-userinfo:{Fingerprint(accessToken)}";
         if (!cache.TryGetValue(cacheKey, out IReadOnlyDictionary<string, string?>? userInfo))
         {
             userInfo = await FetchUserInfoAsync(accessToken);
@@ -64,7 +65,7 @@ public sealed class PingAuthHandler(
         }
 
         ClaimsIdentity identity = new(Scheme.Name, UidClaim, ClaimTypes.Role);
-        foreach (var (type, value) in userInfo!)
+        foreach ((string type, string? value) in userInfo!)
         {
             if (value is not { Length: > 0 })
             {
@@ -74,7 +75,7 @@ public sealed class PingAuthHandler(
             if (type == IsMemberOfClaim)
             {
                 foreach (
-                    var role in value.Split(
+                    string role in value.Split(
                         separator: '^',
                         StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
                     )
@@ -96,8 +97,8 @@ public sealed class PingAuthHandler(
     {
         if (Options.CacheDuration > TimeSpan.Zero)
         {
-            var ttl = expiresUtc - DateTime.UtcNow;
-            cache.Set(cacheKey, userInfo, ttl < Options.CacheDuration ? ttl : Options.CacheDuration);
+            TimeSpan ttl = expiresUtc - DateTime.UtcNow;
+            _ = cache.Set(cacheKey, userInfo, ttl < Options.CacheDuration ? ttl : Options.CacheDuration);
         }
     }
 
@@ -110,8 +111,11 @@ public sealed class PingAuthHandler(
 
     private async Task<IReadOnlyDictionary<string, string?>?> FetchUserInfoAsync(string accessToken)
     {
-        var client = httpClientFactory.CreateClient(PingAuthDefaults.HttpClientName);
-        using var response = await client.GetAsync($"{UserInfoPath}{Uri.EscapeDataString(accessToken)}", Context.RequestAborted);
+        HttpClient client = httpClientFactory.CreateClient(PingAuthDefaults.HttpClientName);
+        using HttpResponseMessage response = await client.GetAsync(
+            $"{UserInfoPath}{Uri.EscapeDataString(accessToken)}",
+            Context.RequestAborted
+        );
 
         return response.IsSuccessStatusCode
             ? await response.Content.ReadFromJsonAsync<Dictionary<string, string?>>(Context.RequestAborted)
@@ -120,7 +124,10 @@ public sealed class PingAuthHandler(
 
     private bool TryGetEnvelope([MaybeNullWhen(false)] out string envelope)
     {
-        if (Context.Request.Cookies.TryGetValue(Options.CookieName, out var cookie) && !string.IsNullOrWhiteSpace(cookie))
+        if (
+            Context.Request.Cookies.TryGetValue(Options.CookieName, out string? cookie)
+            && !string.IsNullOrWhiteSpace(cookie)
+        )
         {
             envelope = cookie;
             return true;
@@ -128,7 +135,7 @@ public sealed class PingAuthHandler(
 
         if (
             Options.HeaderName is { Length: > 0 } headerName
-            && Context.Request.Headers.TryGetValue(headerName, out var header)
+            && Context.Request.Headers.TryGetValue(headerName, out StringValues header)
             && header.FirstOrDefault() is { Length: > 0 } headerValue
         )
         {
@@ -145,7 +152,9 @@ public sealed class PingAuthHandler(
     {
         try
         {
-            return new JsonWebToken(envelope).TryGetPayloadValue(AccessTokenClaim, out string? token) && token is { Length: > 0 }
+            return
+                new JsonWebToken(envelope).TryGetPayloadValue(AccessTokenClaim, out string? token)
+                && token is { Length: > 0 }
                 ? token
                 : envelope;
         }
@@ -169,8 +178,6 @@ public sealed class PingAuthHandler(
         }
     }
 
-    private static string Fingerprint(string token)
-    {
-        return Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(token)));
-    }
+    private static string Fingerprint(string token) =>
+        Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(token)));
 }

@@ -19,11 +19,15 @@ public abstract class SourceDocOptions<TDocument> : IConfigureElasticsearch<TDoc
 
     public IReadOnlyDictionary<string, string> IndexSettings =>
         ConfigureIndexSettings(
-                new Dictionary<string, string> { ["index.highlight.max_analyzed_offset"] = DefaultHighlightMaxAnalyzedOffset }
+                new Dictionary<string, string>
+                {
+                    ["index.highlight.max_analyzed_offset"] = DefaultHighlightMaxAnalyzedOffset,
+                }
             )
             .AsReadOnly();
 
-    protected virtual IDictionary<string, string> ConfigureIndexSettings(Dictionary<string, string> settings) => settings;
+    protected virtual IDictionary<string, string> ConfigureIndexSettings(Dictionary<string, string> settings) =>
+        settings;
 }
 
 public static class SourceDocOptionsExtensions
@@ -36,7 +40,10 @@ public static class SourceDocOptionsExtensions
         analysis
             .TokenFilter("front_ngram", f => f.EdgeNGram().MinGram(1).MaxGram(12))
             .TokenFilter("bigram_joiner", f => f.Shingle().MaxShingleSize(2).TokenSeparator("").OutputUnigrams(false))
-            .TokenFilter("bigram_joiner_unigrams", f => f.Shingle().MaxShingleSize(2).TokenSeparator("").OutputUnigrams(true))
+            .TokenFilter(
+                "bigram_joiner_unigrams",
+                f => f.Shingle().MaxShingleSize(2).TokenSeparator("").OutputUnigrams(true)
+            )
             .TokenFilter("bigram_max_size", f => f.Length().Min(0).Max(16))
             .TokenFilter(EnStemFilter, f => f.Stemmer().Language("light_english"))
             .TokenFilter(EnStopWordsFilter, f => f.Stop().Stopwords("_english_"))
@@ -102,7 +109,11 @@ public static class SourceDocOptionsExtensions
                 a =>
                     a.Custom()
                         .Tokenizer(BuiltInAnalysis.Tokenizers.Standard)
-                        .Filters(BuiltInAnalysis.TokenFilters.Lowercase, BuiltInAnalysis.TokenFilters.AsciiFolding, "front_ngram")
+                        .Filters(
+                            BuiltInAnalysis.TokenFilters.Lowercase,
+                            BuiltInAnalysis.TokenFilters.AsciiFolding,
+                            "front_ngram"
+                        )
             )
             .Analyzer(
                 "q_prefix",

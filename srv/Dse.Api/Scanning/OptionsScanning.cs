@@ -20,10 +20,12 @@ public static partial class ServiceCollectionExtensions
         where TOptions : class
     {
         var attr = typeof(TOptions).GetCustomAttribute<OptionsAttribute>();
-        OptionsBuilder<TOptions> builder = services
+
+        var builder = services
             .AddOptions<TOptions>(attr?.Name)
             .ValidateDataAnnotations()
             .ValidateOnStart();
+
         builder.Services.AddSingleton<IValidateOptions<TOptions>>(s => new FluentValidateOptions<TOptions>(
             s,
             builder.Name
@@ -47,9 +49,9 @@ public static partial class ServiceCollectionExtensions
 
             ArgumentNullException.ThrowIfNull(options);
 
-            using IServiceScope scope = sp.CreateScope();
-            string type = options.GetType().Name;
-            IEnumerable<IValidator<T>> validators = scope.ServiceProvider.GetServices<IValidator<T>>();
+            using var scope = sp.CreateScope();
+            var type = options.GetType().Name;
+            var validators = scope.ServiceProvider.GetServices<IValidator<T>>();
 
             List<string> errors =
             [

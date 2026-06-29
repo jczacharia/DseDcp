@@ -6,5 +6,5 @@ namespace Dse;
 
 public interface IRegistration
 {
-    static abstract void Register(IHostApplicationBuilder builder);
+    public static abstract void Register(IHostApplicationBuilder builder);
 }

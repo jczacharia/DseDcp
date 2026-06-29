@@ -17,6 +17,7 @@ public static class OpenShiftExtensions
             {
                 options.ForwardedHeaders =
                     ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+
                 options.ForwardLimit = null; // gateway -> router is more than one hop
                 options.KnownIPNetworks.Clear(); // only in-cluster infrastructure can reach the pod
                 options.KnownProxies.Clear();
@@ -36,8 +37,7 @@ public static class OpenShiftExtensions
             }
 
             // Authenticated requests must not be cached so that, after a Ping logout, the browser can't redisplay them from cache.
-            app.Use(
-                (context, next) =>
+            app.Use((context, next) =>
                 {
                     context.Response.OnStarting(
                         static state =>
@@ -55,6 +55,7 @@ public static class OpenShiftExtensions
                             {
                                 const string NoStore =
                                     "max-age=0, no-cache, no-store, must-revalidate, private, proxy-revalidate, no-transform";
+
                                 ctx.Response.Headers.CacheControl = NoStore;
                             }
 

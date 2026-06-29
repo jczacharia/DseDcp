@@ -40,8 +40,8 @@ public sealed class ElasticRegistration : IRegistration
     private static DistributedTransport<IElasticsearchClientSettings> BuildTransport(IServiceProvider sp)
     {
         var env = sp.GetRequiredService<IHostEnvironment>();
-        ElasticOptions opts = sp.GetRequiredService<IOptions<ElasticOptions>>().Value;
-        var es = new ElasticsearchClientSettings(new SingleNodePool(new Uri(opts.BaseAddress)));
+        var opts = sp.GetRequiredService<IOptions<ElasticOptions>>().Value;
+        var es = new ElasticsearchClientSettings(new SingleNodePool(new(opts.BaseAddress)));
 
         if (!string.IsNullOrWhiteSpace(opts.ApiKey))
         {
@@ -54,8 +54,8 @@ public sealed class ElasticRegistration : IRegistration
         }
 
         es = es
-        // Multi-node pools cap retries at the remaining known nodes; single-node pools still have no failover target.
-        .MaximumRetries(opts.MaximumRetries)
+            // Multi-node pools cap retries at the remaining known nodes; single-node pools still have no failover target.
+            .MaximumRetries(opts.MaximumRetries)
             .RequestTimeout(opts.RequestTimeout)
             .MaxRetryTimeout(opts.MaxRetryTimeout)
             .ConnectionLimit(opts.ConnectionLimit);
@@ -100,6 +100,6 @@ public sealed class ElasticRegistration : IRegistration
             es = es.EnableHttpCompression();
         }
 
-        return new DistributedTransport<IElasticsearchClientSettings>(env.IsDevelopment() ? es.EnableDebugMode() : es);
+        return new(env.IsDevelopment() ? es.EnableDebugMode() : es);
     }
 }

@@ -4,7 +4,9 @@ export default defineConfig({
   testDir: './e2e',
   fullyParallel: false,
   workers: 1,
+  forbidOnly: !!process.env.CI,
   reporter: [['list']],
+  tsconfig: './tsconfig.e2e.json',
   globalTeardown: './e2e/coverage-report.ts',
   use: {
     baseURL: 'http://localhost:4200',
@@ -15,7 +17,7 @@ export default defineConfig({
   },
   projects: [{name: 'chromium', use: {...devices['Desktop Chrome']}}],
   webServer: {
-    command: 'dotnet run --project srv/Dse.Api/Dse.Api.csproj --launch-profile http',
+    command: 'npm run start',
     url: 'http://localhost:4200',
     reuseExistingServer: !process.env.CI,
     stdout: 'ignore',

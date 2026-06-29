@@ -7,20 +7,24 @@ using Dse.Authentication;
 
 namespace Dse.Tests.Core;
 
-public sealed class UserInfoEndpointTests(ITestOutputHelper outputHelper) : ApiTest(outputHelper)
+public sealed class UserInfoEndpointTests(ITestOutputHelper outputHelper)
 {
     [Fact]
-    public async Task UserInfoEndpoint_Returns401()
+    public async Task UserInfoEndpointReturns401()
     {
-        var response = await Client.GetAsync("/api/userinfo", TestContext.Current.CancellationToken);
+        await using var host = new ApiHost(outputHelper);
+        var response = await host.CreateClient().GetAsync("/api/userinfo", TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
-    public async Task UserInfoEndpoint_ReturnsUser()
+    public async Task UserInfoEndpointReturnsUser()
     {
-        var response = await ClientWithUser("user", ["member"])
+        await using var host = new ApiHost(outputHelper);
+
+        var response = await host.ClientWithUser("user", ["member"])
             .GetFromJsonAsync<UserInfoResponse>("/api/userinfo", TestContext.Current.CancellationToken);
+
         response.Should().NotBeNull();
         response.Name.Should().Be("user");
         response.Claims.Should().Contain(c => c.Type == ClaimTypes.Role && c.Value == "member");

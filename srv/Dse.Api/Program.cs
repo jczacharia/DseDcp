@@ -12,7 +12,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
 using Scalar.AspNetCore;
 
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddUserSecrets("dse");
 
@@ -29,6 +29,7 @@ builder.Services.AddMemoryCache();
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddAuthentication(PingAuthDefaults.AuthenticationScheme);
+
 builder
     .Services.AddAuthorizationBuilder()
     .SetDefaultPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
@@ -40,13 +41,14 @@ builder.Host.UseDefaultServiceProvider(static options =>
 });
 
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddOpenApi(opts =>
 {
     opts.OpenApiVersion = OpenApiSpecVersion.OpenApi3_1;
     opts.MapVogenTypesInDse();
     opts.AddComponentsFromAssemblies([.. AppDomain.CurrentDomain.GetAssemblies(), typeof(ConfluenceDoc).Assembly]);
-    opts.AddDocumentTransformer(
-        static (doc, _, _) =>
+
+    opts.AddDocumentTransformer(static (doc, _, _) =>
         {
             doc.Info.Title = "DSE";
             doc.Info.Description = "Enterprise Search";
@@ -64,7 +66,7 @@ if (CoreEnvironment.IsDocumentGenerationBuild)
     builder.Services.RemoveAll<IHostedService>();
 }
 
-WebApplication app = builder.Build();
+var app = builder.Build();
 
 app.UseOpenShiftIntegration();
 
@@ -79,10 +81,10 @@ app.MapScalarApiReference();
 app.UseAuthentication();
 app.UseAuthorization();
 
-RouteGroupBuilder api = app.MapGroup("api").WithTags("Api").RequireAuthorization();
+var api = app.MapGroup("api").WithTags("Api").RequireAuthorization();
 api.MapApiEndpoints();
 
-foreach (WebAppExtender reg in app.Services.GetServices<WebAppExtender>())
+foreach (var reg in app.Services.GetServices<WebAppExtender>())
 {
     reg.Register(app);
 }

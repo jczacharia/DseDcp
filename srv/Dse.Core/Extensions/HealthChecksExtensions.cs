@@ -3,7 +3,6 @@
 using System.Globalization;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,7 +43,7 @@ public sealed record HealthReportEntry(
 
 public static class HealthCheckEndpoints
 {
-    public const string HealthEndpointPath = "/health";
+    public const string HealthEndpointPath = "/api/health";
 
     // MapHealthChecks maps a raw RequestDelegate pipeline, so its endpoints carry neither a MethodInfo nor an
     // IHttpMethodMetadata — the two pieces EndpointMetadataApiDescriptionProvider requires before it will emit an
@@ -59,6 +58,7 @@ public static class HealthCheckEndpoints
     private static async Task WriteHealthReportAsync(HttpContext context, HealthReport report)
     {
         context.Response.ContentType = "application/json";
+
         await context.Response.WriteAsJsonAsync(
             new DseHealthReport(
                 report.Status.ToString("G"),
@@ -82,16 +82,17 @@ public static class HealthCheckEndpoints
     {
         public void MapDseHealthChecks()
         {
-            RouteGroupBuilder group = endpoints.MapGroup(HealthEndpointPath).WithTags("Health");
+            var group = endpoints.MapGroup(HealthEndpointPath).WithTags("Health");
 
             group
-                .MapHealthChecks("", new HealthCheckOptions { ResponseWriter = WriteHealthReportAsync })
+                .MapHealthChecks("", new()
+                { ResponseWriter = WriteHealthReportAsync })
                 .ApplyDefaults("Full health report", "Every registered check.");
 
             group
                 .MapHealthChecks(
                     "startup",
-                    new HealthCheckOptions
+                    new()
                     {
                         Predicate = static r => r.Tags.Contains("startup"),
                         ResponseWriter = WriteHealthReportAsync,
@@ -102,7 +103,7 @@ public static class HealthCheckEndpoints
             group
                 .MapHealthChecks(
                     "live",
-                    new HealthCheckOptions
+                    new()
                     {
                         Predicate = static r => r.Tags.Contains("live"),
                         ResponseWriter = WriteHealthReportAsync,
@@ -113,7 +114,7 @@ public static class HealthCheckEndpoints
             group
                 .MapHealthChecks(
                     "ready",
-                    new HealthCheckOptions
+                    new()
                     {
                         Predicate = static r => r.Tags.Contains("ready"),
                         ResponseWriter = WriteHealthReportAsync,
@@ -122,7 +123,7 @@ public static class HealthCheckEndpoints
                 .ApplyDefaults("Readiness probe", "Process and its ready-tagged dependencies are reachable.");
 
             foreach (
-                string name in endpoints
+                var name in endpoints
                     .Services.GetRequiredService<IOptions<HealthCheckServiceOptions>>()
                     .Value.Registrations.Select(r => r.Name)
             )
@@ -130,7 +131,7 @@ public static class HealthCheckEndpoints
                 group
                     .MapHealthChecks(
                         $"{name}",
-                        new HealthCheckOptions
+                        new()
                         {
                             Predicate = r => r.Name == name,
                             ResponseWriter = WriteHealthReportAsync,
@@ -146,8 +147,7 @@ public static class HealthCheckEndpoints
         private void ApplyDefaults(string summary, string description) =>
             builder
                 .WithMetadata(new HttpMethodMetadata(["GET"]), s_healthEndpointMarker)
-                .AddOpenApiOperationTransformer(
-                    async (operation, ctx, ct) =>
+                .AddOpenApiOperationTransformer(async (operation, ctx, ct) =>
                     {
                         operation.Summary = summary;
                         operation.Description = description;
@@ -156,9 +156,11 @@ public static class HealthCheckEndpoints
                             nameof(DseHealthReport),
                             await ctx.GetOrCreateSchemaAsync(typeof(DseHealthReport), null, ct)
                         );
+
                         var schemaRef = new OpenApiSchemaReference(nameof(DseHealthReport), ctx.Document);
 
                         operation.Responses ??= [];
+
                         operation.Responses["200"] = new OpenApiResponse
                         {
                             Description =
@@ -168,6 +170,7 @@ public static class HealthCheckEndpoints
                                 ["application/json"] = new() { Schema = schemaRef },
                             },
                         };
+
                         operation.Responses["503"] = new OpenApiResponse
                         {
                             Description = "The service or an upstream dependency is unhealthy.",

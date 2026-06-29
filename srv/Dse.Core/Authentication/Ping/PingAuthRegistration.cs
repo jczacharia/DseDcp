@@ -20,19 +20,21 @@ public sealed class PingAuthRegistration : IRegistration
 
         builder
             .Services.AddHttpClient(PingAuthDefaults.HttpClientName)
-            .ConfigureHttpClient(
-                static (sp, client) =>
+            .ConfigureHttpClient(static (sp, client) =>
                 {
-                    PingAuthOptions options = sp.GetRequiredService<IOptionsMonitor<PingAuthOptions>>()
+                    var options = sp.GetRequiredService<IOptionsMonitor<PingAuthOptions>>()
                         .Get(PingAuthDefaults.AuthenticationScheme);
-                    client.BaseAddress = new Uri(options.BaseAddress);
+
+                    client.BaseAddress = new(options.BaseAddress);
                 }
             )
             .ConfigurePrimaryHttpMessageHandler(static sp =>
             {
-                PingAuthOptions options = sp.GetRequiredService<IOptionsMonitor<PingAuthOptions>>()
+                var options = sp.GetRequiredService<IOptionsMonitor<PingAuthOptions>>()
                     .Get(PingAuthDefaults.AuthenticationScheme);
-                bool useProxy = !string.IsNullOrWhiteSpace(options.ProxyAddress);
+
+                var useProxy = !string.IsNullOrWhiteSpace(options.ProxyAddress);
+
                 return new HttpClientHandler
                 {
                     Proxy = useProxy ? new WebProxy(options.ProxyAddress) : null,

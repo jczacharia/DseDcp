@@ -5,16 +5,17 @@ using Dse.Extensions;
 
 namespace Dse.Tests.Core;
 
-public sealed class HealthCheckTests(ITestOutputHelper outputHelper) : ApiTest(outputHelper)
+public sealed class HealthCheckTests(ITestOutputHelper outputHelper)
 {
     [Theory]
-    [InlineData("/health")]
-    [InlineData("/health/live")]
-    [InlineData("/health/ready")]
-    [InlineData("/health/startup")]
-    public async Task Health_endpoints_are_healthy(string url)
+    [InlineData("/api/health")]
+    [InlineData("/api/health/live")]
+    [InlineData("/api/health/ready")]
+    [InlineData("/api/health/startup")]
+    public async Task HealthEndpointsAreHealthy(string url)
     {
-        var response = await Client.GetFromJsonAsync<DseHealthReport>(url, TestContext.Current.CancellationToken);
+        await using var host = new ApiHost(outputHelper);
+        var response = await host.CreateClient().GetFromJsonAsync<DseHealthReport>(url, TestContext.Current.CancellationToken);
         response.Should().BeAssignableTo<DseHealthReport>();
     }
 }

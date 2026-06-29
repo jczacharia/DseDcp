@@ -42,6 +42,7 @@ public sealed class PingAuthOptionsValidator : AbstractValidator<PingAuthOptions
         RuleFor(x => x.CookieName).NotEmpty();
         RuleFor(x => x.BaseAddress).NotEmpty().Must(url => Uri.IsWellFormedUriString(url, UriKind.Absolute));
         RuleFor(x => x.CacheDuration).GreaterThanOrEqualTo(TimeSpan.Zero);
+
         RuleFor(x => x.ProxyAddress)
             .Must(url => Uri.IsWellFormedUriString(url, UriKind.Absolute))
             .When(x => !string.IsNullOrWhiteSpace(x.ProxyAddress));

@@ -19,7 +19,7 @@ public abstract class SourceDocOptions<TDocument> : IConfigureElasticsearch<TDoc
 
     public IReadOnlyDictionary<string, string> IndexSettings =>
         ConfigureIndexSettings(
-                new Dictionary<string, string>
+                new()
                 {
                     ["index.highlight.max_analyzed_offset"] = DefaultHighlightMaxAnalyzedOffset,
                 }

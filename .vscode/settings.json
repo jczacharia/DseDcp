@@ -1,22 +1,8 @@
 {
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "prettier.prettierPath": "node_modules/prettier",
   "editor.rulers": [120],
   "files.eol": "\n",
   "css.lint.unknownAtRules": "ignore",
-
-  "[csharp]": {
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "csharpier.csharpier-vscode"
-  },
-  "[xml]": {
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "csharpier.csharpier-vscode"
-  },
-  "files.associations": {
-    "*.{svg}": "html"
-  },
 
   "eslint.workingDirectories": [{"directory": "ui", "changeProcessCWD": true}],
   "eslint.validate": ["javascript", "typescript", "html"],
@@ -37,7 +23,7 @@
 
   "sonarlint.connectedMode.project": {
     "connectionId": "http-localhost-9000",
-    "projectKey": "dse"
+    "projectKey": "ddd"
   },
   "cSpell.words": ["ASPNETCORE", "esproj", "HOSTINGSTARTUPASSEMBLIES", "Qube", "slnx"]
 }

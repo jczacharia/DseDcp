@@ -2,7 +2,6 @@
 
 using System.Reflection;
 using Microsoft.AspNetCore.OpenApi;
-using Microsoft.OpenApi;
 
 namespace Dse;
 
@@ -17,11 +16,10 @@ public static class OpenApiComponentAttributeExtensions
     extension(OpenApiOptions options)
     {
         public void AddComponentsFromAssemblies(params Assembly[] assemblies) =>
-            options.AddDocumentTransformer(
-                async (document, context, cancellationToken) =>
+            options.AddDocumentTransformer(async (document, context, cancellationToken) =>
                 {
                     foreach (
-                        Type type in assemblies
+                        var type in assemblies
                             .SelectMany(a => a.GetTypes())
                             .Where(type =>
                                 type is { IsAbstract: false, IsInterface: false }
@@ -30,7 +28,7 @@ public static class OpenApiComponentAttributeExtensions
                     )
                     {
                         var attr = type.GetCustomAttribute<OpenApiComponentAttribute>()!;
-                        OpenApiSchema schema = await context.GetOrCreateSchemaAsync(type, null, cancellationToken);
+                        var schema = await context.GetOrCreateSchemaAsync(type, null, cancellationToken);
                         document.AddComponent(attr.Name ?? type.Name, schema);
                     }
                 }

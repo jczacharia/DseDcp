@@ -1,6 +1,5 @@
 // Copyright (c) PNC Financial Services. All rights reserved.
 
-using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http.Json;
 
@@ -8,7 +7,7 @@ namespace Dse.Authentication.Ping;
 
 public interface IPingAuthClient
 {
-    Task<IReadOnlyDictionary<string, string>?> DecodeAccessTokenAsync(
+    public Task<IReadOnlyDictionary<string, string>?> DecodeAccessTokenAsync(
         string accessToken,
         CancellationToken cancellationToken = default
     );
@@ -24,8 +23,9 @@ public sealed class PingAuthClient(IHttpClientFactory httpClientFactory) : IPing
         CancellationToken cancellationToken = default
     )
     {
-        HttpClient client = httpClientFactory.CreateClient(PingAuthDefaults.HttpClientName);
-        using HttpResponseMessage response = await client.GetAsync(
+        var client = httpClientFactory.CreateClient(PingAuthDefaults.HttpClientName);
+
+        using var response = await client.GetAsync(
             $"{UserInfoPath}{Uri.EscapeDataString(accessToken)}",
             cancellationToken
         );

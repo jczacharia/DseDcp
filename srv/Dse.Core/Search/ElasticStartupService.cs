@@ -2,7 +2,6 @@
 
 using System.Globalization;
 using Elastic.Clients.Elasticsearch;
-using Elastic.Clients.Elasticsearch.Nodes;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -35,19 +34,20 @@ public sealed class ElasticStartupService(
 
     private async Task ProbeClusterAsync(CancellationToken ct)
     {
-        NodesInfoResponse response = await client.Nodes.InfoAsync(null, Metrics.All, ct);
+        var response = await client.Nodes.InfoAsync(null, Metrics.All, ct);
+
         if (!response.IsValidResponse)
         {
             throw new InvalidOperationException($"Nodes info failed: {response.DebugInformation}");
         }
 
-        int dataNodeCount = 0;
-        int writePoolCapacity = 0;
-        long bulkMaxByteSize = long.MaxValue;
+        var dataNodeCount = 0;
+        var writePoolCapacity = 0;
+        var bulkMaxByteSize = long.MaxValue;
 
-        foreach ((string _, NodeInfo node) in response.Nodes)
+        foreach (var (_, node) in response.Nodes)
         {
-            bool isDataNode = node.Roles.Any(r => r.ToString().StartsWith("data", StringComparison.OrdinalIgnoreCase));
+            var isDataNode = node.Roles.Any(r => r.ToString().StartsWith("data", StringComparison.OrdinalIgnoreCase));
 
             if (!isDataNode)
             {
@@ -58,7 +58,7 @@ public sealed class ElasticStartupService(
 
             if (
                 node.ThreadPool is { } pools
-                && pools.TryGetValue("write", out NodeThreadPoolInfo? write)
+                && pools.TryGetValue("write", out var write)
                 && write.Size is { } size
             )
             {
@@ -86,8 +86,8 @@ public sealed class ElasticStartupService(
         // The write pool caps what the cluster can absorb; MaxExportConcurrency caps what a single (possibly
         // single-core) client can actually drive. The smaller wins. Core count is deliberately not a factor —
         // this export path is I/O-bound, not CPU-bound.
-        int clusterCeiling = Math.Max(2, (int)(writePoolCapacity * options.CurrentValue.NodeUtilization));
-        int maxChannelConcurrency = Math.Min(clusterCeiling, Math.Max(2, options.CurrentValue.MaxExportConcurrency));
+        var clusterCeiling = Math.Max(2, (int)(writePoolCapacity * options.CurrentValue.NodeUtilization));
+        var maxChannelConcurrency = Math.Min(clusterCeiling, Math.Max(2, options.CurrentValue.MaxExportConcurrency));
 
         logger.LogInformation(
             "Cluster sizing: {@ClusterSizing}",

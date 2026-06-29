@@ -19,7 +19,8 @@ public static class ProblemDetailsExtensions
     private static string BuildExceptionChainMessage(Exception ex)
     {
         StringBuilder message = new($"{ex.GetType().Name}: {ex.Message} {ex.StackTrace}");
-        for (Exception? inner = ex.InnerException; inner is not null; inner = inner.InnerException)
+
+        for (var inner = ex.InnerException; inner is not null; inner = inner.InnerException)
         {
             message.Append(CultureInfo.InvariantCulture, $" {inner.Message}");
         }
@@ -35,6 +36,7 @@ public static class ProblemDetailsExtensions
         }
 
         context.ProblemDetails = setProblem;
+
         if (setProblem.Status is { } status && !context.HttpContext.Response.HasStarted)
         {
             context.HttpContext.Response.StatusCode = status;
@@ -48,7 +50,7 @@ public static class ProblemDetailsExtensions
             .HttpContext.RequestServices.GetRequiredService<IHostEnvironment>()
             .IsProduction()
             ? "An exception occurred while processing your request."
-                + " Please try again later or contact the DSE team if the problem persists."
+              + " Please try again later or contact the DSE team if the problem persists."
             : BuildExceptionChainMessage(ex);
 
     private static void ApplyNotFoundDetail(ProblemDetailsContext context)

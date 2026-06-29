@@ -6,5 +6,5 @@ namespace Dse;
 
 public interface IEndpoint
 {
-    static abstract void MapEndpoint(IEndpointRouteBuilder builder);
+    public static abstract void MapEndpoint(IEndpointRouteBuilder builder);
 }

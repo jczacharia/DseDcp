@@ -11,9 +11,7 @@
     "test": "vitest",
     "test:ci": "vitest run --mode production --coverage",
     "e2e": "playwright test",
-    "fix:srv": "dotnet format --verbosity detailed --severity info",
-    "fix:ui": "eslint --fix ui && prettier --write ui",
-    "fix": "dotnet tool restore && dotnet format --verbosity detailed --severity info && eslint --fix . && prettier --write .",
+    "fix": "dotnet format --verbosity detailed --severity info && eslint --fix . && prettier --write .",
     "openapi": "openapi-ts",
     "prepare": "husky"
   },

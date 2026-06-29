@@ -1,6 +1,7 @@
 {
   // Type-checks the repo's root tooling config files (which live outside the app's rootDir, so the
   // app tsconfigs don't include them). Gives the editor Node's types — e.g. `import.meta.dirname`.
+  "extends": "./tsconfig.json",
   "compilerOptions": {
     "module": "nodenext",
     "moduleResolution": "nodenext",

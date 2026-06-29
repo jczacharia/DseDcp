@@ -23,6 +23,5 @@
   "sonarlint.connectedMode.project": {
     "connectionId": "http-localhost-9000",
     "projectKey": "ddd"
-  },
-  "cSpell.words": ["ASPNETCORE", "esproj", "HOSTINGSTARTUPASSEMBLIES", "Qube", "slnx"]
+  }
 }

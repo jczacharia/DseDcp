@@ -1,7 +1,7 @@
-import SearchBar from '#features/search/search-bar';
-import {HlmSidebarImports} from '#ui/sidebar';
+import {HlmSidebarImports} from '#hlm/sidebar';
 import {Component} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
+import SearchBar from './features/search/search-bar';
 
 @Component({
   selector: 'app-shell',

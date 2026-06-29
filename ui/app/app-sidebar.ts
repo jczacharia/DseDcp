@@ -1,5 +1,5 @@
 import {SourceRegistry} from '#core/sources/source-registry';
-import {HlmSidebarImports} from '#ui/sidebar';
+import {HlmSidebarImports} from '#hlm/sidebar';
 import {Component, inject} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {NgIcon} from '@ng-icons/core';

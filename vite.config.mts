@@ -23,7 +23,7 @@ export default defineConfig(({mode}) => ({
       provider: 'v8',
       enabled: mode === 'production',
       include: ['ui/**/*.ts'],
-      exclude: ['ui/api/**', 'ui/ui/**', 'ui/testing/**', 'ui/**/*.spec.ts', 'ui/**/*.d.ts'],
+      exclude: ['ui/api/**', 'ui/hlm/**', 'ui/testing/**', 'ui/**/*.spec.ts', 'ui/**/*.d.ts'],
       reportsDirectory: 'coverage',
       reporter: ['text', 'lcovonly', ['cobertura', {file: 'test-coverage.xml'}]],
     },

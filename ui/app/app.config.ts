@@ -56,7 +56,7 @@ export const appConfig: ApplicationConfig = {
                   path: '',
                   pathMatch: 'full',
                   providers: [{provide: Source, useExisting: Pnc}],
-                  loadComponent: () => import('#features/source/source-page'),
+                  loadComponent: () => import('./features/source/source-page'),
                 },
               ],
             },
@@ -91,8 +91,8 @@ function routeSourceChild(source: Source): Route {
     providers: [{provide: Source, useValue: source}],
     title: () => createPageTitle(source.options.name),
     children: [
-      {path: '', loadComponent: () => import('#features/source/source-page')},
-      {path: '', outlet: 'sidebar', loadComponent: () => import('#features/source/source-sidebar')},
+      {path: '', loadComponent: () => import('./features/source/source-page')},
+      {path: '', outlet: 'sidebar', loadComponent: () => import('./features/source/source-sidebar')},
       {path: 'home', outlet: 'sidebar', loadComponent: () => import('./app-sidebar')},
     ],
   };

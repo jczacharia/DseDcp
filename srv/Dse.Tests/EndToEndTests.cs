@@ -10,7 +10,7 @@ public sealed class EndToEndTests(ITestOutputHelper testOutputHelper)
     [Fact]
     public async Task RunEndToEndTests()
     {
-        await using var host = new ApiHost(testOutputHelper, [new("HeaderName", "X-Ping")]);
+        await using var host = new ApiHost(testOutputHelper, [new("Ping:HeaderName", "X-Ping")]);
         host.StartServer();
         using var cts = new CancellationTokenSource();
         cts.CancelAfter(TimeSpan.FromMinutes(5));

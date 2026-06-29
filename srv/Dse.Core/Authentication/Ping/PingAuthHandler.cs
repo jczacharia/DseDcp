@@ -139,11 +139,12 @@ public sealed class PingAuthHandler(
     {
         try
         {
-            return
-                new JsonWebToken(envelope).TryGetPayloadValue(AccessTokenClaim, out string? token)
-                && token is { Length: > 0 }
-                    ? token
-                    : envelope;
+            if (new JsonWebToken(envelope).TryGetPayloadValue(AccessTokenClaim, out string? token) && token is { Length: > 0 })
+            {
+                return token;
+            }
+
+            return envelope;
         }
         catch (ArgumentException)
         {

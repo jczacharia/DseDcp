@@ -34,8 +34,22 @@ public sealed class SpikeTests(ITestOutputHelper output) : IAsyncLifetime
 
     // Public-within-gate: a doc with no _allow_access_control is visible to anyone past the gate.
     // Restricted: terms-match against the user's resolved group DNs.
-    private const string DlsSource =
-        """{"bool":{"should":[{"bool":{"must_not":{"exists":{"field":"_allow_access_control"}}}},{"terms":{"_allow_access_control":{{#toJson}}access{{/toJson}}}}],"minimum_should_match":1}}""";
+    private const string DlsSource = """
+        {
+          "bool": {
+            "should": [
+              {"bool": {"must_not": {"exists": {"field": "_allow_access_control"}}}},
+              {
+                "terms": {
+                  "_allow_access_control": {{#toJson}}access{{/toJson}}
+                }
+              }
+            ],
+            "minimum_should_match": 1
+          }
+        }
+
+        """;
 
     private ApiHost _host = null!;
     private ElasticsearchClient _admin = null!;
@@ -45,21 +59,49 @@ public sealed class SpikeTests(ITestOutputHelper output) : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        _host = new ApiHost(output);
+        _host = new(output);
         _admin = _host.Services.GetRequiredService<ElasticsearchClient>();
-        _baseAddress = new Uri(_host.Services.GetRequiredService<IOptions<ElasticOptions>>().Value.BaseAddress);
+        _baseAddress = new(_host.Services.GetRequiredService<IOptions<ElasticOptions>>().Value.BaseAddress);
 
         await DropIndicesAsync();
 
         await CreateIndexAsync(
             ConfluenceIndex,
             ConfluenceAlias,
-            """{"settings":{"number_of_replicas":0},"mappings":{"properties":{"title":{"type":"text"},"body":{"type":"text"},"space":{"type":"keyword"},"_allow_access_control":{"type":"keyword"}}}}"""
+            // lang=json
+            """
+            {
+              "settings": {"number_of_replicas": 0},
+              "mappings": {
+                "properties": {
+                  "title": {"type": "text"},
+                  "body": {"type": "text"},
+                  "space": {"type": "keyword"},
+                  "_allow_access_control": {"type": "keyword"}
+                }
+              }
+            }
+
+            """
         );
         await CreateIndexAsync(
             ServiceNowIndex,
             ServiceNowAlias,
-            """{"settings":{"number_of_replicas":0},"mappings":{"properties":{"number":{"type":"keyword"},"short_description":{"type":"text"},"assignment_group":{"type":"keyword"},"_allow_access_control":{"type":"keyword"}}}}"""
+            // lang=json
+            """
+            {
+              "settings": {"number_of_replicas": 0},
+              "mappings": {
+                "properties": {
+                  "number": {"type": "keyword"},
+                  "short_description": {"type": "text"},
+                  "assignment_group": {"type": "keyword"},
+                  "_allow_access_control": {"type": "keyword"}
+                }
+              }
+            }
+
+            """
         );
 
         // Confluence today: public-within-gate, so no _allow_access_control on any doc.
@@ -160,9 +202,16 @@ public sealed class SpikeTests(ITestOutputHelper output) : IAsyncLifetime
     {
         // Serialized with plain STJ so property names ("role_descriptors", "params") survive verbatim — the typed
         // CreateApiKey model can't express the mustache-templated DLS query (IndicesPrivileges.Query is object?).
-        var body = JsonSerializer.Serialize(new { name, expiration = "1h", role_descriptors = roleDescriptors });
+        var body = JsonSerializer.Serialize(
+            new
+            {
+                name,
+                expiration = "1h",
+                role_descriptors = roleDescriptors,
+            }
+        );
         var response = await _admin.Transport.RequestAsync<StringResponse>(
-            new EndpointPath(HttpMethod.POST, "/_security/api_key"),
+            new(HttpMethod.POST, "/_security/api_key"),
             PostData.String(body),
             null,
             null,
@@ -201,7 +250,7 @@ public sealed class SpikeTests(ITestOutputHelper output) : IAsyncLifetime
     private async Task<ApiCallDetails> Raw(HttpMethod method, string path, string? body = null)
     {
         var response = await _admin.Transport.RequestAsync<StringResponse>(
-            new EndpointPath(method, path),
+            new(method, path),
             body is null ? PostData.Empty : PostData.String(body),
             null,
             null,
@@ -222,6 +271,6 @@ public sealed class SpikeTests(ITestOutputHelper output) : IAsyncLifetime
         [property: JsonPropertyName("assignment_group")] string AssignmentGroup,
         [property: JsonPropertyName("_allow_access_control")]
         [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        string[]? AllowAccessControl
+            string[]? AllowAccessControl
     );
 }

@@ -17,10 +17,20 @@ public abstract class SourceDocOptions<TDocument> : IConfigureElasticsearch<TDoc
 
     public abstract MappingsBuilder<TDocument> ConfigureMappings(MappingsBuilder<TDocument> mappings);
 
-    public IReadOnlyDictionary<string, string> IndexSettings =>
-        ConfigureIndexSettings(new() { ["index.highlight.max_analyzed_offset"] = DefaultHighlightMaxAnalyzedOffset }).AsReadOnly();
+    public IReadOnlyDictionary<string, string> IndexSettings
+    {
+        get
+        {
+            Dictionary<string, string> dict = new()
+            {
+                ["index.highlight.max_analyzed_offset"] = DefaultHighlightMaxAnalyzedOffset,
+            };
+            ConfigureIndexSettings(dict);
+            return dict.AsReadOnly();
+        }
+    }
 
-    protected virtual IDictionary<string, string> ConfigureIndexSettings(Dictionary<string, string> settings) => settings;
+    protected virtual void ConfigureIndexSettings(Dictionary<string, string> settings) { }
 }
 
 public static class SourceDocOptionsExtensions
@@ -56,14 +66,23 @@ public static class SourceDocOptionsExtensions
                 a =>
                     a.Custom()
                         .Tokenizer(BuiltInAnalysis.Tokenizers.Standard)
-                        .Filters(BuiltInAnalysis.TokenFilters.Lowercase, BuiltInAnalysis.TokenFilters.AsciiFolding, EnStopWordsFilter)
+                        .Filters(
+                            BuiltInAnalysis.TokenFilters.Lowercase,
+                            BuiltInAnalysis.TokenFilters.AsciiFolding,
+                            EnStopWordsFilter
+                        )
             )
             .Analyzer(
                 "iq_text_stem",
                 a =>
                     a.Custom()
                         .Tokenizer(BuiltInAnalysis.Tokenizers.Standard)
-                        .Filters(BuiltInAnalysis.TokenFilters.Lowercase, BuiltInAnalysis.TokenFilters.AsciiFolding, EnStopWordsFilter, EnStemFilter)
+                        .Filters(
+                            BuiltInAnalysis.TokenFilters.Lowercase,
+                            BuiltInAnalysis.TokenFilters.AsciiFolding,
+                            EnStopWordsFilter,
+                            EnStemFilter
+                        )
             )
             .Analyzer(
                 "iq_text_delimiter",

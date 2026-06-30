@@ -17,6 +17,8 @@
     <NodePrefix>npx --yes -p node@26.3.0 -p pnpm@11.9.0</NodePrefix>
     <RepositoryType>git</RepositoryType>
     <RepoRoot>$(SolutionDir)</RepoRoot>
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(IsTestProject)' != 'true'">

@@ -164,8 +164,8 @@ public static partial class ConfluenceContext;
 
 public sealed class ConfluenceDocConfiguration : SourceDocOptions<ConfluenceDoc>
 {
-    // DseKeyword (full search sub-fields) only for free-text-searched fields; identifiers/enums
-    // (type, username, label prefix) stay plain keyword from their attribute — term/facet only.
+    /// DseKeyword (full search sub-fields) only for free-text-searched fields; identifiers/enums
+    /// (type, username, label prefix) stay plain keyword from their attribute — term/facet only.
     public override MappingsBuilder<ConfluenceDoc> ConfigureMappings(MappingsBuilder<ConfluenceDoc> mappings) =>
         mappings
             .Title(b => b.DseKeyword())

@@ -1,5 +1,6 @@
 // Copyright (c) PNC Financial Services. All rights reserved.
 
+using System.Collections.Frozen;
 using System.IdentityModel.Tokens.Jwt;
 using Dse.Authentication.Ping;
 using Microsoft.AspNetCore.Builder;
@@ -22,7 +23,10 @@ public sealed class ApiHost : WebApplicationFactory<Program>
     private readonly ITestOutputHelper _outputHelper;
 
     public ApiHost(ITestOutputHelper outputHelper, IEnumerable<KeyValuePair<string, string?>> configurationOverrides)
-        : this(outputHelper, builder => builder.ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(configurationOverrides))) { }
+        : this(
+            outputHelper,
+            builder => builder.ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(configurationOverrides))
+        ) { }
 
     public ApiHost(ITestOutputHelper outputHelper, Action<IWebHostBuilder>? configure = null)
     {
@@ -34,7 +38,10 @@ public sealed class ApiHost : WebApplicationFactory<Program>
             .Setup(x => x.DecodeAccessTokenAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(
                 (string accessToken, CancellationToken _) =>
-                    new JwtSecurityTokenHandler().ReadJwtToken(accessToken).Claims.GroupBy(c => c.Type).ToDictionary(g => g.Key, g => g.Last().Value)
+                    new JwtSecurityTokenHandler()
+                        .ReadJwtToken(accessToken)
+                        .Claims.GroupBy(c => c.Type)
+                        .ToFrozenDictionary(g => g.Key, g => g.Last().Value)
             );
     }
 

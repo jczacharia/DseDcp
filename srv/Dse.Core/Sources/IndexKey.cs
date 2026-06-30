@@ -6,10 +6,12 @@ using Vogen;
 namespace Dse.Sources;
 
 /// <summary>
-///     Value object identifier for a source such as Confluence, Jira, and ServiceNOW.
+///     Value object identifier for one index within a source — e.g. <c>incident</c>, <c>change</c>,
+///     <c>business-app</c> under ServiceNow. A source owns one or more of these; Confluence's single index is the
+///     degenerate case.
 /// </summary>
 [ValueObject<string>(comparison: ComparisonGeneration.Omit)]
-public readonly partial record struct SourceKey
+public readonly partial record struct IndexKey
 {
     [GeneratedRegex("^[a-z][a-z0-9-]{0,29}$")]
     private static partial Regex Pattern();

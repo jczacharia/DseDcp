@@ -5,14 +5,31 @@ using System.Reflection;
 using Vogen;
 
 [assembly: VogenDefaults(
-    toPrimitiveCasting: CastOperator.Implicit,
-    staticAbstractsGeneration: StaticAbstractsGeneration.ValueObjectsDeriveFromTheInterface
-        | StaticAbstractsGeneration.EqualsOperators
-        | StaticAbstractsGeneration.ExplicitCastFromPrimitive
-        | StaticAbstractsGeneration.ImplicitCastToPrimitive
-        | StaticAbstractsGeneration.FactoryMethods,
+    throws: null,
+    underlyingType: null,
     conversions: Conversions.SystemTextJson | Conversions.TypeConverter,
-    openApiSchemaCustomizations: OpenApiSchemaCustomizations.GenerateOpenApiMappingExtensionMethod
+    customizations: Customizations.AddFactoryMethodForGuids,
+    deserializationStrictness: DeserializationStrictness.Default,
+    debuggerAttributes: DebuggerAttributeGeneration.Basic,
+    toPrimitiveCasting: CastOperator.Explicit,
+    fromPrimitiveCasting: CastOperator.Explicit,
+    disableStackTraceRecordingInDebug: false,
+    parsableForStrings: ParsableForStrings.GenerateMethodsAndInterface,
+    parsableForPrimitives: ParsableForPrimitives.HoistMethodsAndInterfaces,
+    tryFromGeneration: TryFromGeneration.GenerateBoolAndErrorOrMethods,
+    isInitializedMethodGeneration: IsInitializedMethodGeneration.Generate,
+    systemTextJsonConverterFactoryGeneration: SystemTextJsonConverterFactoryGeneration.Generate,
+    staticAbstractsGeneration: StaticAbstractsGeneration.ExplicitCastFromPrimitive
+        | StaticAbstractsGeneration.ExplicitCastToPrimitive
+        | StaticAbstractsGeneration.EqualsOperators
+        | StaticAbstractsGeneration.FactoryMethods
+        | StaticAbstractsGeneration.InstanceMethodsAndProperties
+        | StaticAbstractsGeneration.ValueObjectsDeriveFromTheInterface
+        | StaticAbstractsGeneration.InstancesHaveInterfaceDefinition,
+    openApiSchemaCustomizations: OpenApiSchemaCustomizations.GenerateOpenApiMappingExtensionMethod,
+    explicitlySpecifyTypeInValueObject: true,
+    primitiveEqualityGeneration: PrimitiveEqualityGeneration.GenerateOperatorsAndMethods,
+    numericsGeneration: NumericsGeneration.Omit
 )]
 
 namespace Dse.Extensions;

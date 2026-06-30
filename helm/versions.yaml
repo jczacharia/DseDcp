@@ -1,0 +1,8 @@
+manifest:
+  group: pnc.dse.deployments
+  artifactId: dse-deploy-manifest
+  version: 1.0.92
+searchapi:
+  group: pnc.dse
+  image:
+    tag: 1.0.2-1780024026382-de5d506

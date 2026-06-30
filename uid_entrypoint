@@ -1,7 +1,24 @@
 #!/bin/sh
+# OpenShift assigns a random UID; register it in /etc/passwd so whoami/HOME resolve.
 if ! whoami &> /dev/null; then
   if [ -w /etc/passwd ]; then
     echo "${USER_NAME:-default}:x:$(id -u):0:${USER_NAME:-default} user:${HOME}:/sbin/nologin" >> /etc/passwd
   fi
 fi
+
+dotnet ./sealights/SL.DotNet.dll scan \
+  --token "$SL_SESSION_TOKEN" \
+  --buildSessionIdFile buildSessionId.txt \
+  --scanDir ./bin
+
+# Generic SeaLights cdAgent launcher tuned for PNC OpenShift and Helm deployments.
+set -- /sealights/SL.DotNet cdAgent \
+  --token "$SL_SESSION_TOKEN" \
+  --target dotnet --targetArgs "$SL_TARGET_DLL" \
+  --workingDir "${SL_APP_DIR:-/app}" --binDir "${SL_APP_DIR:-/app}" \
+  --includeNamespace "$SL_NAMESPACE" \
+  --proxy http://vz-proxy.pncint.net:8080 \
+  --buildName "$IMAGE_TAG" \
+  --appName "$DT_RELEASE_PRODUCT"
+
 exec "$@"

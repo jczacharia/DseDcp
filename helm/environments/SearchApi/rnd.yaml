@@ -1,0 +1,92 @@
+# Overrides for the PNC shared app chart (aliased "searchapi" in Chart.yaml). Mirrors the searchapi schema.
+# Placeholders to confirm: mnemonic, namespace, image repo path, and the route hostnames (from MIS/Ping/F5).
+searchapi:
+  namespace: dse-rnd
+  environment: rnd
+  mnemonic: dse
+
+  port: &port 8080
+  nameOverride: searchapi
+
+  image:
+    port: *port
+    name: 'docker-stage.docker.pncint.net/pnc/dse/searchapi'
+
+  service:
+    annotations:
+      name: searchapi
+      namespace: dse-rnd
+    labels:
+      app: searchapi
+      mnemonic: dse
+    create: true
+    port: 8080
+    targetPort: *port
+
+  deployment:
+    create: true
+    replicas: 1
+    vpa:
+      create: true
+      updatePolicy:
+        updateMode: 'Initial'
+    pod:
+      contrast:
+        enable: false
+        appName: searchapi
+        appType: dotnet-core
+      # .NET respects the cgroup memory *limit* for GC sizing, not the request.
+      # VPA-Initial rewrites requests on each pod start; limits stay as-is.
+      resources:
+        limits:
+          cpu: 1000m
+          memory: 2Gi
+        requests:
+          cpu: 250m
+          memory: 1Gi
+      env:
+        - name: DEPLOYMENT_ENVIRONMENT
+          value: RND
+        - name: ASPNETCORE_HTTP_PORTS
+          value: '8080'
+      envFrom:
+        - secretRef: searchapi-secrets
+          optional: false
+      probes:
+        # /api/live = self-only (no dependencies) for startup + liveness; /api/ready runs registered
+        # health checks for readiness. Probes hit the pod directly, so both are AllowAnonymous in code.
+        startupProbe:
+          httpGet:
+            path: /api/live
+            port: 8080
+            scheme: HTTP
+          failureThreshold: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /api/live
+            port: 8080
+            scheme: HTTP
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /api/ready
+            port: 8080
+            scheme: HTTP
+          periodSeconds: 10
+          timeoutSeconds: 10
+          failureThreshold: 3
+
+  route:
+    # Doc's Case 2: the OCP auto host (direct, for non-Ping verification) + the friendly host the Ping
+    # Gateway forwards to after authenticating. Confirm exact hostnames with MIS/Ping/F5.
+    hosts:
+      - uri: searchapi-dse-rnd.apps.ethe-ocp4-rnd.pncint.net
+        name: searchapi
+      - uri: dse-rnd.pncint.net
+        name: searchapi-ingress
+        tls:
+          termination: edge

@@ -1,0 +1,10 @@
+apiVersion: v2
+description: A Helm chart for Kubernetes
+name: dse-deploy
+version: 1.0.0
+dependencies:
+  - alias: searchapi
+    name: pnc-ddp-pnc-charts
+    version: 0.2.4+2.04c2c4a
+    path: pnc/ddp/pnc-charts/pnc-ddp-pnc-charts
+    repository: https://rpo.pncint.net/artifactory/helm-release

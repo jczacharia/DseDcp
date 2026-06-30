@@ -1,0 +1,85 @@
+trigger:
+  branches:
+    include:
+      - 'main'
+
+variables:
+  - template: environments/shared-values.yml@templates
+
+  - name: version
+    value: '2.2.2'
+  - name: mnemonic
+    value: dse
+  - name: app_name
+    value: searchapi
+  - name: manifest_repo
+    value: 'git.pncint.net/dse/dse-deploy.git'
+  - name: build_type
+    value: dotnet
+  - name: dotnet_version
+    value: '10.0'
+  - name: helm_deploy
+    value: true
+  - name: sonar_custom_exclusions
+    value: >
+      **/.angular/**,
+      **/.husky/**,
+      **/.playwright/**,
+      **/.sonarlint/**,
+      **/.vscode/**,
+      **/*Dockerfile*,
+      **/*opencover*.xml,
+      **/*testresult*.xml,
+      **/*Tests*.cs,
+      **/bin/**,
+      **/coverage/**,
+      **/dist/**,
+      **/e2e/**,
+      **/lint-staged.config.mjs,
+      **/node_modules/**,
+      **/obj/**,
+      **/Program.cs,
+      **/public/**,
+      **/quality_engineering/**,
+      **/scripts/**,
+      **/srv/Dse.Tests/**,
+      **/test-results/**,
+      **/ui/**/*.d.ts,
+      **/ui/**/*.spec.ts,
+      **/ui/api/**,
+      **/ui/hlm/**,
+      **/ui/testing/**,
+      **/wwwroot/**
+
+      sonar.sourceEncoding=UTF-8
+
+      sonar.tests=$(System.DefaultWorkingDirectory)/ui
+
+      sonar.javascript.lcov.reportPaths=$(System.DefaultWorkingDirectory)/coverage/lcov.info,$(System.DefaultWorkingDirectory)/coverage/e2e/lcov.info
+
+      sonar.typescript.tsconfigPaths=$(System.DefaultWorkingDirectory)/tsconfig.app.json
+
+      sonar.testExecutionReportPaths=$(System.DefaultWorkingDirectory)/coverage/ut_report.xml
+
+      sonar.qualitygate.wait=true
+  - name: qfaasDirectory
+    value: 'quality_engineering/DseDataPipelines-services'
+  - name: restore_proj
+    value: 'Dse.slnx'
+  - name: build_proj
+    value: 'Dse.slnx'
+  - name: publish_proj
+    value: 'srv/Dse.Api/Dse.Api.csproj'
+  - name: runtime_identifier
+    value: 'linux-x64'
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      endpoint: enterprise_pnc_automation
+      name: PNC - ADO Enterprise Automation Pipeline/pnc-enterprise-templates
+      ref: refs/heads/master
+
+jobs:
+  - template: enterprise-pipeline/pipeline_dotnet.yml@templates

@@ -1,0 +1,17 @@
+.versionsFile: &versionsFile versions.yaml
+.chartPath: &chartPath ./charts/dse-deploy
+.secretsFile: &secretsFile secrets-manifest.yaml
+branches:
+  - name: stage-rnd-ocp4
+    release:
+      name: dse-deploy-rnd
+      chartPath: *chartPath
+      secretsFile: *secretsFile
+      valuesFiles:
+        - *versionsFile
+        - environments/SearchApi/rnd.yaml
+      setValues:
+        namespace: dse-rnd
+        level: rnd
+        ocp: v4
+        timeout: 20m0s

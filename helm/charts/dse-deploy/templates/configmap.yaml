@@ -1,0 +1,14 @@
+# {{- range $.Values.configMaps }}
+# ---
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: {{ .name }}
+# data:
+# {{- if .key }}
+# {{ .key | indent 2 }}: |-
+# {{- $.Files.Get .configPath | nindent 4 }}
+# {{- else }}
+# {{- $.Files.Get .configPath | nindent 2 }}
+# {{- end }}
+# {{- end }}

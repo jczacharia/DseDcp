@@ -15,6 +15,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Scalar.AspNetCore" Version="2.16.6" />
+    <PackageReference Include="Sealights.DotNet.Linux" Version="3.14.1" />
     <PackageReference Include="ServiceScan.SourceGenerator" Version="3.1.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -37,10 +38,20 @@
     </Hash>
     <PropertyGroup>
       <_OpenApiHashFile>$(IntermediateOutputPath)openapi.hash</_OpenApiHashFile>
-      <_OpenApiHashPrev Condition="Exists('$(_OpenApiHashFile)')">$([System.IO.File]::ReadAllText('$(_OpenApiHashFile)').Trim())</_OpenApiHashPrev>
+      <_OpenApiHashPrev Condition="Exists('$(_OpenApiHashFile)')"
+        >$([System.IO.File]::ReadAllText('$(_OpenApiHashFile)').Trim())</_OpenApiHashPrev>
     </PropertyGroup>
-    <Exec Condition="'$(_OpenApiHash)' != '$(_OpenApiHashPrev)'" WorkingDirectory="$(SolutionDir)" Command="$(NodePrefix) pnpm openapi" />
-    <WriteLinesToFile Condition="'$(_OpenApiHash)' != '$(_OpenApiHashPrev)'" File="$(_OpenApiHashFile)" Lines="$(_OpenApiHash)" Overwrite="true" />
+    <Exec
+      Condition="'$(_OpenApiHash)' != '$(_OpenApiHashPrev)'"
+      WorkingDirectory="$(SolutionDir)"
+      Command="$(NodePrefix) pnpm openapi"
+    />
+    <WriteLinesToFile
+      Condition="'$(_OpenApiHash)' != '$(_OpenApiHashPrev)'"
+      File="$(_OpenApiHashFile)"
+      Lines="$(_OpenApiHash)"
+      Overwrite="true"
+    />
   </Target>
 
   <Target Name="UIPublish" AfterTargets="ComputeFilesToPublish">

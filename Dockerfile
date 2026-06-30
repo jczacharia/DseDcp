@@ -1,22 +1,7 @@
 ARG baseimage
 FROM $baseimage
 
-# Coverage runs via the cdAgent CLI (SL.DotNet wraps `dotnet Dse.Api.dll` at the ENTRYPOINT),
-# not the env-var Profiler-Initiated Collector. cdAgent is the only mode that accepts --proxy, which
-# we need to reach *.sealights.co:443 through PNC's egress proxy. cdAgent injects the CORECLR_*
-# profiler env into the child dotnet itself, so we must NOT set them container-wide — they would also
-# attach the profiler to the SL.DotNet process and collide with cdAgent's own setup.
-ENV SL_FEATURES_IDENTIFYMETHODSBYFQN="true"
 
-ARG BUILD_NUMBER
-ENV SL_GENERAL_APPNAME="dse_searchapi"
-ENV SL_GENERAL_BRANCHNAME="main"
-ENV SL_GENERAL_BUILDNAME=$BUILD_NUMBER
-# TODO: replace "my_lab" with the real lab ID from the SeaLights dashboard (or drop this line)
-ENV SL_LABID="my_lab"
-ENV SL_SCAN_BINDIR="/app"
-ENV SL_SCAN_INCLUDENAMESPACES_0="Dse.*"
-ENV SL_SCAN_INCLUDEASSEMBLIES="Dse.*"
 
 # SL_SESSION_TOKEN is injected at runtime (OpenShift env, sourced from a Secret).
 # Do NOT hardcode the token here — this file is committed to git.
@@ -37,6 +22,25 @@ RUN mkdir -p /sealights/logs && \
       https://agents.sealights.co/dotnetcore/latest/sealights-dotnet-agent-linux-self-contained.tar.gz && \
     tar -xzf /tmp/sl-agent.tar.gz --directory /sealights && \
     rm /tmp/sl-agent.tar.gz
+
+# Coverage runs via the cdAgent CLI (uid_entrypoint runs `SL.DotNet cdAgent` wrapping the app),
+# not the env-var Profiler-Initiated Collector. cdAgent is the only mode that accepts --proxy, which
+# we need to reach *.sealights.co:443 through PNC's egress proxy. cdAgent injects the CORECLR_*
+# profiler env into the child dotnet itself, so we must NOT set them container-wide — they would also
+# attach the profiler to the SL.DotNet process and collide with cdAgent's own setup.
+ENV SL_FEATURES_IDENTIFYMETHODSBYFQN="true"
+
+ENV SL_GENERAL_APPNAME="dse_searchapi"
+ENV SL_GENERAL_BRANCHNAME="main"
+ENV SL_LABID="my_lab"
+
+# Per-project knobs read by uid_entrypoint to build the cdAgent command — together with
+# SL_GENERAL_APPNAME above, these are the only lines to change when reusing this in another service.
+ENV SL_TARGET_DLL="Dse.Api.dll"
+ENV SL_NAMESPACE="Dse.*"
+ENV SL_APP_DIR="/app"
+# Assembly-level scan filter (cdAgent reads this natively; no CLI flag is passed). Reuses the namespace.
+ENV SL_SCAN_INCLUDEASSEMBLIES="${SL_NAMESPACE}"
 
 # Higher-level port mapped to port 80/443 in OpenShift
 EXPOSE 8080
@@ -60,14 +64,9 @@ RUN chmod -R u+x /app && \
 
 USER 10001
 
-# uid_entrypoint resolves the (random) OpenShift UID into /etc/passwd, then exec's the agent.
-# SL.DotNet cdAgent wraps `dotnet Dse.Api.dll` (--target/--targetArgs), attaches the SeaLights
-# profiler to that child, and streams coverage to SeaLights through --proxy. App identity (appName,
-# branch, build, lab) comes from the SL_GENERAL_*/SL_LABID env above.
-#
-# --proxy routes only the agent's *.sealights.co connection through vz-proxy (not the app's egress).
+# uid_entrypoint registers the random OpenShift UID in /etc/passwd, then builds and exec's the
+# SeaLights cdAgent command — kept in the shell so it can read runtime env (e.g. IMAGE_TAG -> build
+# name). See uid_entrypoint for the full invocation. App identity comes from the SL_GENERAL_*/SL_LABID
+# env above; --proxy routes only the agent's *.sealights.co traffic through vz-proxy, not the app's.
 # Single ENTRYPOINT — having two silently drops the first.
-ENTRYPOINT ["uid_entrypoint", "/sealights/SL.DotNet", "cdAgent", \
-    "--target", "dotnet", "--targetArgs", "Dse.Api.dll", "--workingDir", "/app", \
-    "--binDir", "/app", "--includeNamespace", "Dse.*", \
-    "--proxy", "http://vz-proxy.pncint.net:8080"]
+ENTRYPOINT ["uid_entrypoint"]

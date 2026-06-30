@@ -1,14 +1,49 @@
-(function() {
-    const originalStopProp = Event.prototype.stopPropagation;
-    const originalStopImmediateProp = Event.prototype.stopImmediatePropagation;
+ (() => {
+    const MAX_DEPTH = 10;
+    const seen = new Set();
 
-    Event.prototype.stopPropagation = function() {
-        console.log(`stopPropagation called on: ${this.type}`);
-        originalStopProp.apply(this, arguments);
+    // Does this window hold a scorm-again instance? Return it (2004 preferred, else 1.2).
+    const apiOn = (w) => {
+      try {
+        if (w.API_1484_11 && typeof w.API_1484_11.renderCMIToJSONObject === "function")
+          return { api: w.API_1484_11, version: "2004" };
+        if (w.API && typeof w.API.renderCMIToJSONObject === "function")
+          return { api: w.API, version: "1.2" };
+      } catch { /* cross-origin window — can't read, skip */ }
+      return null;
     };
 
-    Event.prototype.stopImmediatePropagation = function() {
-        console.log(`stopImmediatePropagation called on: ${this.type}`);
-        originalStopImmediateProp.apply(this, arguments);
+    // Walk up parents + opener, then descend into child frames. try/catch every access.
+    const find = (w, depth) => {
+      if (!w || depth > MAX_DEPTH || seen.has(w)) return null;
+      seen.add(w);
+
+      const here = apiOn(w);
+      if (here) return here;
+
+      // climb up
+      try { if (w.parent && w.parent !== w) { const r = find(w.parent, depth + 1); if (r) return r; } } catch {}
+      try { if (w.opener) { const r = find(w.opener, depth + 1); if (r) return r; } } catch {}
+
+      // descend into children
+      try {
+        for (let i = 0; i < w.frames.length; i++) {
+          const r = find(w.frames[i], depth + 1);
+          if (r) return r;
+        }
+      } catch {}
+
+      return null;
     };
-})();
+
+    const found = find(window, 0);
+    if (!found) {
+      console.warn("[probe] No reachable scorm-again API. It may be cross-origin/sandboxed, or not instantiated yet.");
+      return;
+    }
+
+    console.log(`[probe] Found SCORM ${found.version} API`);
+    const interactions = found.api.renderCMIToJSONObject().interactions;
+    console.log(JSON.stringify(interactions, null, 2));
+    window.__lmsApi = found.api; // stash a handle for repeat pokes
+  })();

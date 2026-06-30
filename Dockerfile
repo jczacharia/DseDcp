@@ -23,25 +23,17 @@ ENV SL_SCAN_INCLUDEASSEMBLIES="Dse.*"
 
 USER root
 
-# Proxy needed for Sealights download and runtime connectivity
-ARG SEALIGHT_PROXY=http://vz-proxy.pncint.net:8080
-ENV http_proxy=${SEALIGHT_PROXY}
-ENV HTTP_PROXY=${SEALIGHT_PROXY}
-ENV https_proxy=${SEALIGHT_PROXY}
-ENV HTTPS_PROXY=${SEALIGHT_PROXY}
-
 # Install the SeaLights .NET Core agent (glibc/RHEL 8 build) into /sealights.
 # Provides libSL.DotNet.ProfilerLib.Linux.so referenced by the CORECLR_* paths above.
 #
-# Proxy: the ADO template passes no proxy build-arg, so it defaults to PNC's egress proxy (the same one
-# this pipeline's Sysdig step uses); HTTPS_PROXY still override it via --build-arg.
+# vz-proxy is SeaLights' egress proxy, used only here and on the ENTRYPOINT --proxy — never as a
+# runtime ENV, which would also push the app's own traffic (Elasticsearch, etc.) through it.
 # -4: agents.sealights.co resolves IPv6-only and the agent has no IPv6 egress (the proxy is reached over IPv4).
 # --insecure/--proxy-insecure: the proxy intercepts TLS with a CA the agent doesn't trust and has no cert
 # store (or openssl) to add it to — internal download over the trusted VPN. Prefer `--cacert <file>` if a
 # corporate CA ever becomes available.
 RUN mkdir -p /sealights/logs && \
-    proxy=${HTTPS_PROXY} && \
-    curl -4 -fsSL --insecure --proxy-insecure ${proxy:+--proxy "$proxy"} -o /tmp/sl-agent.tar.gz \
+    curl -4 -fsSL --insecure --proxy-insecure --proxy "http://vz-proxy.pncint.net:8080" -o /tmp/sl-agent.tar.gz \
       https://agents.sealights.co/dotnetcore/latest/sealights-dotnet-agent-linux-self-contained.tar.gz && \
     tar -xzf /tmp/sl-agent.tar.gz --directory /sealights && \
     rm /tmp/sl-agent.tar.gz
@@ -73,11 +65,9 @@ USER 10001
 # profiler to that child, and streams coverage to SeaLights through --proxy. App identity (appName,
 # branch, build, lab) comes from the SL_GENERAL_*/SL_LABID env above.
 #
-# --proxy "system": exec-form ENTRYPOINT does NOT expand ${HTTPS_PROXY} (and unquoted it is invalid
-# JSON, which silently degrades to broken shell-form). "system" makes the agent read the HTTPS_PROXY
-# env set above at runtime — no hardcoded URL, resolved at start.
+# --proxy routes only the agent's *.sealights.co connection through vz-proxy (not the app's egress).
 # Single ENTRYPOINT — having two silently drops the first.
 ENTRYPOINT ["uid_entrypoint", "/sealights/SL.DotNet", "cdAgent", \
     "--target", "dotnet", "--targetArgs", "Dse.Api.dll", "--workingDir", "/app", \
     "--binDir", "/app", "--includeNamespace", "Dse.*", \
-    "--proxy", "system"]
+    "--proxy", "http://vz-proxy.pncint.net:8080"]

@@ -4,6 +4,7 @@ allowBuilds:
   less: true
   lmdb: true
   msgpackr-extract: true
+  node: set this to true or false
   nx: true
 
 minimumReleaseAge: 2880
@@ -17,13 +18,13 @@ minimumReleaseAgeExclude:
 
 overrides:
   '@angular/aria': '22.1.0-next.1'
-  '@angular/cdk': '22.1.0-next.1'
-  '@angular/common': '22.1.0-next.1'
-  '@angular/compiler': '22.1.0-next.1'
-  '@angular/core': '22.1.0-next.1'
-  '@angular/forms': '22.1.0-next.1'
-  '@angular/platform-browser': '22.1.0-next.1'
-  '@angular/router': '22.1.0-next.1'
   '@angular/build': '22.1.0-next.1'
+  '@angular/cdk': '22.1.0-next.1'
   '@angular/cli': '22.1.0-next.1'
-  '@angular/compiler-cli': '22.1.0-next.1'
+  '@angular/common': '22.1.0-next.3'
+  '@angular/compiler-cli': '22.1.0-next.3'
+  '@angular/compiler': '22.1.0-next.3'
+  '@angular/core': '22.1.0-next.3'
+  '@angular/forms': '22.1.0-next.3'
+  '@angular/platform-browser': '22.1.0-next.3'
+  '@angular/router': '22.1.0-next.3'

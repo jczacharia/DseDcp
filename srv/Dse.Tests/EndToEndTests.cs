@@ -18,12 +18,14 @@ public sealed class EndToEndTests(ITestOutputHelper testOutputHelper)
         var result = await Cli.Wrap("npx")
             .WithArguments([.. CoreEnvironment.NodePrefix.Split(' '), "pnpm", "e2e"])
             .WithValidation(CommandResultValidation.None)
-            .WithEnvironmentVariables(new Dictionary<string, string?>
-            {
-                ["TEST_API_BASE_URL"] = host.BaseAddress,
-                ["PWDEBUG"] = Debugger.IsAttached ? "1" : null,
-                ["CI"] = CoreEnvironment.IsRelease ? "1" : null,
-            })
+            .WithEnvironmentVariables(
+                new Dictionary<string, string?>
+                {
+                    ["TEST_API_BASE_URL"] = host.BaseAddress,
+                    ["PWDEBUG"] = Debugger.IsAttached ? "1" : null,
+                    ["CI"] = CoreEnvironment.IsRelease ? "1" : null,
+                }
+            )
             .WithWorkingDirectory(CoreEnvironment.RepoRoot)
             .WithStandardOutputPipe(PipeTarget.ToDelegate(testOutputHelper.WriteLine))
             .WithStandardErrorPipe(PipeTarget.ToDelegate(testOutputHelper.WriteLine))

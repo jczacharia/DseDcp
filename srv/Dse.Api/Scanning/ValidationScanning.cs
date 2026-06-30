@@ -7,10 +7,6 @@ namespace Dse.Api.Scanning;
 
 public static partial class ValidationScanning
 {
-    [GenerateServiceRegistrations(
-        AssignableTo = typeof(IValidator<>),
-        Lifetime = ServiceLifetime.Scoped,
-        AssemblyNameFilter = "Dse.*"
-    )]
+    [GenerateServiceRegistrations(AssignableTo = typeof(IValidator<>), Lifetime = ServiceLifetime.Scoped, AssemblyNameFilter = "Dse.*")]
     public static partial IServiceCollection AddDseValidators(this IServiceCollection services);
 }

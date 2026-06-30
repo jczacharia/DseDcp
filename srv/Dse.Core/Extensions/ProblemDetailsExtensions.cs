@@ -46,11 +46,8 @@ public static class ProblemDetailsExtensions
     }
 
     private static void ApplyExceptionDetail(ProblemDetailsContext context, Exception ex) =>
-        context.ProblemDetails.Detail = context
-            .HttpContext.RequestServices.GetRequiredService<IHostEnvironment>()
-            .IsProduction()
-            ? "An exception occurred while processing your request."
-              + " Please try again later or contact the DSE team if the problem persists."
+        context.ProblemDetails.Detail = context.HttpContext.RequestServices.GetRequiredService<IHostEnvironment>().IsProduction()
+            ? "An exception occurred while processing your request." + " Please try again later or contact the DSE team if the problem persists."
             : BuildExceptionChainMessage(ex);
 
     private static void ApplyNotFoundDetail(ProblemDetailsContext context)
@@ -102,9 +99,7 @@ public static class ProblemDetailsExtensions
             httpContext.SetProblem(httpContext.BuildProblemDetails(statusCode, detail));
 
         public ProblemDetails BuildProblemDetails(HttpStatusCode statusCode, string detail) =>
-            httpContext
-                .RequestServices.GetRequiredService<ProblemDetailsFactory>()
-                .CreateProblemDetails(httpContext, (int)statusCode, detail);
+            httpContext.RequestServices.GetRequiredService<ProblemDetailsFactory>().CreateProblemDetails(httpContext, (int)statusCode, detail);
 
         public ProblemHttpResult ProblemHttpResult(HttpStatusCode statusCode, string detail) =>
             TypedResults.Problem(httpContext.BuildProblemDetails(statusCode, detail));

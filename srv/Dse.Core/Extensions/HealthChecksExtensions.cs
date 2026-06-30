@@ -43,6 +43,15 @@ public sealed record HealthReportEntry(
 
 public static class HealthCheckEndpoints
 {
+    private sealed class HealthCheckEndpointsConventionBuilder(RouteGroupBuilder inner) : IEndpointConventionBuilder
+    {
+        private IEndpointConventionBuilder InnerAsConventionBuilder => inner;
+
+        public void Add(Action<EndpointBuilder> convention) => InnerAsConventionBuilder.Add(convention);
+
+        public void Finally(Action<EndpointBuilder> finallyConvention) => InnerAsConventionBuilder.Finally(finallyConvention);
+    }
+
     public const string HealthEndpointPath = "/api/health";
 
     // MapHealthChecks maps a raw RequestDelegate pipeline, so its endpoints carry neither a MethodInfo nor an
@@ -78,67 +87,52 @@ public static class HealthCheckEndpoints
 
     private static Task DescribeHealthEndpointAsync() => Task.CompletedTask;
 
-    extension(WebApplication endpoints)
+    extension(IEndpointRouteBuilder endpoints)
     {
-        public void MapDseHealthChecks()
+        public IEndpointConventionBuilder MapDseHealthChecks()
         {
             var group = endpoints.MapGroup(HealthEndpointPath).WithTags("Health");
 
             group
-                .MapHealthChecks("", new()
-                { ResponseWriter = WriteHealthReportAsync })
+                .MapHealthChecks("", new() { ResponseWriter = WriteHealthReportAsync })
                 .ApplyDefaults("Full health report", "Every registered check.");
 
             group
                 .MapHealthChecks(
                     "startup",
-                    new()
-                    {
-                        Predicate = static r => r.Tags.Contains("startup"),
-                        ResponseWriter = WriteHealthReportAsync,
-                    }
+                    new() { Predicate = static r => r.Tags.Contains("startup"), ResponseWriter = WriteHealthReportAsync }
                 )
                 .ApplyDefaults("Full health report", "Every registered check.");
 
             group
                 .MapHealthChecks(
                     "live",
-                    new()
-                    {
-                        Predicate = static r => r.Tags.Contains("live"),
-                        ResponseWriter = WriteHealthReportAsync,
-                    }
+                    new() { Predicate = static r => r.Tags.Contains("live"), ResponseWriter = WriteHealthReportAsync }
                 )
                 .ApplyDefaults("Liveness probe", "Process is up — no dependency checks run.");
 
             group
                 .MapHealthChecks(
                     "ready",
-                    new()
-                    {
-                        Predicate = static r => r.Tags.Contains("ready"),
-                        ResponseWriter = WriteHealthReportAsync,
-                    }
+                    new() { Predicate = static r => r.Tags.Contains("ready"), ResponseWriter = WriteHealthReportAsync }
                 )
                 .ApplyDefaults("Readiness probe", "Process and its ready-tagged dependencies are reachable.");
 
             foreach (
                 var name in endpoints
-                    .Services.GetRequiredService<IOptions<HealthCheckServiceOptions>>()
+                    .ServiceProvider.GetRequiredService<IOptions<HealthCheckServiceOptions>>()
                     .Value.Registrations.Select(r => r.Name)
             )
             {
                 group
                     .MapHealthChecks(
                         $"{name}",
-                        new()
-                        {
-                            Predicate = r => r.Name == name,
-                            ResponseWriter = WriteHealthReportAsync,
-                        }
+                        new() { Predicate = r => r.Name == name, ResponseWriter = WriteHealthReportAsync }
                     )
                     .ApplyDefaults($"Health: {name}", $"The '{name}' check in isolation.");
             }
+
+            return new HealthCheckEndpointsConventionBuilder(group);
         }
     }
 
@@ -147,7 +141,8 @@ public static class HealthCheckEndpoints
         private void ApplyDefaults(string summary, string description) =>
             builder
                 .WithMetadata(new HttpMethodMetadata(["GET"]), s_healthEndpointMarker)
-                .AddOpenApiOperationTransformer(async (operation, ctx, ct) =>
+                .AddOpenApiOperationTransformer(
+                    async (operation, ctx, ct) =>
                     {
                         operation.Summary = summary;
                         operation.Description = description;

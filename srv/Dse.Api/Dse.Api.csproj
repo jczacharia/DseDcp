@@ -27,11 +27,7 @@
     <ProjectReference Include="..\Dse.SonarQube\Dse.SonarQube.csproj" />
   </ItemGroup>
 
-  <Target
-    Name="UIInstallDeps"
-    BeforeTargets="BeforeBuild;PublishAngular"
-    Condition="!Exists('$(SolutionDir)node_modules')"
-  >
+  <Target Name="UIInstallDeps" BeforeTargets="BeforeBuild;PublishAngular" Condition="!Exists('$(SolutionDir)node_modules')">
     <Exec WorkingDirectory="$(SolutionDir)" Command="$(NodePrefix) pnpm i" />
   </Target>
 
@@ -41,20 +37,10 @@
     </Hash>
     <PropertyGroup>
       <_OpenApiHashFile>$(IntermediateOutputPath)openapi.hash</_OpenApiHashFile>
-      <_OpenApiHashPrev Condition="Exists('$(_OpenApiHashFile)')"
-        >$([System.IO.File]::ReadAllText('$(_OpenApiHashFile)').Trim())</_OpenApiHashPrev>
+      <_OpenApiHashPrev Condition="Exists('$(_OpenApiHashFile)')">$([System.IO.File]::ReadAllText('$(_OpenApiHashFile)').Trim())</_OpenApiHashPrev>
     </PropertyGroup>
-    <Exec
-      Condition="'$(_OpenApiHash)' != '$(_OpenApiHashPrev)'"
-      WorkingDirectory="$(SolutionDir)"
-      Command="$(NodePrefix) pnpm openapi"
-    />
-    <WriteLinesToFile
-      Condition="'$(_OpenApiHash)' != '$(_OpenApiHashPrev)'"
-      File="$(_OpenApiHashFile)"
-      Lines="$(_OpenApiHash)"
-      Overwrite="true"
-    />
+    <Exec Condition="'$(_OpenApiHash)' != '$(_OpenApiHashPrev)'" WorkingDirectory="$(SolutionDir)" Command="$(NodePrefix) pnpm openapi" />
+    <WriteLinesToFile Condition="'$(_OpenApiHash)' != '$(_OpenApiHashPrev)'" File="$(_OpenApiHashFile)" Lines="$(_OpenApiHash)" Overwrite="true" />
   </Target>
 
   <Target Name="UIPublish" AfterTargets="ComputeFilesToPublish">

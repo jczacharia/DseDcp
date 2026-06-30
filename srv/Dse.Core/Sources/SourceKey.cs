@@ -15,9 +15,7 @@ public readonly partial record struct SourceKey
     private static partial Regex Pattern();
 
     private static Validation Validate(string input) =>
-        Pattern().IsMatch(input)
-            ? Validation.Ok
-            : Validation.Invalid("Must be 1-30 chars, lowercase alphanumeric, and start with a letter.");
+        Pattern().IsMatch(input) ? Validation.Ok : Validation.Invalid("Must be 1-30 chars, lowercase alphanumeric, and start with a letter.");
 
     private static string NormalizeInput(string input) => input.Trim().ToLowerInvariant();
 }

@@ -8,7 +8,9 @@
   "paths": {
     "/api/health": {
       "get": {
-        "tags": ["Health"],
+        "tags": [
+          "Health"
+        ],
         "summary": "Full health report",
         "description": "Every registered check.",
         "responses": {
@@ -37,7 +39,9 @@
     },
     "/api/health/startup": {
       "get": {
-        "tags": ["Health"],
+        "tags": [
+          "Health"
+        ],
         "summary": "Full health report",
         "description": "Every registered check.",
         "responses": {
@@ -66,7 +70,9 @@
     },
     "/api/health/live": {
       "get": {
-        "tags": ["Health"],
+        "tags": [
+          "Health"
+        ],
         "summary": "Liveness probe",
         "description": "Process is up — no dependency checks run.",
         "responses": {
@@ -95,7 +101,9 @@
     },
     "/api/health/ready": {
       "get": {
-        "tags": ["Health"],
+        "tags": [
+          "Health"
+        ],
         "summary": "Readiness probe",
         "description": "Process and its ready-tagged dependencies are reachable.",
         "responses": {
@@ -124,7 +132,9 @@
     },
     "/api/health/elastic": {
       "get": {
-        "tags": ["Health"],
+        "tags": [
+          "Health"
+        ],
         "summary": "Health: elastic",
         "description": "The 'elastic' check in isolation.",
         "responses": {
@@ -153,7 +163,9 @@
     },
     "/api/userinfo": {
       "get": {
-        "tags": ["Api"],
+        "tags": [
+          "Api"
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -172,7 +184,10 @@
   "components": {
     "schemas": {
       "ClaimDto": {
-        "required": ["type", "value"],
+        "required": [
+          "type",
+          "value"
+        ],
         "type": "object",
         "properties": {
           "type": {
@@ -207,40 +222,69 @@
             "type": "string"
           },
           "hash": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "type": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "title": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "body": {
-            "type": ["null", "string"]
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "space": {
-            "required": ["id", "key", "name", "link"],
+            "required": [
+              "id",
+              "key",
+              "name",
+              "link"
+            ],
             "type": "object",
             "properties": {
               "id": {
                 "pattern": "^-?(?:0|[1-9]\\d*)$",
-                "type": ["integer", "string"],
+                "type": [
+                  "integer",
+                  "string"
+                ],
                 "format": "int64"
               },
               "key": {
                 "type": "string"
               },
               "name": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "link": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               }
             }
           },
           "versionNumber": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": ["integer", "string"],
+            "type": [
+              "integer",
+              "string"
+            ],
             "format": "int64"
           },
           "versionWhen": {
@@ -248,20 +292,37 @@
             "format": "date-time"
           },
           "versionBy": {
-            "required": ["username", "userKey", "displayName", "profilePicturePath"],
+            "required": [
+              "username",
+              "userKey",
+              "displayName",
+              "profilePicturePath"
+            ],
             "type": "object",
             "properties": {
               "username": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "userKey": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "displayName": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "profilePicturePath": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               }
             }
           },
@@ -270,40 +331,71 @@
             "format": "date-time"
           },
           "createdBy": {
-            "required": ["username", "userKey", "displayName", "profilePicturePath"],
+            "required": [
+              "username",
+              "userKey",
+              "displayName",
+              "profilePicturePath"
+            ],
             "type": "object",
             "properties": {
               "username": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "userKey": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "displayName": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               },
               "profilePicturePath": {
-                "type": ["null", "string"]
+                "type": [
+                  "null",
+                  "string"
+                ]
               }
             }
           },
           "ancestors": {
             "type": "array",
             "items": {
-              "required": ["id", "type", "title", "link"],
+              "required": [
+                "id",
+                "type",
+                "title",
+                "link"
+              ],
               "type": "object",
               "properties": {
                 "id": {
                   "type": "string"
                 },
                 "type": {
-                  "type": ["null", "string"]
+                  "type": [
+                    "null",
+                    "string"
+                  ]
                 },
                 "title": {
-                  "type": ["null", "string"]
+                  "type": [
+                    "null",
+                    "string"
+                  ]
                 },
                 "link": {
-                  "type": ["null", "string"]
+                  "type": [
+                    "null",
+                    "string"
+                  ]
                 }
               }
             }
@@ -311,17 +403,27 @@
           "labels": {
             "type": "array",
             "items": {
-              "required": ["id", "name", "prefix"],
+              "required": [
+                "id",
+                "name",
+                "prefix"
+              ],
               "type": "object",
               "properties": {
                 "id": {
                   "type": "string"
                 },
                 "name": {
-                  "type": ["null", "string"]
+                  "type": [
+                    "null",
+                    "string"
+                  ]
                 },
                 "prefix": {
-                  "type": ["null", "string"]
+                  "type": [
+                    "null",
+                    "string"
+                  ]
                 }
               }
             }
@@ -333,7 +435,11 @@
         }
       },
       "DseHealthReport": {
-        "required": ["status", "totalDuration", "checks"],
+        "required": [
+          "status",
+          "totalDuration",
+          "checks"
+        ],
         "type": "object",
         "properties": {
           "status": {
@@ -347,7 +453,14 @@
           "checks": {
             "type": "array",
             "items": {
-              "required": ["name", "status", "duration", "description", "exception", "data"],
+              "required": [
+                "name",
+                "status",
+                "duration",
+                "description",
+                "exception",
+                "data"
+              ],
               "type": "object",
               "properties": {
                 "name": {
@@ -363,11 +476,17 @@
                   "description": "How long this check took."
                 },
                 "description": {
-                  "type": ["null", "string"],
+                  "type": [
+                    "null",
+                    "string"
+                  ],
                   "description": "Human-readable detail the check chose to report, if any."
                 },
                 "exception": {
-                  "type": ["null", "string"],
+                  "type": [
+                    "null",
+                    "string"
+                  ],
                   "description": "The failure message when the check threw, if any."
                 },
                 "data": {
@@ -383,11 +502,17 @@
         "description": "Aggregated health of the service: overall status, total evaluation time, and a per-check breakdown."
       },
       "UserInfoResponse": {
-        "required": ["name", "claims"],
+        "required": [
+          "name",
+          "claims"
+        ],
         "type": "object",
         "properties": {
           "name": {
-            "type": ["null", "string"],
+            "type": [
+              "null",
+              "string"
+            ],
             "description": "Current user's name."
           },
           "claims": {

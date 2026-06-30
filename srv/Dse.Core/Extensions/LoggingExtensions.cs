@@ -15,9 +15,7 @@ public static class LoggingExtensions
 
             foreach (
                 var descriptor in services
-                    .Where(d =>
-                        d.ServiceType == typeof(ILoggerProvider) && d.ImplementationType?.FullName == EventLogProvider
-                    )
+                    .Where(d => d.ServiceType == typeof(ILoggerProvider) && d.ImplementationType?.FullName == EventLogProvider)
                     .ToList()
             )
             {

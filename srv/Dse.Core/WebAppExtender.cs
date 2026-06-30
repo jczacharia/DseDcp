@@ -14,7 +14,6 @@ public static class WebAppExtenderExtensions
 {
     extension(IServiceCollection services)
     {
-        public IServiceCollection AddWebAppExtender(Action<WebApplication> configure) =>
-            services.AddSingleton(new WebAppExtender(configure));
+        public IServiceCollection AddWebAppExtender(Action<WebApplication> configure) => services.AddSingleton(new WebAppExtender(configure));
     }
 }

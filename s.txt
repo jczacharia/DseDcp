@@ -1,0 +1,14 @@
+(function() {
+    const originalStopProp = Event.prototype.stopPropagation;
+    const originalStopImmediateProp = Event.prototype.stopImmediatePropagation;
+
+    Event.prototype.stopPropagation = function() {
+        console.log(`stopPropagation called on: ${this.type}`);
+        originalStopProp.apply(this, arguments);
+    };
+
+    Event.prototype.stopImmediatePropagation = function() {
+        console.log(`stopImmediatePropagation called on: ${this.type}`);
+        originalStopImmediateProp.apply(this, arguments);
+    };
+})();

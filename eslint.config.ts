@@ -11,7 +11,7 @@ const gitignorePath = fileURLToPath(new URL('.gitignore', import.meta.url));
 export default defineConfig([
   includeIgnoreFile(gitignorePath, {gitignoreResolution: true}),
   {
-    ignores: ['ui/api/**', 'ui/index.html'],
+    ignores: ['ui/api/**', 'ui/index.html', 'srv/**'],
   },
   {
     rules: {'linebreak-style': ['error', 'unix']},

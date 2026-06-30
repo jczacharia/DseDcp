@@ -16,14 +16,14 @@ public static class OpenApiComponentAttributeExtensions
     extension(OpenApiOptions options)
     {
         public void AddComponentsFromAssemblies(params Assembly[] assemblies) =>
-            options.AddDocumentTransformer(async (document, context, cancellationToken) =>
+            options.AddDocumentTransformer(
+                async (document, context, cancellationToken) =>
                 {
                     foreach (
                         var type in assemblies
                             .SelectMany(a => a.GetTypes())
                             .Where(type =>
-                                type is { IsAbstract: false, IsInterface: false }
-                                && type.GetCustomAttribute<OpenApiComponentAttribute>() is not null
+                                type is { IsAbstract: false, IsInterface: false } && type.GetCustomAttribute<OpenApiComponentAttribute>() is not null
                             )
                     )
                     {

@@ -36,12 +36,10 @@ public sealed class PingAuthTests(ITestOutputHelper outputHelper)
     {
         await using var host = new ApiHost(outputHelper);
 
-        host.PingAuthClientMock
-            .Setup(x => x.DecodeAccessTokenAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+        host.PingAuthClientMock.Setup(x => x.DecodeAccessTokenAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((IReadOnlyDictionary<string, string>?)null);
 
-        var response = await host.ClientWithUser("user", ["member"])
-            .GetAsync("/api/userinfo", TestContext.Current.CancellationToken);
+        var response = await host.ClientWithUser("user", ["member"]).GetAsync("/api/userinfo", TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
@@ -56,10 +54,7 @@ public sealed class PingAuthTests(ITestOutputHelper outputHelper)
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
 
-        host.PingAuthClientMock.Verify(
-            x => x.DecodeAccessTokenAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
-            Times.Never
-        );
+        host.PingAuthClientMock.Verify(x => x.DecodeAccessTokenAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -72,10 +67,7 @@ public sealed class PingAuthTests(ITestOutputHelper outputHelper)
         await client.GetAsync("/api/userinfo", TestContext.Current.CancellationToken);
         await client.GetAsync("/api/userinfo", TestContext.Current.CancellationToken);
 
-        host.PingAuthClientMock.Verify(
-            x => x.DecodeAccessTokenAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
-            Times.Exactly(2)
-        );
+        host.PingAuthClientMock.Verify(x => x.DecodeAccessTokenAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
     }
 
     [Theory]
@@ -89,11 +81,7 @@ public sealed class PingAuthTests(ITestOutputHelper outputHelper)
 
         response.Should().NotBeNull();
 
-        response
-            .Claims.Where(c => c.Type == ClaimTypes.Role)
-            .Select(c => c.Value)
-            .Should()
-            .BeEquivalentTo(expectedRoles);
+        response.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).Should().BeEquivalentTo(expectedRoles);
     }
 
     [Fact]
@@ -105,9 +93,6 @@ public sealed class PingAuthTests(ITestOutputHelper outputHelper)
         await client.GetAsync("/api/userinfo", TestContext.Current.CancellationToken);
         await client.GetAsync("/api/userinfo", TestContext.Current.CancellationToken);
 
-        host.PingAuthClientMock.Verify(
-            x => x.DecodeAccessTokenAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
-            Times.Once
-        );
+        host.PingAuthClientMock.Verify(x => x.DecodeAccessTokenAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 }

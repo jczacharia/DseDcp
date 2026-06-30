@@ -8,32 +8,20 @@ namespace Dse.Search;
 
 public sealed class ElasticHealthCheck(ElasticsearchClient elastic) : IHealthCheck
 {
-    public async Task<HealthCheckResult> CheckHealthAsync(
-        HealthCheckContext context,
-        CancellationToken cancellationToken = default
-    )
+    public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
         try
         {
             var cluster = await elastic.Cluster.HealthAsync(cancellationToken);
 
-            if (cluster is { IsValidResponse: false })
-            {
-                return new(
-                    context.Registration.FailureStatus,
-                    $"Cluster health call failed: {cluster.DebugInformation}"
-                );
-            }
-
-            return cluster.Status switch
-            {
-                HealthStatus.Green => HealthCheckResult.Healthy($"Cluster '{cluster.ClusterName}' is green."),
-                HealthStatus.Yellow => HealthCheckResult.Degraded($"Cluster '{cluster.ClusterName}' is yellow."),
-                _ => new(
-                    context.Registration.FailureStatus,
-                    $"Cluster '{cluster.ClusterName}' status is {cluster.Status}"
-                ),
-            };
+            return cluster is { IsValidResponse: false }
+                ? new(context.Registration.FailureStatus, $"Cluster health call failed: {cluster.DebugInformation}")
+                : cluster.Status switch
+                {
+                    HealthStatus.Green => HealthCheckResult.Healthy($"Cluster '{cluster.ClusterName}' is green."),
+                    HealthStatus.Yellow => HealthCheckResult.Degraded($"Cluster '{cluster.ClusterName}' is yellow."),
+                    _ => new(context.Registration.FailureStatus, $"Cluster '{cluster.ClusterName}' status is {cluster.Status}"),
+                };
         }
         catch (Exception ex)
         {

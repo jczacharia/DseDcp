@@ -74,12 +74,7 @@ public sealed class PingAuthHandler(
 
             if (type == IsMemberOfClaim)
             {
-                foreach (
-                    var role in value.Split(
-                        '^',
-                        StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
-                    )
-                )
+                foreach (var role in value.Split('^', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
                 {
                     identity.AddClaim(new(ClaimTypes.Role, role));
                 }
@@ -111,10 +106,7 @@ public sealed class PingAuthHandler(
 
     private bool TryGetEnvelope([MaybeNullWhen(false)] out string envelope)
     {
-        if (
-            Context.Request.Cookies.TryGetValue(Options.CookieName, out var cookie)
-            && !string.IsNullOrWhiteSpace(cookie)
-        )
+        if (Context.Request.Cookies.TryGetValue(Options.CookieName, out var cookie) && !string.IsNullOrWhiteSpace(cookie))
         {
             envelope = cookie;
             return true;
@@ -139,12 +131,7 @@ public sealed class PingAuthHandler(
     {
         try
         {
-            if (new JsonWebToken(envelope).TryGetPayloadValue(AccessTokenClaim, out string? token) && token is { Length: > 0 })
-            {
-                return token;
-            }
-
-            return envelope;
+            return new JsonWebToken(envelope).TryGetPayloadValue(AccessTokenClaim, out string? token) && token is { Length: > 0 } ? token : envelope;
         }
         catch (ArgumentException)
         {
@@ -166,6 +153,5 @@ public sealed class PingAuthHandler(
         }
     }
 
-    private static string Fingerprint(string token) =>
-        Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(token)));
+    private static string Fingerprint(string token) => Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(token)));
 }

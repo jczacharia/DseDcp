@@ -7,10 +7,7 @@ namespace Dse.Authentication.Ping;
 
 public interface IPingAuthClient
 {
-    public Task<IReadOnlyDictionary<string, string>?> DecodeAccessTokenAsync(
-        string accessToken,
-        CancellationToken cancellationToken = default
-    );
+    public Task<IReadOnlyDictionary<string, string>?> DecodeAccessTokenAsync(string accessToken, CancellationToken cancellationToken = default);
 }
 
 [ExcludeFromCodeCoverage]
@@ -18,20 +15,12 @@ public sealed class PingAuthClient(IHttpClientFactory httpClientFactory) : IPing
 {
     private const string UserInfoPath = "/idp/userinfo.openid?schema=openid&access_token=";
 
-    public async Task<IReadOnlyDictionary<string, string>?> DecodeAccessTokenAsync(
-        string accessToken,
-        CancellationToken cancellationToken = default
-    )
+    public async Task<IReadOnlyDictionary<string, string>?> DecodeAccessTokenAsync(string accessToken, CancellationToken cancellationToken = default)
     {
         var client = httpClientFactory.CreateClient(PingAuthDefaults.HttpClientName);
 
-        using var response = await client.GetAsync(
-            $"{UserInfoPath}{Uri.EscapeDataString(accessToken)}",
-            cancellationToken
-        );
+        using var response = await client.GetAsync($"{UserInfoPath}{Uri.EscapeDataString(accessToken)}", cancellationToken);
 
-        return response.IsSuccessStatusCode
-            ? await response.Content.ReadFromJsonAsync<Dictionary<string, string>?>(cancellationToken)
-            : null;
+        return response.IsSuccessStatusCode ? await response.Content.ReadFromJsonAsync<Dictionary<string, string>?>(cancellationToken) : null;
     }
 }

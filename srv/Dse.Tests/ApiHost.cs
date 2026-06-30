@@ -21,12 +21,8 @@ public sealed class ApiHost : WebApplicationFactory<Program>
     private readonly Action<IWebHostBuilder>? _configure;
     private readonly ITestOutputHelper _outputHelper;
 
-    public ApiHost(ITestOutputHelper outputHelper, IEnumerable<KeyValuePair<string, string?>> configurationOverrides) : this(
-        outputHelper, builder =>
-        {
-            builder.ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(configurationOverrides));
-        })
-    { }
+    public ApiHost(ITestOutputHelper outputHelper, IEnumerable<KeyValuePair<string, string?>> configurationOverrides)
+        : this(outputHelper, builder => builder.ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(configurationOverrides))) { }
 
     public ApiHost(ITestOutputHelper outputHelper, Action<IWebHostBuilder>? configure = null)
     {
@@ -36,11 +32,10 @@ public sealed class ApiHost : WebApplicationFactory<Program>
 
         PingAuthClientMock
             .Setup(x => x.DecodeAccessTokenAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((string accessToken, CancellationToken _) =>
-                new JwtSecurityTokenHandler()
-                    .ReadJwtToken(accessToken)
-                    .Claims.GroupBy(c => c.Type)
-                    .ToDictionary(g => g.Key, g => g.Last().Value));
+            .ReturnsAsync(
+                (string accessToken, CancellationToken _) =>
+                    new JwtSecurityTokenHandler().ReadJwtToken(accessToken).Claims.GroupBy(c => c.Type).ToDictionary(g => g.Key, g => g.Last().Value)
+            );
     }
 
     public Mock<IPingAuthClient> PingAuthClientMock { get; }
@@ -68,10 +63,7 @@ public sealed class ApiHost : WebApplicationFactory<Program>
             logging.AddXUnit(_outputHelper);
         });
 
-        builder.ConfigureServices(services =>
-        {
-            services.Replace(ServiceDescriptor.Singleton(PingAuthClientMock.Object));
-        });
+        builder.ConfigureServices(services => services.Replace(ServiceDescriptor.Singleton(PingAuthClientMock.Object)));
 
         _configure?.Invoke(builder);
     }
@@ -87,7 +79,7 @@ public sealed class ApiHost : WebApplicationFactory<Program>
 
         string BuildEnvelope()
         {
-            var handler = new JwtSecurityTokenHandler();
+            JwtSecurityTokenHandler handler = new();
 
             var inner = handler.WriteToken(
                 new JwtSecurityToken(

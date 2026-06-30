@@ -7,10 +7,10 @@ using Vogen;
 [assembly: VogenDefaults(
     toPrimitiveCasting: CastOperator.Implicit,
     staticAbstractsGeneration: StaticAbstractsGeneration.ValueObjectsDeriveFromTheInterface
-                               | StaticAbstractsGeneration.EqualsOperators
-                               | StaticAbstractsGeneration.ExplicitCastFromPrimitive
-                               | StaticAbstractsGeneration.ImplicitCastToPrimitive
-                               | StaticAbstractsGeneration.FactoryMethods,
+        | StaticAbstractsGeneration.EqualsOperators
+        | StaticAbstractsGeneration.ExplicitCastFromPrimitive
+        | StaticAbstractsGeneration.ImplicitCastToPrimitive
+        | StaticAbstractsGeneration.FactoryMethods,
     conversions: Conversions.SystemTextJson | Conversions.TypeConverter,
     openApiSchemaCustomizations: OpenApiSchemaCustomizations.GenerateOpenApiMappingExtensionMethod
 )]

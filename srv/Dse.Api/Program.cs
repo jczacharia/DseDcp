@@ -30,9 +30,7 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddAuthentication(PingAuthDefaults.AuthenticationScheme);
 
-builder
-    .Services.AddAuthorizationBuilder()
-    .SetDefaultPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
+builder.Services.AddAuthorizationBuilder().SetDefaultPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
 
 builder.Host.UseDefaultServiceProvider(static options =>
 {
@@ -48,7 +46,8 @@ builder.Services.AddOpenApi(opts =>
     opts.MapVogenTypesInDse();
     opts.AddComponentsFromAssemblies([.. AppDomain.CurrentDomain.GetAssemblies(), typeof(ConfluenceDoc).Assembly]);
 
-    opts.AddDocumentTransformer(static (doc, _, _) =>
+    opts.AddDocumentTransformer(
+        static (doc, _, _) =>
         {
             doc.Info.Title = "DSE";
             doc.Info.Description = "Enterprise Search";

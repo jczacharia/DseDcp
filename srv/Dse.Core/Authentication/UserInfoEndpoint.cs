@@ -25,12 +25,7 @@ public sealed class UserInfoEndpoint : IEndpoint
             .MapGet(
                 "/userinfo",
                 (ClaimsPrincipal user) =>
-                    TypedResults.Ok(
-                        new UserInfoResponse(
-                            user.Identity?.Name,
-                            [.. user.Claims.Select(c => new ClaimDto(c.Type, c.Value))]
-                        )
-                    )
+                    TypedResults.Ok(new UserInfoResponse(user.Identity?.Name, [.. user.Claims.Select(c => new ClaimDto(c.Type, c.Value))]))
             )
             .RequireAuthorization();
 }

@@ -9,11 +9,8 @@ using ByteSize = Humanizer.ByteSize;
 
 namespace Dse.Search;
 
-public sealed class ElasticStartupService(
-    ILogger<ElasticStartupService> logger,
-    ElasticsearchClient client,
-    IOptionsMonitor<ElasticOptions> options
-) : BackgroundService
+public sealed class ElasticStartupService(ILogger<ElasticStartupService> logger, ElasticsearchClient client, IOptionsMonitor<ElasticOptions> options)
+    : BackgroundService
 {
     private const long DefaultBulkMaxByteSize = 100L * 1024 * 1024;
 
@@ -56,11 +53,7 @@ public sealed class ElasticStartupService(
 
             dataNodeCount++;
 
-            if (
-                node.ThreadPool is { } pools
-                && pools.TryGetValue("write", out var write)
-                && write.Size is { } size
-            )
+            if (node.ThreadPool is { } pools && pools.TryGetValue("write", out var write) && write.Size is { } size)
             {
                 writePoolCapacity += size;
             }
@@ -73,9 +66,7 @@ public sealed class ElasticStartupService(
 
         if (writePoolCapacity <= 0)
         {
-            throw new InvalidOperationException(
-                $"No data nodes reported a 'write' thread pool size: {response.DebugInformation}"
-            );
+            throw new InvalidOperationException($"No data nodes reported a 'write' thread pool size: {response.DebugInformation}");
         }
 
         if (bulkMaxByteSize == long.MaxValue)

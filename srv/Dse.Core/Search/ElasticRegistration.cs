@@ -19,9 +19,7 @@ public sealed class ElasticRegistration : IRegistration
         builder.Services.AddSingleton<ElasticStartupService>();
         builder.Services.AddHostedService(static sp => sp.GetRequiredService<ElasticStartupService>());
 
-        builder.Services.AddSingleton<ITransport>(static sp =>
-            sp.GetRequiredService<DistributedTransport<IElasticsearchClientSettings>>()
-        );
+        builder.Services.AddSingleton<ITransport>(static sp => sp.GetRequiredService<DistributedTransport<IElasticsearchClientSettings>>());
 
         builder.Services.AddSingleton(static sp => new ElasticsearchClient(
             sp.GetRequiredService<DistributedTransport<IElasticsearchClientSettings>>()
@@ -29,12 +27,7 @@ public sealed class ElasticRegistration : IRegistration
 
         builder
             .Services.AddHealthChecks()
-            .AddCheck<ElasticHealthCheck>(
-                "elastic",
-                HealthStatus.Unhealthy,
-                ["ready"],
-                HealthCheckDefaults.ReadinessTimeout
-            );
+            .AddCheck<ElasticHealthCheck>("elastic", HealthStatus.Unhealthy, ["ready"], HealthCheckDefaults.ReadinessTimeout);
     }
 
     private static DistributedTransport<IElasticsearchClientSettings> BuildTransport(IServiceProvider sp)
@@ -54,8 +47,8 @@ public sealed class ElasticRegistration : IRegistration
         }
 
         es = es
-            // Multi-node pools cap retries at the remaining known nodes; single-node pools still have no failover target.
-            .MaximumRetries(opts.MaximumRetries)
+        // Multi-node pools cap retries at the remaining known nodes; single-node pools still have no failover target.
+        .MaximumRetries(opts.MaximumRetries)
             .RequestTimeout(opts.RequestTimeout)
             .MaxRetryTimeout(opts.MaxRetryTimeout)
             .ConnectionLimit(opts.ConnectionLimit);

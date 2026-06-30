@@ -9,11 +9,7 @@ namespace Dse.Api.Scanning;
 
 public static partial class ServiceCollectionExtensions
 {
-    [ScanForTypes(
-        AttributeFilter = typeof(OptionsAttribute),
-        Handler = nameof(AddOption),
-        AssemblyNameFilter = "Dse.*"
-    )]
+    [ScanForTypes(AttributeFilter = typeof(OptionsAttribute), Handler = nameof(AddOption), AssemblyNameFilter = "Dse.*")]
     public static partial IServiceCollection AddDseOptions(this IServiceCollection services);
 
     private static void AddOption<TOptions>(IServiceCollection services)
@@ -21,15 +17,9 @@ public static partial class ServiceCollectionExtensions
     {
         var attr = typeof(TOptions).GetCustomAttribute<OptionsAttribute>();
 
-        var builder = services
-            .AddOptions<TOptions>(attr?.Name)
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
+        var builder = services.AddOptions<TOptions>(attr?.Name).ValidateDataAnnotations().ValidateOnStart();
 
-        builder.Services.AddSingleton<IValidateOptions<TOptions>>(s => new FluentValidateOptions<TOptions>(
-            s,
-            builder.Name
-        ));
+        builder.Services.AddSingleton<IValidateOptions<TOptions>>(s => new FluentValidateOptions<TOptions>(s, builder.Name));
 
         if (attr?.Path is { } path)
         {
@@ -56,24 +46,15 @@ public static partial class ServiceCollectionExtensions
             List<string> errors =
             [
                 .. validators.SelectMany(validator =>
-                {
-                    if (validator.Validate(options) is not { IsValid: false } result)
-                    {
-                        return [];
-                    }
-
-                    return result.Errors.Select(failure =>
-                        $"Validation failed for {type}.{failure.PropertyName} with the error: {failure.ErrorMessage}"
-                    );
-                }),
+                    validator.Validate(options) is not { IsValid: false } result
+                        ? []
+                        : result.Errors.Select(failure =>
+                            $"Validation failed for {type}.{failure.PropertyName} with the error: {failure.ErrorMessage}"
+                        )
+                ),
             ];
 
-            if (errors.Count > 0)
-            {
-                return ValidateOptionsResult.Fail(errors);
-            }
-
-            return ValidateOptionsResult.Success;
+            return errors.Count > 0 ? ValidateOptionsResult.Fail(errors) : ValidateOptionsResult.Success;
         }
     }
 }

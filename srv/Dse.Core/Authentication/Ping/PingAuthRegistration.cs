@@ -20,7 +20,8 @@ public sealed class PingAuthRegistration : IRegistration
 
         builder
             .Services.AddHttpClient(PingAuthDefaults.HttpClientName)
-            .ConfigureHttpClient(static (sp, client) =>
+            .ConfigureHttpClient(
+                static (sp, client) =>
                 {
                     var options = sp.GetRequiredService<IOptionsMonitor<PingAuthOptions>>()
                         .Get(PingAuthDefaults.AuthenticationScheme);

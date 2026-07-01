@@ -90,7 +90,8 @@ async Task<int> BaselineAsync()
         Arg("--window-ref") is { } wr ? (await GitAsync("rev-parse", wr)).Trim()
         : (await GitAsync("rev-list", "-1", "--before=30 days ago", baseCommit)).Trim() is { Length: > 0 } old ? old
         : (await GitAsync("rev-list", "--reverse", baseCommit)).Split('\n')[0].Trim();
-    var windowDate = (await GitAsync("show", "-s", "--format=%cI", windowCommit)).Trim();
+    // sonar.projectDate only accepts yyyy-MM-dd.
+    var windowDate = (await GitAsync("show", "-s", "--format=%cs", windowCommit)).Trim();
 
     Note($"Baseline for your changes: {baseRef} ({baseCommit[..7]})");
     Note($"Baseline for 30-day gate:  {windowCommit[..7]} ({windowDate}) — pass --window-ref to override");
@@ -612,6 +613,11 @@ sealed record PipelineVariables(string ProjectKey, string Version, string Restor
                 .Where(p => p.Length == 2)
                 .Select(p => new KeyValuePair<string, string>(p[0], p[1]))
         );
-        return props;
+        // The generic test execution sensor hard-fails on a missing report file
+        // (unlike coverage sensors, which merely warn) — pass only what exists.
+        return
+        [
+            .. props.Where(p => p.Key != "sonar.testExecutionReportPaths" || p.Value.Split(',').All(File.Exists)),
+        ];
     }
 }

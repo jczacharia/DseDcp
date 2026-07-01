@@ -6,6 +6,10 @@ namespace Dse.Api.Scanning;
 
 public static partial class RegistrationScanning
 {
-    [ScanForTypes(AssignableTo = typeof(IRegistration), Handler = nameof(IRegistration.Register), AssemblyNameFilter = "Dse.*")]
-    public static partial IHostApplicationBuilder AddRegistrations(this IHostApplicationBuilder services);
+    [ScanForTypes(
+        AssignableTo = typeof(IRegisterServices),
+        Handler = nameof(IRegisterServices.Register),
+        AssemblyNameFilter = "Dse.*"
+    )]
+    public static partial IServiceCollection AddScannedServices(this IServiceCollection services);
 }

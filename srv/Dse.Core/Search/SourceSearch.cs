@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Text.Json;
 using Dse.Sources;
 using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch.QueryDsl;
 using Elastic.Transport;
 
 namespace Dse.Search;
@@ -41,7 +42,7 @@ public sealed class SourceSearch(
         var principals = await resolver.ResolveAsync(user, ct);
 
         // Target only readable indices in the selection — explicitly naming an un-granted index is a 403.
-        var targets = registry.Resolve(selection, principals).Select(i => i.ReadTarget).ToArray();
+        var targets = registry.Resolve(selection, principals).Select(i => i.Context.ResolveReadTarget()).ToArray();
         if (targets.Length == 0)
         {
             return [];
@@ -64,9 +65,7 @@ public sealed class SourceSearch(
                     }
                     else
                     {
-                        q.SimpleQueryString(sqs =>
-                            sqs.Query(query).DefaultOperator(Elastic.Clients.Elasticsearch.QueryDsl.Operator.And)
-                        );
+                        q.SimpleQueryString(sqs => sqs.Query(query).DefaultOperator(Operator.And));
                     }
                 });
             },
@@ -80,6 +79,6 @@ public sealed class SourceSearch(
             );
         }
 
-        return [.. response.Hits.Select(h => new SearchResult(h.Index!, h.Id!))];
+        return [.. response.Hits.Select(h => new SearchResult(h.Index, h.Id))];
     }
 }

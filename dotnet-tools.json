@@ -6,6 +6,11 @@
       "version": "1.3.0",
       "commands": ["csharpier"],
       "rollForward": false
+    },
+    "dotnet-sonarscanner": {
+      "version": "11.2.1",
+      "commands": ["dotnet-sonarscanner"],
+      "rollForward": false
     }
   }
 }

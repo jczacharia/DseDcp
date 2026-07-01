@@ -9,18 +9,20 @@ public static class LoggingExtensions
 {
     extension(IServiceCollection services)
     {
-        public void RemoveWindowsEventLogProvider()
+        public IServiceCollection RemoveWindowsEventLogProvider()
         {
-            const string EventLogProvider = "Microsoft.Extensions.Logging.EventLog.EventLogLoggerProvider";
+            const string eventLogProvider = "Microsoft.Extensions.Logging.EventLog.EventLogLoggerProvider";
 
             foreach (
                 var descriptor in services
-                    .Where(d => d.ServiceType == typeof(ILoggerProvider) && d.ImplementationType?.FullName == EventLogProvider)
+                    .Where(d => d.ServiceType == typeof(ILoggerProvider) && d.ImplementationType?.FullName == eventLogProvider)
                     .ToList()
             )
             {
                 services.Remove(descriptor);
             }
+
+            return services;
         }
     }
 }

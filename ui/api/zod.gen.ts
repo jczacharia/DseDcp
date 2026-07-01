@@ -102,27 +102,27 @@ export const zUserInfoResponse = z.object({
 /**
  * The service is serving traffic — overall status is Healthy or Degraded (see the body's status field).
  */
-export const zGetHealthResponse = zDseHealthReport;
+export const zGetApiHealthResponse = zDseHealthReport;
 
 /**
  * The service is serving traffic — overall status is Healthy or Degraded (see the body's status field).
  */
-export const zGetHealthStartupResponse = zDseHealthReport;
+export const zGetApiHealthStartupResponse = zDseHealthReport;
 
 /**
  * The service is serving traffic — overall status is Healthy or Degraded (see the body's status field).
  */
-export const zGetHealthLiveResponse = zDseHealthReport;
+export const zGetApiHealthLiveResponse = zDseHealthReport;
 
 /**
  * The service is serving traffic — overall status is Healthy or Degraded (see the body's status field).
  */
-export const zGetHealthReadyResponse = zDseHealthReport;
+export const zGetApiHealthReadyResponse = zDseHealthReport;
 
 /**
  * The service is serving traffic — overall status is Healthy or Degraded (see the body's status field).
  */
-export const zGetHealthElasticResponse = zDseHealthReport;
+export const zGetApiHealthElasticResponse = zDseHealthReport;
 
 /**
  * OK

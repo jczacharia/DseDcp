@@ -3,23 +3,23 @@
 import type {Client, ClientMeta, Options as Options2, RequestResult, TDataShape} from './client';
 import {client} from './client.gen';
 import type {
+  GetApiHealthData,
+  GetApiHealthElasticData,
+  GetApiHealthElasticErrors,
+  GetApiHealthElasticResponses,
+  GetApiHealthErrors,
+  GetApiHealthLiveData,
+  GetApiHealthLiveErrors,
+  GetApiHealthLiveResponses,
+  GetApiHealthReadyData,
+  GetApiHealthReadyErrors,
+  GetApiHealthReadyResponses,
+  GetApiHealthResponses,
+  GetApiHealthStartupData,
+  GetApiHealthStartupErrors,
+  GetApiHealthStartupResponses,
   GetApiUserinfoData,
   GetApiUserinfoResponses,
-  GetHealthData,
-  GetHealthElasticData,
-  GetHealthElasticErrors,
-  GetHealthElasticResponses,
-  GetHealthErrors,
-  GetHealthLiveData,
-  GetHealthLiveErrors,
-  GetHealthLiveResponses,
-  GetHealthReadyData,
-  GetHealthReadyErrors,
-  GetHealthReadyResponses,
-  GetHealthResponses,
-  GetHealthStartupData,
-  GetHealthStartupErrors,
-  GetHealthStartupResponses,
 } from './types.gen';
 
 export type Options<
@@ -45,21 +45,24 @@ export type Options<
  *
  * Every registered check.
  */
-export const getHealth = <ThrowOnError extends boolean = true>(
-  options?: Options<GetHealthData, ThrowOnError>,
-): RequestResult<GetHealthResponses, GetHealthErrors, ThrowOnError> =>
-  (options?.client ?? client).get<GetHealthResponses, GetHealthErrors, ThrowOnError>({url: '/health', ...options});
+export const getApiHealth = <ThrowOnError extends boolean = true>(
+  options?: Options<GetApiHealthData, ThrowOnError>,
+): RequestResult<GetApiHealthResponses, GetApiHealthErrors, ThrowOnError> =>
+  (options?.client ?? client).get<GetApiHealthResponses, GetApiHealthErrors, ThrowOnError>({
+    url: '/api/health',
+    ...options,
+  });
 
 /**
  * Full health report
  *
  * Every registered check.
  */
-export const getHealthStartup = <ThrowOnError extends boolean = true>(
-  options?: Options<GetHealthStartupData, ThrowOnError>,
-): RequestResult<GetHealthStartupResponses, GetHealthStartupErrors, ThrowOnError> =>
-  (options?.client ?? client).get<GetHealthStartupResponses, GetHealthStartupErrors, ThrowOnError>({
-    url: '/health/startup',
+export const getApiHealthStartup = <ThrowOnError extends boolean = true>(
+  options?: Options<GetApiHealthStartupData, ThrowOnError>,
+): RequestResult<GetApiHealthStartupResponses, GetApiHealthStartupErrors, ThrowOnError> =>
+  (options?.client ?? client).get<GetApiHealthStartupResponses, GetApiHealthStartupErrors, ThrowOnError>({
+    url: '/api/health/startup',
     ...options,
   });
 
@@ -68,11 +71,11 @@ export const getHealthStartup = <ThrowOnError extends boolean = true>(
  *
  * Process is up — no dependency checks run.
  */
-export const getHealthLive = <ThrowOnError extends boolean = true>(
-  options?: Options<GetHealthLiveData, ThrowOnError>,
-): RequestResult<GetHealthLiveResponses, GetHealthLiveErrors, ThrowOnError> =>
-  (options?.client ?? client).get<GetHealthLiveResponses, GetHealthLiveErrors, ThrowOnError>({
-    url: '/health/live',
+export const getApiHealthLive = <ThrowOnError extends boolean = true>(
+  options?: Options<GetApiHealthLiveData, ThrowOnError>,
+): RequestResult<GetApiHealthLiveResponses, GetApiHealthLiveErrors, ThrowOnError> =>
+  (options?.client ?? client).get<GetApiHealthLiveResponses, GetApiHealthLiveErrors, ThrowOnError>({
+    url: '/api/health/live',
     ...options,
   });
 
@@ -81,11 +84,11 @@ export const getHealthLive = <ThrowOnError extends boolean = true>(
  *
  * Process and its ready-tagged dependencies are reachable.
  */
-export const getHealthReady = <ThrowOnError extends boolean = true>(
-  options?: Options<GetHealthReadyData, ThrowOnError>,
-): RequestResult<GetHealthReadyResponses, GetHealthReadyErrors, ThrowOnError> =>
-  (options?.client ?? client).get<GetHealthReadyResponses, GetHealthReadyErrors, ThrowOnError>({
-    url: '/health/ready',
+export const getApiHealthReady = <ThrowOnError extends boolean = true>(
+  options?: Options<GetApiHealthReadyData, ThrowOnError>,
+): RequestResult<GetApiHealthReadyResponses, GetApiHealthReadyErrors, ThrowOnError> =>
+  (options?.client ?? client).get<GetApiHealthReadyResponses, GetApiHealthReadyErrors, ThrowOnError>({
+    url: '/api/health/ready',
     ...options,
   });
 
@@ -94,11 +97,11 @@ export const getHealthReady = <ThrowOnError extends boolean = true>(
  *
  * The 'elastic' check in isolation.
  */
-export const getHealthElastic = <ThrowOnError extends boolean = true>(
-  options?: Options<GetHealthElasticData, ThrowOnError>,
-): RequestResult<GetHealthElasticResponses, GetHealthElasticErrors, ThrowOnError> =>
-  (options?.client ?? client).get<GetHealthElasticResponses, GetHealthElasticErrors, ThrowOnError>({
-    url: '/health/elastic',
+export const getApiHealthElastic = <ThrowOnError extends boolean = true>(
+  options?: Options<GetApiHealthElasticData, ThrowOnError>,
+): RequestResult<GetApiHealthElasticResponses, GetApiHealthElasticErrors, ThrowOnError> =>
+  (options?.client ?? client).get<GetApiHealthElasticResponses, GetApiHealthElasticErrors, ThrowOnError>({
+    url: '/api/health/elastic',
     ...options,
   });
 

@@ -44,7 +44,7 @@ public sealed class SearchKeyFactory(ElasticsearchClient admin, SourceRegistry r
         {
             var privilege = new Dictionary<string, object>
             {
-                ["names"] = new[] { index.ReadTarget },
+                ["names"] = new[] { index.Context.ResolveReadTarget() },
                 ["privileges"] = new[] { "read" },
             };
 
@@ -75,7 +75,7 @@ public sealed class SearchKeyFactory(ElasticsearchClient admin, SourceRegistry r
         );
 
         var response = await admin.Transport.RequestAsync<StringResponse>(
-            new EndpointPath(HttpMethod.POST, "/_security/api_key"),
+            new(HttpMethod.POST, "/_security/api_key"),
             PostData.String(body),
             null,
             null,

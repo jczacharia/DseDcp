@@ -534,3 +534,7 @@ Thumbs.db
 .angular
 
 vitest.config.*.timestamp*
+
+# SonarQube preflight (scripts/sonar.cs)
+.sonarqube/
+TestResults/

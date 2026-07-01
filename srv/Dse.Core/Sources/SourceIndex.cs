@@ -1,5 +1,7 @@
 // Copyright (c) PNC Financial Services. All rights reserved.
 
+using Elastic.Mapping;
+
 namespace Dse.Sources;
 
 public enum Cycle
@@ -18,7 +20,7 @@ public enum Cycle
 public sealed record SourceIndex(
     SourceKey Source,
     IndexKey Index,
-    string ReadTarget,
+    ElasticsearchTypeContext Context,
     PermissionPolicy Permissions,
     Cycle Cycle = Cycle.Incremental
 )

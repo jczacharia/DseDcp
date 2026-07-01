@@ -118,130 +118,130 @@ export type UserInfoResponse = {
   claims: Array<ClaimDto>;
 };
 
-export type GetHealthData = {
+export type GetApiHealthData = {
   body?: never;
   path?: never;
   query?: never;
-  url: '/health';
+  url: '/api/health';
 };
 
-export type GetHealthErrors = {
+export type GetApiHealthErrors = {
   /**
    * The service or an upstream dependency is unhealthy.
    */
   503: DseHealthReport;
 };
 
-export type GetHealthError = GetHealthErrors[keyof GetHealthErrors];
+export type GetApiHealthError = GetApiHealthErrors[keyof GetApiHealthErrors];
 
-export type GetHealthResponses = {
+export type GetApiHealthResponses = {
   /**
    * The service is serving traffic — overall status is Healthy or Degraded (see the body's status field).
    */
   200: DseHealthReport;
 };
 
-export type GetHealthResponse = GetHealthResponses[keyof GetHealthResponses];
+export type GetApiHealthResponse = GetApiHealthResponses[keyof GetApiHealthResponses];
 
-export type GetHealthStartupData = {
+export type GetApiHealthStartupData = {
   body?: never;
   path?: never;
   query?: never;
-  url: '/health/startup';
+  url: '/api/health/startup';
 };
 
-export type GetHealthStartupErrors = {
+export type GetApiHealthStartupErrors = {
   /**
    * The service or an upstream dependency is unhealthy.
    */
   503: DseHealthReport;
 };
 
-export type GetHealthStartupError = GetHealthStartupErrors[keyof GetHealthStartupErrors];
+export type GetApiHealthStartupError = GetApiHealthStartupErrors[keyof GetApiHealthStartupErrors];
 
-export type GetHealthStartupResponses = {
+export type GetApiHealthStartupResponses = {
   /**
    * The service is serving traffic — overall status is Healthy or Degraded (see the body's status field).
    */
   200: DseHealthReport;
 };
 
-export type GetHealthStartupResponse = GetHealthStartupResponses[keyof GetHealthStartupResponses];
+export type GetApiHealthStartupResponse = GetApiHealthStartupResponses[keyof GetApiHealthStartupResponses];
 
-export type GetHealthLiveData = {
+export type GetApiHealthLiveData = {
   body?: never;
   path?: never;
   query?: never;
-  url: '/health/live';
+  url: '/api/health/live';
 };
 
-export type GetHealthLiveErrors = {
+export type GetApiHealthLiveErrors = {
   /**
    * The service or an upstream dependency is unhealthy.
    */
   503: DseHealthReport;
 };
 
-export type GetHealthLiveError = GetHealthLiveErrors[keyof GetHealthLiveErrors];
+export type GetApiHealthLiveError = GetApiHealthLiveErrors[keyof GetApiHealthLiveErrors];
 
-export type GetHealthLiveResponses = {
+export type GetApiHealthLiveResponses = {
   /**
    * The service is serving traffic — overall status is Healthy or Degraded (see the body's status field).
    */
   200: DseHealthReport;
 };
 
-export type GetHealthLiveResponse = GetHealthLiveResponses[keyof GetHealthLiveResponses];
+export type GetApiHealthLiveResponse = GetApiHealthLiveResponses[keyof GetApiHealthLiveResponses];
 
-export type GetHealthReadyData = {
+export type GetApiHealthReadyData = {
   body?: never;
   path?: never;
   query?: never;
-  url: '/health/ready';
+  url: '/api/health/ready';
 };
 
-export type GetHealthReadyErrors = {
+export type GetApiHealthReadyErrors = {
   /**
    * The service or an upstream dependency is unhealthy.
    */
   503: DseHealthReport;
 };
 
-export type GetHealthReadyError = GetHealthReadyErrors[keyof GetHealthReadyErrors];
+export type GetApiHealthReadyError = GetApiHealthReadyErrors[keyof GetApiHealthReadyErrors];
 
-export type GetHealthReadyResponses = {
+export type GetApiHealthReadyResponses = {
   /**
    * The service is serving traffic — overall status is Healthy or Degraded (see the body's status field).
    */
   200: DseHealthReport;
 };
 
-export type GetHealthReadyResponse = GetHealthReadyResponses[keyof GetHealthReadyResponses];
+export type GetApiHealthReadyResponse = GetApiHealthReadyResponses[keyof GetApiHealthReadyResponses];
 
-export type GetHealthElasticData = {
+export type GetApiHealthElasticData = {
   body?: never;
   path?: never;
   query?: never;
-  url: '/health/elastic';
+  url: '/api/health/elastic';
 };
 
-export type GetHealthElasticErrors = {
+export type GetApiHealthElasticErrors = {
   /**
    * The service or an upstream dependency is unhealthy.
    */
   503: DseHealthReport;
 };
 
-export type GetHealthElasticError = GetHealthElasticErrors[keyof GetHealthElasticErrors];
+export type GetApiHealthElasticError = GetApiHealthElasticErrors[keyof GetApiHealthElasticErrors];
 
-export type GetHealthElasticResponses = {
+export type GetApiHealthElasticResponses = {
   /**
    * The service is serving traffic — overall status is Healthy or Degraded (see the body's status field).
    */
   200: DseHealthReport;
 };
 
-export type GetHealthElasticResponse = GetHealthElasticResponses[keyof GetHealthElasticResponses];
+export type GetApiHealthElasticResponse = GetApiHealthElasticResponses[keyof GetApiHealthElasticResponses];
 
 export type GetApiUserinfoData = {
   body?: never;

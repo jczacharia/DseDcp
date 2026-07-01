@@ -2,24 +2,23 @@
 
 using System.Net;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace Dse.Authentication.Ping;
 
-public sealed class PingAuthRegistration : IRegistration
+public sealed class PingAuthRegisterServices : IRegisterServices
 {
-    public static void Register(IHostApplicationBuilder builder)
+    public static void Register(IServiceCollection services)
     {
-        builder
-            .Services.AddAuthentication()
+        services
+            .AddAuthentication()
             .AddScheme<PingAuthOptions, PingAuthHandler>(PingAuthDefaults.AuthenticationScheme, static _ => { });
 
-        builder.Services.AddMemoryCache();
-        builder.Services.AddTransient<IPingAuthClient, PingAuthClient>();
+        services.AddMemoryCache();
+        services.AddTransient<IPingAuthClient, PingAuthClient>();
 
-        builder
-            .Services.AddHttpClient(PingAuthDefaults.HttpClientName)
+        services
+            .AddHttpClient(PingAuthDefaults.HttpClientName)
             .ConfigureHttpClient(
                 static (sp, client) =>
                 {

@@ -14,8 +14,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Scalar.AspNetCore" Version="2.16.6" />
-    <PackageReference Include="Sealights.DotNet.Linux" Version="3.14.1" />
+    <PackageReference Include="Scalar.AspNetCore" Version="2.16.7" />
     <PackageReference Include="ServiceScan.SourceGenerator" Version="3.1.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

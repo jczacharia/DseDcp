@@ -10,23 +10,25 @@ using HealthStatus = Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus;
 
 namespace Dse.Search;
 
-public sealed class ElasticRegistration : IRegistration
+public sealed class ElasticRegisterServices : IRegisterServices
 {
-    public static void Register(IHostApplicationBuilder builder)
+    public static void Register(IServiceCollection services)
     {
-        builder.Services.AddSingleton(BuildTransport);
+        services.AddSingleton(BuildTransport);
 
-        builder.Services.AddSingleton<ElasticStartupService>();
-        builder.Services.AddHostedService(static sp => sp.GetRequiredService<ElasticStartupService>());
+        services.AddSingleton<ElasticStartupService>();
+        services.AddHostedService(static sp => sp.GetRequiredService<ElasticStartupService>());
 
-        builder.Services.AddSingleton<ITransport>(static sp => sp.GetRequiredService<DistributedTransport<IElasticsearchClientSettings>>());
+        services.AddSingleton<ITransport>(static sp =>
+            sp.GetRequiredService<DistributedTransport<IElasticsearchClientSettings>>()
+        );
 
-        builder.Services.AddSingleton(static sp => new ElasticsearchClient(
+        services.AddSingleton(static sp => new ElasticsearchClient(
             sp.GetRequiredService<DistributedTransport<IElasticsearchClientSettings>>()
         ));
 
-        builder
-            .Services.AddHealthChecks()
+        services
+            .AddHealthChecks()
             .AddCheck<ElasticHealthCheck>("elastic", HealthStatus.Unhealthy, ["ready"], HealthCheckDefaults.ReadinessTimeout);
     }
 

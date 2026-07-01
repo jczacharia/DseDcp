@@ -145,23 +145,6 @@ public sealed class ConfluenceDoc
     }
 }
 
-[ElasticsearchMappingContext]
-[Index<ConfluenceDoc>(
-    Name = "source-confluence",
-    WriteAlias = "source-confluence",
-    ReadAlias = "source-confluence-search",
-    DatePattern = "yyyy.MM.dd.HHmmss",
-    RefreshInterval = "30s",
-    Configuration = typeof(ConfluenceDocConfiguration)
-)]
-[Index<ConfluenceDoc>(
-    NameTemplate = "test-confluence-{uuid}",
-    RefreshInterval = "-1",
-    Variant = "Test",
-    Configuration = typeof(ConfluenceDocConfiguration)
-)]
-public static partial class ConfluenceContext;
-
 public sealed class ConfluenceDocConfiguration : SourceDocOptions<ConfluenceDoc>
 {
     /// DseKeyword (full search sub-fields) only for free-text-searched fields; identifiers/enums

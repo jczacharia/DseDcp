@@ -105,23 +105,22 @@ export type RequestResult<
         }
     : TResponseStyle extends 'data'
       ? (TData extends Record<string, unknown> ? TData[keyof TData] : TData) | undefined
-      :
-          | {
-              data: TData extends Record<string, unknown> ? TData[keyof TData] : TData;
-              error: undefined;
-              request: HttpRequest<unknown>;
-              response: HttpResponse<TData>;
-            }
-          | {
-              data: undefined;
-              error: TError[keyof TError];
-              /** request may be undefined, because error may be from building the request object itself */
-              request?: HttpRequest<unknown>;
-              /** response may be undefined, because error may be from building the request object itself or from a network error */
-              response?: HttpErrorResponse & {
-                error: TError[keyof TError] | null;
-              };
-            }
+      : | {
+            data: TData extends Record<string, unknown> ? TData[keyof TData] : TData;
+            error: undefined;
+            request: HttpRequest<unknown>;
+            response: HttpResponse<TData>;
+          }
+        | {
+            data: undefined;
+            error: TError[keyof TError];
+            /** request may be undefined, because error may be from building the request object itself */
+            request?: HttpRequest<unknown>;
+            /** response may be undefined, because error may be from building the request object itself or from a network error */
+            response?: HttpErrorResponse & {
+              error: TError[keyof TError] | null;
+            };
+          }
 >;
 
 export interface ClientOptions {

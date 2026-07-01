@@ -3,7 +3,6 @@
 using Dse;
 using Dse.Api.Scanning;
 using Dse.Authentication.Ping;
-using Dse.Confluence;
 using Dse.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -15,21 +14,21 @@ using Scalar.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddUserSecrets("dse");
-
-// Source Generated Registrations
-builder.Services.AddDseOptions();
-builder.Services.AddDseValidators();
 builder.Services.AddOpenShiftIntegration();
-builder.AddRegistrations();
 
-builder.Services.AddProblemDetails(static s => s.ApplyCoreCustomization());
-builder.Services.AddScoped<ProblemDetailsFactory, DefaultProblemDetailsFactory>();
-builder.Services.ConfigureHttpClientDefaults(static o => o.RemoveAllLoggers());
-builder.Services.AddMemoryCache();
-builder.Services.AddHttpContextAccessor();
+builder
+    .Services.AddScannedOptions()
+    .AddScannedValidators()
+    .AddScannedSources()
+    .AddScannedServices()
+    .AddScannedElasticDocConfig()
+    .AddProblemDetails(static s => s.ApplyCoreCustomization())
+    .AddScoped<ProblemDetailsFactory, DefaultProblemDetailsFactory>()
+    .ConfigureHttpClientDefaults(static o => o.RemoveAllLoggers())
+    .AddMemoryCache()
+    .AddHttpContextAccessor();
 
 builder.Services.AddAuthentication(PingAuthDefaults.AuthenticationScheme);
-
 builder.Services.AddAuthorizationBuilder().SetDefaultPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
 
 builder.Host.UseDefaultServiceProvider(static options =>
@@ -38,23 +37,22 @@ builder.Host.UseDefaultServiceProvider(static options =>
     options.ValidateOnBuild = true;
 });
 
-builder.Services.AddEndpointsApiExplorer();
-
-builder.Services.AddOpenApi(opts =>
-{
-    opts.OpenApiVersion = OpenApiSpecVersion.OpenApi3_1;
-    opts.MapVogenTypesInDse();
-    opts.AddComponentsFromAssemblies([.. AppDomain.CurrentDomain.GetAssemblies(), typeof(ConfluenceDoc).Assembly]);
-
-    opts.AddDocumentTransformer(
-        static (doc, _, _) =>
-        {
-            doc.Info.Title = "DSE";
-            doc.Info.Description = "Enterprise Search";
-            return Task.CompletedTask;
-        }
-    );
-});
+builder
+    .Services.AddEndpointsApiExplorer()
+    .AddOpenApi(opts =>
+    {
+        opts.OpenApiVersion = OpenApiSpecVersion.OpenApi3_1;
+        opts.MapVogenTypesInDse();
+        opts.AddDseApiComponents();
+        opts.AddDocumentTransformer(
+            static (doc, _, _) =>
+            {
+                doc.Info.Title = "DSE";
+                doc.Info.Description = "Enterprise Search";
+                return Task.CompletedTask;
+            }
+        );
+    });
 
 builder.Services.RemoveWindowsEventLogProvider();
 
@@ -81,7 +79,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 var api = app.MapGroup("api").WithTags("Api").RequireAuthorization();
-api.MapApiEndpoints();
+api.MapScannedEndpoints();
 
 foreach (var reg in app.Services.GetServices<WebAppExtender>())
 {

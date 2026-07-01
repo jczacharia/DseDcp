@@ -10,7 +10,7 @@ namespace Dse.Api.Scanning;
 public static partial class ServiceCollectionExtensions
 {
     [ScanForTypes(AttributeFilter = typeof(OptionsAttribute), Handler = nameof(AddOption), AssemblyNameFilter = "Dse.*")]
-    public static partial IServiceCollection AddDseOptions(this IServiceCollection services);
+    public static partial IServiceCollection AddScannedOptions(this IServiceCollection services);
 
     private static void AddOption<TOptions>(IServiceCollection services)
         where TOptions : class

@@ -7,5 +7,5 @@ namespace Dse.Api.Scanning;
 public static partial class EndpointScanning
 {
     [ScanForTypes(AssignableTo = typeof(IEndpoint), Handler = nameof(IEndpoint.MapEndpoint), AssemblyNameFilter = "Dse.*")]
-    public static partial IEndpointRouteBuilder MapApiEndpoints(this IEndpointRouteBuilder endpoints);
+    public static partial IEndpointRouteBuilder MapScannedEndpoints(this IEndpointRouteBuilder endpoints);
 }

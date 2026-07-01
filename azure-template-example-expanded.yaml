@@ -1,0 +1,1176 @@
+variables:
+  - name: dotnet_6_0_builder_image
+    value: pnc/jnk/microsoft/dotnet/core/sdk:$(dotnet_6_0_sdk_builder_image_tag)
+  - name: dotnet_6_0_sdk_builder_image_tag
+    value: 1.0.14-8.6-1-0411250048-6.0-1-1211241941
+  - name: dotnet_8_0_builder_image
+    value: pnc/jnk/microsoft/dotnet-8/core/sdk:$(dotnet_8_0_sdk_builder_image_tag)
+  - name: dotnet_8_0_sdk_builder_image_tag
+    value: 1.0.13-8.6-2-0610261638-8.0-2-0610261637
+  - name: dotnet_10_0_builder_image
+    value: pnc/jnk/microsoft/dotnet-10/core/sdk:$(dotnet_10_0_sdk_builder_image_tag)
+  - name: dotnet_10_0_sdk_builder_image_tag
+    value: 0.0.1-9.4-2-0610261724-10.0-2-0610261821
+  - name: npm_18_builder_image
+    value: pnc/jnk/rhel-ubi-openjdk21-nodejs18-builder:$(npm_18_builder_image_tag)
+  - name: npm_18_builder_image_tag
+    value: 2.19.0
+  - name: npm_20_builder_image
+    value: pnc/jnk/rhel-ubi-openjdk21-nodejs20-builder:$(npm_20_builder_image_tag)
+  - name: npm_20_builder_image_tag
+    value: 2.19.0
+  - name: npm_22_builder_image
+    value: pnc/jnk/rhel-ubi-openjdk21-nodejs22-builder:$(npm_22_builder_image_tag)
+  - name: npm_22_builder_image_tag
+    value: 2.19.0
+  - name: npm_24_builder_image
+    value: pnc/jnk/rhel-ubi-openjdk21-nodejs24-builder:$(npm_24_builder_image_tag)
+  - name: npm_24_builder_image_tag
+    value: 2.19.0
+  - name: apache-rhel8_baseimage_tag
+    value: $(npm_rhel8_baseimage_tag)
+  - name: apache-rhel8_baseimage_url
+    value: $(npm_rhel8_baseimage_url)
+  - name: baseimage_6_0_tag
+    value: 1.0.1-9.4-1-0311250010
+  - name: baseimage_6_0_url
+    value: docker-stage.docker.pncint.net/pnc/jnk/rhel9-dotnet6
+  - name: baseimage_8_0_tag
+    value: 8.0-2-0610261637
+  - name: baseimage_8_0_url
+    value: docker-release.docker.pncint.net/pnc/baseimages/dotnet-80-rhel8
+  - name: baseimage_10_0_tag
+    value: 10.0-2-0610261821
+  - name: baseimage_10_0_url
+    value: docker-release.docker.pncint.net/pnc/baseimages/dotnet-100-rhel9
+  - name: npm_baseimage_tag
+    value: 2.4-1-0510240354
+  - name: npm_baseimage_url
+    value: docker-release.docker.pncint.net/pnc/baseimages/apache-rhel7
+  - name: npm_rhel8_baseimage_tag
+    value: 2.4-2-0610261845
+  - name: npm_rhel8_baseimage_url
+    value: docker-release.docker.pncint.net/pnc/baseimages/apache-rhel8
+  - name: redis-6-rhel8_baseimage_tag
+    value: 6-2-0610261822
+  - name: redis-6-rhel8_baseimage_url
+    value: docker-release.docker.pncint.net/pnc/baseimages/redis-6-rhel8
+  - name: redis-7-rhel9_baseimage_tag
+    value: 7-2-0610261637
+  - name: redis-7-rhel9_baseimage_url
+    value: docker-release.docker.pncint.net/pnc/baseimages/redis-7-rhel9
+  - name: sysdig_scanner_image
+    value: pnc/vsm/sysdig/jenkins/secure-inline-scan
+  - name: sysdig_scanner_tag
+    value: 2.4.27
+  - name: build_tools_image
+    value: pnc/jnk/build-tools:$(build_tools_tag)
+  - name: build_tools_tag
+    value: 4.22.2
+  - name: ado_prod_host
+    value: https://tfd.pncint.net
+  - name: ado_qa_host
+    value: https://tfd-qa.pncint.net
+  - name: base_image_os_version
+    value: 'rhel8'
+  - name: init_params
+    value: '"{\"platform\":\"azuredevops\",\"component\":\"$(app_name)\",\"mnemonic\":\"$(mnemonic)\",\"repository-id\":\"$(Build.Repository.ID)\"}"'
+  - name: node18_binary
+    value: '/usr/bin/node'
+  - name: node20_binary
+    value: '/usr/bin/node'
+  - name: ocp4_branch
+    value: stage-rnd-ocp4
+  - name: ocp4_release_branch
+    value: stage-rnd-ocp4
+  - name: uDeploy_branch
+    value: stage-rnd
+  - name: uDeploy_release_branch
+    value: stage-rnd
+  - name: publish_prestage_registry
+    value: false
+  - name: runtime
+    value: ''
+  - name: agent_pool
+    value: PNC-Azure-Linux-Pipelines
+  - name: app_name_lower
+    value: $[ lower(variables.app_name) ]
+  - name: artifactory_docker_repo
+    value: docker-stage.docker.pncint.net
+  - name: artifactory_image_repo
+    value: docker-release.docker.pncint.net
+  - name: artifactory_docker_prestage_repo
+    value: docker-prestage.docker.pncint.net
+  - name: artifactory_file_target
+    value: generic-stage-local/pnc/$(mnemonic)/builds/app_build_$(version).zip
+  - name: artifactory_npm_file_target
+    value: npm-stage-local/@pnc-$(mnemonic)/$(app_name)/-/@pnc-$(mnemonic)/$(app_name)-$(version).tgz
+  - name: artifactory_service
+    value: enterprise_rpo_pncint_net
+  - name: build_configuration
+    value: Release
+  - name: build_proj
+    value: '**/*.sln'
+  - name: cli_sources
+    value: src
+  - name: cliVersion
+    value: 8.0.1.6346
+  - name: contextName
+    value: ''
+  - name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
+    value: true
+  - name: ef_migration
+    value: false
+  - name: fullTeamName
+    value: CxServer\PNC Financial Services Group\$(checkmarx_line_of_business)\$(mnemonic)
+  - name: lcov_path
+    value: 'coverage/lcov.info'
+  - name: mnemonic_lower
+    value: $[ lower(variables.mnemonic) ]
+  - name: npm_build_command
+    value: 'run build -- --configuration="production"'
+  - name: NPM_CONFIG_REGISTRY
+    value: 'https://rpo.pncint.net/artifactory/api/npm/ext-npm-release-remote/'
+  - name: npm_test_command
+    value: 'run test -- --code-coverage'
+  - name: npm_working_dir
+    value: '$(System.DefaultWorkingDirectory)'
+  - name: enable_npm_pack
+    value: false
+  - name: npm_pack_command
+    value: 'pack --pack-destination $(Build.ArtifactStagingDirectory)'
+  - name: npm_version_command
+    value: 'version $(version) --no-git-tag-version'
+  - name: nugetConfigPath
+    value: nuget.config
+  - name: output_folder
+    value: '$(Build.ArtifactStagingDirectory)/app'
+  - name: pack_configuration
+    value: Release
+  - name: pre_process_dir
+    value: ''
+  - name: projectName
+    value: $(mnemonic)-$(app_name) [master]
+  - name: publish_proj
+    value: '**/*.sln'
+  - name: publish_web_projects
+    value: false
+  - name: restore_proj
+    value: '**/*.sln'
+  - name: runtime_identifier
+    value: ''
+  - name: SASS_BINARY_SITE
+    value: 'https://rpo.pncint.net/artifactory/ext-rpo-generic-release-local/com/github/sass/node-sass/releases'
+  - name: sonar_custom_exclusions
+    value: ''
+  - name: sonar_project_key
+    value: $(mnemonic_lower).$(app_name_lower)
+  - name: sonar_sources
+    value: '$(npm_working_dir)/src'
+  - name: telerik_auth
+    value: false
+  - name: vendor_artifact
+    value: ''
+  - name: vendor_artifact_dest_folder
+    value: '.'
+  - name: vendor_artifact_ext
+    value: 'zip'
+  - name: vendor_artifact_pull
+    value: false
+  - name: vendor_artifact_repo
+    value: ''
+  - name: vendor_artifact_unzip
+    value: false
+  - name: vendor_artifact_version
+    value: ''
+  - name: sql_build_configuration
+    value: 'Release /p:NetCoreBuild=true'
+  - name: targetProjectPath
+    value: ''
+  - name: test_configuration
+    value: Release
+  - name: test_options
+    value: ''
+  - name: test_proj
+    value: '**/*Tests.csproj'
+  - name: test_report_paths
+    value: sonar.testExecutionReportPaths=$(npm_working_dir)/coverage/ut_report.xml
+  - name: docker_build_context
+    value: '$(System.DefaultWorkingDirectory)'
+  - name: docker_image_name
+    value: pnc/$(mnemonic)/$(app_name)
+  - name: exception
+    value: 'EXCEPTION'
+  - name: fail
+    value: 'FAIL'
+  - name: pac_uri_location
+    value: generic-stage-local/pnc/$(mnemonic)/$(app_name)--workspace-workspace-_$(mnemonic)-$(app_name)_$(Build.SourceBranchName)-sysdig-results/$(version)/$(app_name)--workspace-workspace-_$(mnemonic)-$(app_name)_$(Build.SourceBranchName)-sysdig-results-$(version).zip
+  - name: pass
+    value: 'PASS'
+  - name: artifactory_report_location
+    value: generic-stage-local/pnc/$(mnemonic)/scan-reports
+  - name: runInspec
+    value: 'false'
+  - name: app_name
+    value: $(app_name)
+  - name: artifactory_qfaas_location
+    value: maven-stage-local/pnc/$(mnemonic)/
+  - name: publish_qfaas
+    value: 'false'
+  - name: helm_deploy
+    value: false
+  - name: group
+    value: pnc.$(mnemonic)
+  - name: module
+    value: $(app_name)
+  - name: ocp4_deploy
+    value: 'true'
+  - name: deploy_type
+    value: 'OCP'
+  - name: build_uri
+    value: $(System.TeamFoundationCollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)&view=logs
+  - name: primary_branch
+    value: ''
+  - name: environment
+    value: 'prod'
+  - name: source
+    value: 'package-lock.json'
+  - name: sourceDotNet
+    value: 'nexus.zip'
+  - name: verbose
+    value: 'true'
+  - name: zipDirectory
+    value: $(Agent.BuildDirectory)
+  - name: version
+    value: '2.2.2'
+  - name: mnemonic
+    value: dse
+  - name: app_name
+    value: searchapi
+  - name: manifest_repo
+    value: 'git.pncint.net/dse/dse-deploy.git'
+  - name: build_type
+    value: dotnet
+  - name: dotnet_version
+    value: '10.0'
+  - name: helm_deploy
+    value: true
+  - name: sonar_custom_exclusions
+    value: '*Tests*.cs,*testresult*.xml,*opencover*.xml,**/Program.cs,*Dockerfile*,**/quality_engineering/**,**/ui/app/api/**'
+  - name: qfaasDirectory
+    value: 'quality_engineering/DseDataPipelines-services'
+  - name: restore_proj
+    value: 'Dse.slnx'
+  - name: build_proj
+    value: 'Dse.slnx'
+  - name: publish_proj
+    value: 'src/Dse.Api/Dse.Api.csproj'
+  - name: runtime_identifier
+    value: 'linux-x64'
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      endpoint: enterprise_pnc_automation
+      name: PNC - ADO Enterprise Automation Pipeline/pnc-enterprise-templates
+      ref: refs/heads/master
+stages:
+  - stage: __default
+    jobs:
+      - job: initialize
+        displayName: 'Initialize'
+        pool:
+          name: $(agent_pool)
+          demands:
+            - gojnk
+        steps:
+          - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
+            condition: false
+            inputs:
+              repository: none
+          - task: Bash@3
+            displayName: Set artifact version
+            name: artifact_version
+            inputs:
+              targetType: inline
+              script: >
+                short_buildnumber=$(echo $(Build.BuildNumber) | cut -d "." -f 2)
+
+                short_hash=$(echo $(Build.SourceVersion) | cut -c 1-7)
+
+                current_timestamp=$(date +"%s%3N")
+
+                artifact_version=$(version)-$current_timestamp-$short_hash
+
+                echo "Artifact Version: $artifact_version"
+
+                echo '##vso[task.setvariable variable=version;isOutput=true;]'$artifact_version
+          - task: Bash@3
+            displayName: 'Check primary branch'
+            name: check_primary_branch
+            inputs:
+              targetType: inline
+              script: |
+                SYSTEM_ACCESSTOKEN="$(System.AccessToken)"
+                if [ -z "$SYSTEM_ACCESSTOKEN" ]; then
+                  echo "ERROR: System.AccessToken is not available. Enable 'Allow scripts to access OAuth token' in pipeline settings."
+                  exit 1
+                fi
+
+                ADO_SERVER="$(System.CollectionUri)"
+                SYSTEM_TEAMPROJECT="$(System.TeamProject)"
+                TEAM_PROJECT=$(printf "%s" "$SYSTEM_TEAMPROJECT" | jq -sRr @uri)
+                REPO_ID="$(Build.Repository.ID)"
+
+                echo "ADO Server: $ADO_SERVER"
+                echo "Team project: $TEAM_PROJECT"
+                echo "Repo ID: $REPO_ID"
+
+                API_URL="$ADO_SERVER$TEAM_PROJECT/_apis/git/repositories/$REPO_ID?api-version=6.0"
+                echo "API URL: $API_URL"
+
+                BUILD_SOURCEBRANCH=$(echo "$(Build.SourceBranch)" | sed 's#refs/heads/##')
+                PRIMARY_BRANCH="$(primary_branch)"
+                DEFAULT_BRANCH=$(curl -sS -u :$SYSTEM_ACCESSTOKEN \
+                  -H "Content-Type: application/json" \
+                  "$API_URL" | jq -r '.defaultBranch' | sed 's#refs/heads/##')
+
+                echo "The source branch is: $BUILD_SOURCEBRANCH"
+                echo "The default branch is: $DEFAULT_BRANCH"
+                echo "The primary branch variable is: $PRIMARY_BRANCH"
+
+                if [[ "$BUILD_SOURCEBRANCH" == "$DEFAULT_BRANCH" || "$BUILD_SOURCEBRANCH" == "$PRIMARY_BRANCH" ]]; then
+                  echo "This build will publish artifacts."
+                  echo "##vso[task.setvariable variable=isPrimary;isOutput=true;]true"
+                else
+                  echo "This build will not publish artifacts."
+                  echo "##vso[task.setvariable variable=isPrimary;isOutput=true;]false"
+                fi
+          - task: Bash@3
+            name: prod_config
+            displayName: 'Use Prod Config'
+            condition: contains(variables['System.CollectionUri'], variables['ado_prod_host'])
+            inputs:
+              targetType: inline
+              script: |
+                echo "##vso[task.setvariable variable=helper_config_file]/opt/app/gojnk/helper.yaml"
+          - task: Bash@3
+            name: rnd_config
+            displayName: 'Use RND Config'
+            condition: contains(variables['System.CollectionUri'], variables['ado_qa_host'])
+            inputs:
+              targetType: inline
+              script: |
+                echo "##vso[task.setvariable variable=helper_config_file]/opt/app/gojnk/helper-rnd.yaml"
+          - task: CmdLine@2
+            inputs:
+              script: >
+                /bin/bash -c '/opt/app/gojnk/gojnk pac validate --config=$(helper_config_file) --params=$(init_params)'
+            name: pac_validate
+            displayName: 'PaC Component Validation'
+          - task: Bash@3
+            name: execute_jnkcli
+            displayName: 'JnkCli Version'
+            inputs:
+              targetType: inline
+              script: |
+                cd $(Agent.ToolsDirectory)/jnkcli/
+                jnkcli_version=`./jnkcli --version`
+                echo "JNKCLI $jnkcli_version"
+          - task: Bash@3
+            name: set_dotnet_images
+            displayName: 'Set .NET Images'
+            condition: or(eq(variables['build_type'], 'dotnet'), eq(variables['build_type'], 'multi_component_dotnet'), eq(variables['build_type'], 'nuget'))
+            env:
+              DOTNET_VERSION: ''
+            inputs:
+              targetType: inline
+              script: >
+                if [[ $DOTNET_VERSION != " " ]]; then
+                  echo "Dotnet version defined in azure-pipelines.yml: $DOTNET_VERSION"
+                  IFS="." read -ra dotnetVersion <<< "$DOTNET_VERSION"
+                  if [[ ${dotnetVersion[0]} == '6' ]]; then
+                    echo "Setting dotnet version to be 6.0"
+                    echo "##vso[task.setvariable variable=dotnet_builder_image]$(dotnet_6_0_builder_image)"
+                    echo "##vso[task.setvariable variable=dotnet_runtime_image]$(baseimage_6_0_url):$(baseimage_6_0_tag)"
+                  elif [[ ${dotnetVersion[0]} == '8' ]]; then
+                    echo "Setting dotnet version to be 8.0"
+                    echo "##vso[task.setvariable variable=dotnet_builder_image]$(dotnet_8_0_builder_image)"
+                    echo "##vso[task.setvariable variable=dotnet_runtime_image]$(baseimage_8_0_url):$(baseimage_8_0_tag)"
+                  elif [[ ${dotnetVersion[0]} == '10' ]]; then
+                    echo "Setting dotnet version to be 10.0"
+                    echo "##vso[task.setvariable variable=dotnet_builder_image]$(dotnet_10_0_builder_image)"
+                    echo "##vso[task.setvariable variable=dotnet_runtime_image]$(baseimage_10_0_url):$(baseimage_10_0_tag)"
+                  else
+                    echo "##vso[task.setvariable variable=dotnet_builder_image]$(dotnet_10_0_builder_image)"
+                    echo "##vso[task.setvariable variable=dotnet_runtime_image]$(baseimage_10_0_url):$(baseimage_10_0_tag)"
+                  fi
+                fi
+          - task: Bash@3
+            name: set_npm_images
+            displayName: 'Set NPM Images'
+            condition: or(eq(variables['build_type'], 'npm'), eq(variables['build_type'], 'multi_component_npm'), eq(variables['build_type'], 'npm_publish'))
+            env:
+              NPM_VERSION: ''
+              RHEL_VERSION: $(base_image_os_version)
+            inputs:
+              targetType: inline
+              script: >
+                if [[ $NPM_VERSION != " " ]]; then
+                  echo "NPM version defined in azure-pipelines.yml: $NPM_VERSION"
+                  IFS="." read -ra npmVersion <<< "$NPM_VERSION"
+                  if [[ ${npmVersion[0]} == '20' ]]; then
+                    echo "Setting NPM version to be 20"
+                    echo "##vso[task.setvariable variable=npm_builder_image]"
+                    echo "##vso[task.setvariable variable=node_binary_location]"
+                  elif [[ ${npmVersion[0]} == '18' ]]; then
+                    echo "Setting NPM version to be 18"
+                    echo "##vso[task.setvariable variable=npm_builder_image]"
+                    echo "##vso[task.setvariable variable=node_binary_location]"
+                  else
+                    echo "Setting NPM version to be 18"
+                    echo "##vso[task.setvariable variable=npm_builder_image]"
+                    echo "##vso[task.setvariable variable=node_binary_location]"
+                  fi
+                fi
+
+
+                if [[ $RHEL_VERSION == 'rhel8' ]]; then
+                  echo "##vso[task.setvariable variable=npm_runtime_image]$(npm_rhel8_baseimage_url):$(npm_rhel8_baseimage_tag)"
+                else
+                  echo "##vso[task.setvariable variable=npm_runtime_image]$(npm_baseimage_tag)"
+                fi
+          - task: Bash@3
+            name: set_docker_images
+            displayName: 'Set Docker Images'
+            condition: eq(variables['build_type'], 'docker')
+            env:
+              BASE_IMAGE: ''
+            inputs:
+              targetType: inline
+              script: |
+                if [[ $BASE_IMAGE == 'redis-6-rhel8' ]]; then
+                  echo redis-6-rhel8
+                  echo "##vso[task.setvariable variable=docker_runtime_image]$(redis-6-rhel8_baseimage_url):$(redis-6-rhel8_baseimage_tag)"
+                elif [[ $BASE_IMAGE == 'redis-7-rhel9' ]]; then
+                  echo redis-7-rhel9
+                  echo "##vso[task.setvariable variable=docker_runtime_image]$(redis-7-rhel9_baseimage_url):$(redis-7-rhel9_baseimage_tag)"
+                elif [[ $BASE_IMAGE == 'apache-rhel8' ]]; then
+                  echo apache-rhel8
+                  echo "##vso[task.setvariable variable=docker_runtime_image]$(apache-rhel8_baseimage_url):$(apache-rhel8_baseimage_tag)"
+                fi
+          - task: Bash@3
+            name: export_images
+            displayName: 'Export Images'
+            condition: always()
+            env:
+              BUILD_TYPE: ''
+              RUNTIME: ''
+            inputs:
+              targetType: inline
+              script: "if [[ $BUILD_TYPE == 'dotnet' ]] || [[ $BUILD_TYPE == 'multi_component_dotnet' ]] || [[ $BUILD_TYPE == 'nuget' ]]; then\n  echo \"##vso[task.setvariable variable=builder_image;isOutput=true;]$(dotnet_builder_image)\"\n  if [[ $RUNTIME == 'apache' ]]; then\n    echo \"##vso[task.setvariable variable=runtime_image;isOutput=true;]$(npm_rhel8_baseimage_url):$(npm_rhel8_baseimage_tag)\"\n  else\n    echo \"##vso[task.setvariable variable=runtime_image;isOutput=true;]$(dotnet_runtime_image)\"\n  fi \nelif  [[ $BUILD_TYPE == 'npm' ]] ||  [[ $BUILD_TYPE == 'multi_component_npm' ]] || [[ $BUILD_TYPE == 'npm_publish' ]]; then\n  echo \"##vso[task.setvariable variable=builder_image;isOutput=true;]$(npm_builder_image)\"\n  echo \"##vso[task.setvariable variable=runtime_image;isOutput=true;]$(npm_runtime_image)\"\n  echo \"##vso[task.setvariable variable=node_binary_location;isOutput=true;]$(node_binary_location)\"\nelif [[ $BUILD_TYPE == 'docker' ]]; then\n  echo \"##vso[task.setvariable variable=runtime_image;isOutput=true;]$(docker_runtime_image)\"\n  echo \"##vso[task.setvariable variable=job_type;isOutput=true;]docker\"\n  echo \"##vso[task.setvariable variable=project_type;isOutput=true;]docker\"\nfi\n"
+          - task: Bash@3
+            name: set_target_branch
+            displayName: Set Target Branch
+            condition: always()
+            inputs:
+              targetType: inline
+              script: |
+                echo "The source branch is: "
+                echo $(Build.SourceBranch)
+                if [[ $(Build.SourceBranch) == "refs/heads/release"* ]]; then
+                  ocp4_deployment_branch=$(ocp4_release_branch)
+                else
+                  ocp4_deployment_branch=$(ocp4_branch)
+                fi
+                echo "The OCP4 deployment branch is: "
+                echo $ocp4_deployment_branch
+                echo "##vso[task.setvariable variable=ocp4_target_branch;isOutput=true;]$ocp4_deployment_branch"
+      - job: build
+        displayName: 'Build in .NET Container'
+        dependsOn:
+          - initialize
+        pool:
+          name: $(agent_pool)
+        variables:
+          - group: TFD_DEVOPS
+          - group: NEXUS_IQ
+          - name: version
+            value: $[ dependencies.initialize.outputs['artifact_version.version'] ]
+          - name: builder_image
+            value: $[ dependencies.initialize.outputs['export_images.builder_image'] ]
+          - name: commit_uri
+            value: '$(Build.Repository.Uri)/commit/$(Build.SourceVersion)'
+          - name: artifactory_props
+            value: 'build.trigger=$(Build.Reason);build.trigger.user=$(Build.RequestedFor);repo.branch.name=$(Build.SourceBranchName);repo.commit.id=$(Build.SourceVersion);repo.uri=$(commit_uri);gitCommit=$(Build.SourceVersion);gitProject=$(System.TeamProject);gitRepo=$(Build.Repository.Name);gitCollection=$(System.CollectionUri)'
+          - name: test_proj
+            value: '**/*Tests.csproj'
+        container:
+          endpoint: 'enterprise_docker_stage_docker_pncint_net'
+          image: $(builder_image)
+          options: -u root
+          env:
+            BROWSERSLIST_IGNORE_OLD_DATA: true
+            NODE_TLS_REJECT_UNAUTHORIZED: 0
+            DOTNET_ROLL_FORWARD: Major
+            HOME: /tmp
+        steps:
+          - task: Bash@3
+            name: build_info
+            displayName: 'Set build information variables'
+            inputs:
+              targetType: inline
+              script: |
+                echo "##vso[task.setvariable variable=project_type;isOutput=true;].net"
+                echo "##vso[task.setvariable variable=job_type;isOutput=true;].netbuild"
+          - task: sonarsource.sonarqube.15B84CA1-B62F-4A2A-A403-89B77A063157.SonarQubePrepare@8
+            displayName: 'Prepare analysis on SonarQube'
+            inputs:
+              SonarQube: 'enterprise_sonar'
+              projectKey: $(sonar_project_key)
+              projectVersion: $(version)
+              extraProperties: "sonar.scanner.skipJreProvisioning=true\nsonar.exclusions=**/*.bin\nsonar.scm.disabled=true\nsonar.coverage.dtdVerification=true \nsonar.exclusions=$(sonar_custom_exclusions)\nsonar.coverage.exclusions=\"*Tests*.cs, *testresult*.xml, *opencover*.xml\"\nsonar.test.exclusions=\"*Tests*.cs, *testresult*.xml, *opencover*.xml\"\nsonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/**/coverage.opencover.xml\nsonar.cs.vstest.reportsPaths=$(Agent.TempDirectory)/*.trx\nsonar.analysis.artifact=gav://pnc/$(mnemonic)/$(app_name):$(version)\nsonar.analysis.commit=$(Build.SourceVersion)\n"
+          - task: Bash@3
+            name: resolve_packages
+            displayName: 'Resolve Package References'
+            env:
+              PRE_PROCESS_DIR: $(pre_process_dir)
+            inputs:
+              targetType: inline
+              script: |
+                echo "Resolving Package References"
+                if [[ -n $PRE_PROCESS_DIR ]]; then
+                  echo "The pre-process command is 'dotnet ./tfd-build-preprocess.dll $PRE_PROCESS_DIR'"
+                  curl -sSf  -u "$(TFD_DEVOPS_SERVICEID):$(TFD_DEVOPS_SERVICEID_PASSWD)" -O 'https://rpo.pncint.net/artifactory/generic-stage-local/pnc/tfd/tfd-build-preprocess/tfd-build-preprocess.dll'
+                  curl -sSf  -u "$(TFD_DEVOPS_SERVICEID):$(TFD_DEVOPS_SERVICEID_PASSWD)" -O 'https://rpo.pncint.net/artifactory/generic-stage-local/pnc/tfd/tfd-build-preprocess/tfd-build-preprocess.runtimeconfig.json'
+                  chmod +x tfd-build-preprocess.dll
+                  dotnet ./tfd-build-preprocess.dll $PRE_PROCESS_DIR
+                else
+                  echo "Nothing to resolve."
+                fi
+          - task: Bash@3
+            name: install_dotnet_ef
+            displayName: 'Install Dotnet-EF'
+            condition: eq(variables['ef_migration'], 'true')
+            env:
+              NUGET_CONFIG_FILE: $(nugetConfigPath)
+            inputs:
+              targetType: inline
+              script: |
+                echo "Install Dotnet-EF"
+
+                if [[ $(dotnet_version) == '8.0' ]]; then
+                  EF_VERSION='8.0.8'
+                elif [[ $(dotnet_version) == '10.0' ]]; then
+                  EF_VERSION='10.0.7'
+                else
+                  EF_VERSION='6.0.9'
+                fi
+
+                echo "DOTNET-EF VERSION being installed: $EF_VERSION"
+
+                dotnet nuget disable source nuget.org
+
+                dotnet tool install \
+                  --global dotnet-ef \
+                  --version $EF_VERSION \
+                  --configfile $NUGET_CONFIG_FILE
+
+                echo ""
+                echo "Checking Dotnet EF Version"
+                dotnet-ef --version
+          - task: NuGetAuthenticate@1
+            displayName: 'NuGet Authenticate'
+            inputs:
+              nuGetServiceConnections: 'enterprise_rpo_telerik_nuget_repo'
+            condition: eq(variables['telerik_auth'], 'true')
+          - task: DotNetCoreCLI@2
+            displayName: 'Restore'
+            condition: and(succeeded(), eq(variables.runtime_identifier, ''))
+            inputs:
+              command: restore
+              projects: $(restore_proj)
+              configuration: $(build_configuration)
+              feedsToUse: config
+              nugetConfigPath: $(nugetConfigPath)
+              verbosityRestore: 'Detailed'
+          - task: DotNetCoreCLI@2
+            displayName: 'Restore (Ready to Run)'
+            condition: and(succeeded(), ne(variables.runtime_identifier, ''))
+            inputs:
+              command: restore
+              projects: $(restore_proj)
+              configuration: $(build_configuration)
+              restoreArguments: '-r $(runtime_identifier) -p:PublishReadyToRun=true'
+              feedsToUse: config
+              nugetConfigPath: $(nugetConfigPath)
+              verbosityRestore: 'Detailed'
+          - task: DotNetCoreCLI@2
+            displayName: 'Build'
+            name: build
+            inputs:
+              command: build
+              projects: $(build_proj)
+              arguments: --configuration $(build_configuration) --no-restore
+          - task: Bash@3
+            name: sqlbuild
+            displayName: 'SQLBuild'
+            condition: eq(variables['build_sql_proj'], 'true')
+            inputs:
+              targetType: inline
+              script: >
+                dotnet nuget disable source nuget.org
+
+                dotnet build \
+
+                $(sql_proj) \
+
+                --configuration $(sql_build_configuration)
+          - task: ArtifactoryGenericUpload@2
+            displayName: 'Publish DacPac to Artifactory'
+            inputs:
+              artifactoryService: '$(artifactory_service)'
+              specSource: 'taskConfiguration'
+              fileSpec: |
+                {
+                  "files": [
+                    {
+                      "pattern": "$(Build.SourcesDirectory)/$(sql_proj_path)/bin/Release/*",
+                      "target": "generic-stage-local/pnc/$(mnemonic)/Dacpacs/$(app_name)/$(version)/",
+                      "props": "$(artifactory_props)"
+                    }
+                  ]
+                }
+              failNoOp: true
+              collectBuildInfo: true
+              buildName: '$(Build.DefinitionName)'
+              buildNumber: '$(Build.BuildNumber)'
+            condition: eq(variables['build_sql_proj'], 'true')
+          - task: Bash@3
+            name: generate_ef_migration_scripts
+            displayName: 'Generate EF Migration Scripts'
+            condition: eq(variables['ef_migration'], 'true')
+            inputs:
+              targetType: inline
+              script: |
+                dotnet nuget disable source nuget.org
+                dotnet ef migrations script \
+                --project $(Build.SourcesDirectory)/$(targetProjectPath) \
+                --idempotent \
+                --context $(contextName) \
+                --no-transactions \
+                --output $(Build.SourcesDirectory)/$(targetProjectPath)/Migrations/Script_$(app_name)_$(version).sql \
+                --verbose
+          - task: ArtifactoryGenericUpload@2
+            displayName: 'Publish EF Migration Scripts to Artifactory'
+            inputs:
+              artifactoryService: '$(artifactory_service)'
+              specSource: 'taskConfiguration'
+              fileSpec: |
+                {
+                  "files": [
+                    {
+                      "pattern": "$(Build.SourcesDirectory)/$(targetProjectPath)/Migrations/Script_$(app_name)_$(version).sql",
+                      "target": "generic-stage-local/pnc/$(mnemonic)/EFMigrationScripts/$(app_name)/$(version)/",
+                      "props": "$(artifactory_props)"
+                    }
+                  ]
+                }
+              failNoOp: true
+              collectBuildInfo: true
+              buildName: '$(Build.DefinitionName)'
+              buildNumber: '$(Build.BuildNumber)'
+            condition: eq(variables['ef_migration'], 'true')
+          - task: Bash@3
+            displayName: 'Archive Build'
+            inputs:
+              targetType: inline
+              script: |
+                /usr/bin/zip -r $(Build.ArtifactStagingDirectory)/app_build.zip $(System.DefaultWorkingDirectory)
+          - task: ArtifactoryGenericUpload@2
+            displayName: 'Publish versioned artifact scripts to Artifactory'
+            inputs:
+              artifactoryService: '$(artifactory_service)'
+              specSource: 'taskConfiguration'
+              fileSpec: |
+                {
+                  "files": [
+                    {
+                      "pattern": "$(Build.ArtifactStagingDirectory)/app_build.zip",
+                      "target": "$(artifactory_file_target)",
+                      "props": "$(artifactory_props)"
+                    }
+                  ]
+                }
+              failNoOp: true
+              collectBuildInfo: true
+              buildName: '$(Build.DefinitionName)'
+              buildNumber: '$(Build.BuildNumber)'
+          - task: DotNetCoreCLI@2
+            displayName: 'Run Tests'
+            inputs:
+              command: test
+              projects: '**/*Tests.csproj'
+              arguments: --configuration $(test_configuration) $(test_options) --logger:Console;noprogress=true /p:CollectCoverage=true /p:CoverletOutputFormat=opencover --no-build --no-restore
+          - task: DotNetCoreCLI@2
+            displayName: 'Publish'
+            condition: and(succeeded(), eq(variables.runtime_identifier, ''))
+            inputs:
+              command: publish
+              projects: $(publish_proj)
+              publishWebProjects: $(publish_web_projects)
+              zipAfterPublish: false
+              modifyOutputPath: false
+              arguments: --configuration $(build_configuration) --output $(output_folder) --no-build --no-restore
+          - task: DotNetCoreCLI@2
+            displayName: 'Publish (Ready-to-Run)'
+            condition: and(succeeded(), ne(variables.runtime_identifier, ''))
+            inputs:
+              command: publish
+              projects: $(publish_proj)
+              publishWebProjects: $(publish_web_projects)
+              zipAfterPublish: false
+              modifyOutputPath: false
+              arguments: --configuration $(build_configuration) -r $(runtime_identifier) -p:PublishReadyToRun=true --output $(output_folder) --no-restore
+          - task: NexusTask@1
+            displayName: 'Nexus IQ Scan'
+          - task: sonarsource.sonarqube.6D01813A-9589-4B15-8491-8164AEB38055.SonarQubeAnalyze@8
+            displayName: 'Run Code Analysis'
+            inputs:
+              jdkversion: 'JAVA_HOME_21_X64'
+          - task: sonarsource.sonarqube.291ed61f-1ee4-45d3-b1b0-bf822d9095ef.SonarQubePublish@8
+            displayName: 'Publish Quality Gate Result'
+            inputs:
+              pollingTimeoutSec: '300'
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish Artifact for Docker Job'
+            inputs:
+              ArtifactName: app
+              PathtoPublish: $(output_folder)
+      - job: docker
+        displayName: 'Build/Scan Docker Image'
+        dependsOn:
+          - build
+          - initialize
+        condition: succeeded()
+        pool:
+          name: $(agent_pool)
+        variables:
+          - group: SYSDIG_SAAS
+          - group: TFD_DEVOPS
+          - name: docker_build_context
+            value: $(System.DefaultWorkingDirectory)
+          - name: version
+            value: $[ dependencies.initialize.outputs['artifact_version.version'] ]
+          - name: runtime_image
+            value: $[ dependencies.initialize.outputs['export_images.runtime_image'] ]
+          - name: is_primary
+            value: $[ dependencies.initialize.outputs['check_primary_branch.isPrimary'] ]
+        steps:
+          - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
+            inputs:
+              repository: self
+              fetchDepth: 1
+          - task: Bash@3
+            name: set_artifact
+            displayName: Set Artifact
+            env:
+              BUILD_TYPE: ''
+            inputs:
+              targetType: inline
+              script: "echo \"The build type is $BUILD_TYPE\" \nif [[ $BUILD_TYPE == \"npm\" ]]; then\n  echo \"The base image tag is $(runtime_image)\"\n  echo \"##vso[task.setvariable variable=artifact_name]dist\"\n  ARTIFACT=dist\nelse\n  echo \"The base image tag is $(runtime_image)\"\n  echo \"##vso[task.setvariable variable=artifact_name]app\"\n  ARTIFACT=app\nfi\necho \"The artifact name is $ARTIFACT\"\n"
+          - task: DownloadBuildArtifacts@0
+            displayName: 'Download Artifact from Build Job'
+            inputs:
+              artifactName: $(artifact_name)
+              downloadPath: '$(docker_build_context)'
+          - task: Docker@2
+            displayName: 'Build .NET OCI Image'
+            name: dotnet_oci_image
+            inputs:
+              containerRegistry: 'enterprise_docker_stage_docker_pncint_net'
+              repository: $(docker_image_name)
+              command: 'build'
+              Dockerfile: '**/Dockerfile'
+              buildContext: $(docker_build_context)
+              arguments: '--build-arg baseimage=$(runtime_image)'
+              tags: |
+                $(version)
+                latest
+            condition: and(eq(variables['artifact_name'], 'app'), ne(variables['runtime'], 'apache'))
+          - task: Docker@2
+            displayName: 'Build Apache OCI Image'
+            name: nodejs_oci_image
+            inputs:
+              containerRegistry: 'enterprise_docker_stage_docker_pncint_net'
+              repository: $(docker_image_name)
+              command: 'build'
+              Dockerfile: '**/Dockerfile'
+              buildContext: $(docker_build_context)
+              arguments: '--build-arg npm_baseimage_tag=$(runtime_image)'
+              tags: |
+                $(version)
+                latest
+            condition: or(eq(variables['artifact_name'], 'dist'), eq(variables['runtime'], 'apache'))
+          - task: Bash@3
+            displayName: 'Remove temp dir'
+            inputs:
+              targetType: inline
+              script: |
+                rm -rf temp
+          - task: goldenImageTask@1
+            displayName: 'Validate Golden Image'
+            env:
+              USERNAME: $(TFD_DEVOPS_SERVICEID)
+              PASSWORD: $(TFD_DEVOPS_SERVICEID_PASSWD)
+          - task: Docker@0
+            displayName: 'Pull Build Tools Image'
+            inputs:
+              containerregistrytype: 'Container Registry'
+              dockerRegistryConnection: 'enterprise_docker_stage_docker_pncint_net'
+              action: 'Run a Docker command'
+              customCommand: pull $(artifactory_image_repo)/$(build_tools_image)
+            condition: and(succeeded(), eq(variables['is_primary'], 'true'))
+          - task: Bash@3
+            env:
+              SECURE_API_TOKEN: $(SYSDIG_SAAS_TOKEN)
+              URL: $(SYSDIG_SAAS_URL)
+              BUILD_TOOLS_IMAGE: $(artifactory_image_repo)/$(build_tools_image)
+              DOCKER_IMAGE_LOCATION: '/var/run/docker.sock'
+              SYSDIG_RESULTS_DIR: $(Build.ArtifactStagingDirectory)/results
+            name: sysdig_scan
+            displayName: Sysdig Scan
+            condition: and(succeeded(), eq(variables['is_primary'], 'true'))
+            inputs:
+              targetType: inline
+              script: >
+                export image_to_scan=$(artifactory_docker_repo)/$(docker_image_name):$(version)
+
+
+                docker run --rm  -u root \
+
+                --env OPENSSL_SECLEVEL=1 \
+
+                --env HTTP_PROXY=http://vz-proxy.pncint.net:8080 \
+
+                --env HTTPS_PROXY=http://vz-proxy.pncint.net:8080 \
+
+                --env SECURE_API_TOKEN \
+
+                --env URL \
+
+                --env image_to_scan \
+
+                -v $DOCKER_IMAGE_LOCATION:$DOCKER_IMAGE_LOCATION \
+
+                -v $SYSDIG_RESULTS_DIR:/usr/src \
+
+                docker-release.docker.pncint.net/$BUILD_TOOLS_IMAGE \
+
+                sysdig-cli-scanner \
+
+                --apiurl ${URL} docker://${image_to_scan} \
+
+                --override-pullstring ${image_to_scan} \
+
+                --full-vulns-table \
+
+                --output-json=/usr/src/sysdig-report.json
+
+
+                EXIT_CODE=$?
+
+                echo "Sysdig exited with code $EXIT_CODE"
+
+                # EXIT_CODE=1
+
+                # echo "Test exit code $EXIT_CODE"
+
+
+                if [[ $EXIT_CODE == 0 ]]; then
+                  IMAGE_SCAN_ID=$(awk -F \" '/resultID/ { print $4 }' $SYSDIG_RESULTS_DIR/sysdig-report.json)
+                  echo "The imageScanId is $IMAGE_SCAN_ID"
+                  echo "##vso[task.setvariable variable=imageScanId;isOutput=true;]$IMAGE_SCAN_ID"
+                  echo "##vso[task.setvariable variable=imageScanStatus;isOutput=true;]PASS"
+                  echo "##vso[task.setvariable variable=sysdig_result;isOutput=true;]$EXIT_CODE"
+                  echo "##vso[task.setvariable variable=run_gitops;isOutput=true;]true"
+                  echo "##vso[task.setvariable variable=sysdig_ran;isOutput=true;]true"
+                elif [[ $EXIT_CODE == 1 ]]; then
+                  echo "Image scan failed. Support is available in the Sysdig Vuln Help channel: https://teams.microsoft.com/l/channel/19%3Aee2ffe7e0a6443fcb2e9f0a214eae673%40thread.tacv2/Sysdig%20Vuln%20Help?groupId=29630478-9518-4c3b-b990-3525e1b53932&tenantId=5d25c963-07db-4627-9db3-720b2ff89865"
+                  IMAGE_SCAN_ID=$(awk -F \" '/resultID/ { print $4 }' $SYSDIG_RESULTS_DIR/sysdig-report.json)
+                  echo "The imageScanId is $IMAGE_SCAN_ID"
+                  echo "##vso[task.setvariable variable=imageScanId;isOutput=true;]$IMAGE_SCAN_ID"
+                  echo "##vso[task.setvariable variable=imageScanStatus;isOutput=true;]FAIL"
+                  echo "##vso[task.setvariable variable=sysdig_result;isOutput=true;]$EXIT_CODE"
+                  echo "##vso[task.setvariable variable=run_gitops;isOutput=true;]false"
+                  echo "##vso[task.setvariable variable=sysdig_ran;isOutput=true;]true"
+                else
+                  echo "Image scan failed with status code: $EXIT_CODE"
+                  echo "##vso[task.setvariable variable=imageScanId;isOutput=true;]"
+                  echo "##vso[task.setvariable variable=imageScanStatus;isOutput=true;]ERROR"
+                  echo "##vso[task.setvariable variable=sysdig_result;isOutput=true;]$EXIT_CODE"
+                  echo "##vso[task.setvariable variable=run_gitops;isOutput=true;]true"
+                  echo "##vso[task.setvariable variable=sysdig_ran;isOutput=true;]false"
+                  exit 1
+                fi
+
+
+                sudo rm -rf $SYSDIG_RESULTS_DIR
+          - task: Docker@2
+            displayName: 'Push Docker Image to Artifactory'
+            inputs:
+              containerRegistry: 'enterprise_docker_stage_docker_pncint_net'
+              repository: $(docker_image_name)
+              command: 'push'
+              tags: |
+                $(version)
+                latest
+            condition: and(succeeded(), eq(variables['is_primary'], 'True'), ne(variables['sysdig_scan.sysdig_result'], '1'))
+          - task: Bash@3
+            displayName: 'Set Build Artifact'
+            name: set_build_artifact
+            condition: always()
+            inputs:
+              targetType: inline
+              script: |
+                echo "##vso[task.setvariable variable=build_artifact;isOutput=true;]true"
+      - job: publish_qfaas
+        displayName: 'Zip & Publish QFaaS'
+        condition: |
+          and(
+            succeeded(),
+            eq(dependencies.initialize.outputs['check_primary_branch.isPrimary'], 'true')
+          )
+        dependsOn:
+          - docker
+          - initialize
+        pool:
+          name: $(agent_pool)
+        variables:
+          - name: version
+            value: $[ dependencies.initialize.outputs['artifact_version.version'] ]
+          - name: commit_uri
+            value: '$(Build.Repository.Uri)/commit/$(Build.SourceVersion)'
+          - name: qfaas_directory
+            value: $(qfaasDirectory)
+          - name: artifactory_props
+            value: 'build.trigger=$(Build.Reason);build.trigger.user=$(Build.RequestedFor);repo.branch.name=$(Build.SourceBranchName);gitCommit=$(Build.SourceVersion);repo.uri=$(commit_uri);gitRepo=$(Build.Repository.Name);gitProject=$(mnemonic)'
+        steps:
+          - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
+            inputs:
+              repository: self
+              fetchDepth: 1
+          - task: CmdLine@2
+            displayName: 'Set Build Type Directory'
+            condition: or(eq(variables['build_type'], 'dotnet'), eq(variables['build_type'], 'multi_component_dotnet'))
+            inputs:
+              script: echo '##vso[task.setvariable variable=build_type_directory]services'
+          - task: CmdLine@2
+            displayName: 'Set Build Type Directory'
+            condition: or(eq(variables['build_type'], 'npm'), eq(variables['build_type'], 'multi_component_npm'))
+            inputs:
+              script: echo '##vso[task.setvariable variable=build_type_directory]ui'
+          - task: CmdLine@2
+            displayName: 'Set Qfaas Directory'
+            condition: and(eq(variables['qfaasDirectory'], ''), or(eq(variables['build_type'], 'dotnet'), eq(variables['build_type'], 'multi_component_dotnet')))
+            inputs:
+              script: echo '##vso[task.setvariable variable=qfaas_directory]quality_engineering/$(app_name)-services'
+          - task: CmdLine@2
+            displayName: 'Set Qfaas Directory'
+            condition: and(eq(variables['qfaasDirectory'], ''), or(eq(variables['build_type'], 'npm'), eq(variables['build_type'], 'multi_component_npm')))
+            inputs:
+              script: echo '##vso[task.setvariable variable=qfaas_directory]quality_engineering/$(app_name)-ui'
+          - task: ArchiveFiles@2
+            displayName: 'Archive Functional Tests'
+            inputs:
+              rootFolderOrFile: './$(qfaas_directory)'
+              includeRootFolder: false
+              archiveType: 'zip'
+              archiveFile: '$(System.DefaultWorkingDirectory)/$(qfaas_directory)-$(version).zip'
+              replaceExistingArchive: true
+              verbose: true
+          - task: ArtifactoryGenericUpload@2
+            displayName: 'Publish QFaaS Archive'
+            inputs:
+              artifactoryService: '$(artifactory_service)'
+              specSource: 'taskConfiguration'
+              fileSpec: "{\n  \"files\": [\n    {\n      \"pattern\": \"$(Agent.BuildDirectory)/s/$(qfaas_directory)-$(version).zip\",      \n      \"target\": \"$(artifactory_qfaas_location)/$(app_name)-quality_engineering/$(build_type_directory)/$(version)/$(app_name)-quality_engineering/$(build_type_directory)-$(version).zip\",\n      \"props\": \"$(artifactory_props)\"\n    }\n  ]\n}\n"
+              failNoOp: true
+              collectBuildInfo: true
+              buildName: '$(Build.DefinitionName)'
+              buildNumber: '$(Build.BuildNumber)'
+      - job: gitops
+        displayName: 'GitOps Openshift Deployment'
+        condition: |
+          and(
+            succeeded(),
+            eq(dependencies.initialize.outputs['check_primary_branch.isPrimary'], 'true')
+          )
+        dependsOn:
+          - docker
+          - initialize
+        pool:
+          name: PNC-Azure-Linux-Pipelines
+        variables:
+          - group: TFD_DEVOPS
+          - name: version
+            value: $[ dependencies.initialize.outputs['artifact_version.version'] ]
+          - name: deployment_branch
+            value: $[ dependencies.initialize.outputs['set_target_branch.ocp4_target_branch'] ]
+        container:
+          endpoint: 'enterprise_docker_stage_docker_pncint_net'
+          image: $(build_tools_image)
+          options: -u root
+        steps:
+          - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
+            condition: false
+            inputs:
+              repository: none
+          - task: HelmTask@0
+            displayName: 'Helm Deploy'
+            name: helm_deploy
+            condition: eq(variables['helm_deploy'], 'true')
+          - task: Bash@3
+            name: update_manifest
+            displayName: OCP4 Manifest Update
+            condition: eq(variables['helm_deploy'], 'false')
+            env:
+              USER: $(TFD_DEVOPS_SERVICEID)
+              PASSWORD: $(TFD_DEVOPS_SERVICEID_PASSWD)
+              MODULE: $(MODULE)
+              GROUP: $(GROUP)
+              VERSION: $(version)
+              MANIFEST_REPO: $(MANIFEST_REPO)
+              TARGET_BRANCH: $(deployment_branch)
+              PIMS_VARS: '[{"name": $(MODULE), "group": $(GROUP), "version": $(version)}]'
+              MANIFEST_FILE: manifest.yml
+            inputs:
+              targetType: inline
+              script: |
+                UPDATE_RESULT=$(cli-update-deploy-repo \
+                  -u $USER  \
+                  -p $PASSWORD \
+                  -m $MODULE \
+                  -g $GROUP \
+                  -v $VERSION \
+                  -r $MANIFEST_REPO \
+                  -b $TARGET_BRANCH \
+                  -f $MANIFEST_FILE)
+                echo "$UPDATE_RESULT"
+                if [[ $UPDATE_RESULT == *"No matching artifact found in manifest"* ]]; then
+                  echo "##vso[task.logissue type=warning]No deployment. Please verify the app_name in your azure-pipelines.yml file has a corresponding component in your manifest.yml of your deploy repo."
+                  exit 1
+                fi
+                echo "##vso[task.logissue type=warning]OCP template deployment detected. Please migrate to Helm deployments via the PNC standard Helm chart: https://pnc.sharepoint.com.mcas.ms/sites/DevSecOpsPlatformSupport-MT/SitePages/Deploy-Migrating-to-Helm.aspx"
+                echo "##vso[task.complete result=SucceededWithIssues;]"
+      - job: finalize_success
+        displayName: 'Policy as Code - Pipeline Success'
+        pool:
+          name: $(agent_pool)
+        variables:
+          - name: base_image
+            value: $[ dependencies.docker.outputs['goldenImageTask.base_image'] ]
+          - name: base_image_age
+            value: $[ dependencies.docker.outputs['goldenImageTask.base_image_age'] ]
+          - name: base_image_status
+            value: $[ dependencies.docker.outputs['goldenImageTask.base_image_status'] ]
+          - name: build_artifact
+            value: $[ dependencies.docker.outputs['set_build_artifact.build_artifact'] ]
+          - name: job_type
+            value: $[ dependencies.build.outputs['build_info.job_type'] ]
+          - name: image_scan_id
+            value: $[ dependencies.docker.outputs['sysdig_scan.imageScanId'] ]
+          - name: nexus_artifact_name
+            value: '$(app_name)--workspace-workspace-_$(mnemonic)-$(app_name)_$(Build.SourceBranchName)'
+          - name: nexus_scan
+            value: $[ dependencies.build.outputs['NexusTask.nexus_ran'] ]
+          - name: nexus_scanid
+            value: $[ dependencies.build.outputs['NexusTask.nexus_scanid'] ]
+          - name: nexus_uri
+            value: $[ dependencies.build.outputs['NexusTask.nexus_uri'] ]
+          - name: project_type
+            value: $[ dependencies.build.outputs['build_info.project_type'] ]
+          - name: sysdig_artifact_name
+            value: '$(app_name)--workspace-workspace-_$(mnemonic)-$(app_name)_$(Build.SourceBranchName)-sysdig-results'
+          - name: sysdig_scan
+            value: $[ dependencies.docker.outputs['sysdig_scan.sysdig_ran'] ]
+          - name: sysdig_result
+            value: $[ dependencies.docker.outputs['sysdig_scan.sysdig_result'] ]
+          - name: sysdig_uri
+            value: /artifactory/$(pac_uri_location)
+          - name: version
+            value: $[ dependencies.initialize.outputs['artifact_version.version'] ]
+          - name: validate_image
+            value: $[ dependencies.docker.outputs['goldenImageTask.validate_run'] ]
+        dependsOn:
+          - build
+          - docker
+          - publish_qfaas
+          - gitops
+          - initialize
+        condition: |
+          and(
+            eq(dependencies.build.result, 'Succeeded'),
+            eq(dependencies.docker.result, 'Succeeded'),
+            in(dependencies.publish_qfaas.result, 'Succeeded', 'Skipped'),
+            eq(dependencies.initialize.result, 'Succeeded'),
+            in(dependencies.gitops.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
+          )
+        steps:
+          - task: 6d15af64-176c-496d-b583-fd2ae21d4df4@1
+            inputs:
+              repository: self
+              fetchDepth: 1
+          - task: PimsTask@1
+            inputs:
+              containerRegistry: 'enterprise_docker_stage_docker_pncint_net'
+              policyAsCodeService: 'enterprise_pac_events_host'
+              result: SUCCESS
+            env:
+              NODE_TLS_REJECT_UNAUTHORIZED: 0
+      - job: finalize_failure
+        displayName: 'Policy as Code - Pipeline Failed'
+        pool:
+          name: $(agent_pool)
+        variables:
+          - name: base_image
+            value: $[ dependencies.docker.outputs['goldenImageTask.base_image'] ]
+          - name: base_image_age
+            value: $[ dependencies.docker.outputs['goldenImageTask.base_image_age'] ]
+          - name: base_image_status
+            value: $[ dependencies.docker.outputs['goldenImageTask.base_image_status'] ]
+          - name: build_artifact
+            value: $[ dependencies.docker.outputs['set_build_artifact.build_artifact'] ]
+          - name: job_type
+            value: $[ dependencies.build.outputs['build_info.job_type'] ]
+          - name: image_scan_id
+            value: $[ dependencies.docker.outputs['sysdig_scan.imageScanId'] ]
+          - name: project_type
+            value: $[ dependencies.build.outputs['build_info.project_type'] ]
+          - name: sysdig_artifact_name
+            value: '$(app_name)--workspace-workspace-_$(mnemonic)-$(app_name)_$(Build.SourceBranchName)-sysdig-results'
+          - name: sysdig_scan
+            value: $[ dependencies.docker.outputs['sysdig_scan.sysdig_ran'] ]
+          - name: sysdig_result
+            value: $[ dependencies.docker.outputs['sysdig_scan.sysdig_result'] ]
+          - name: sysdig_uri
+            value: /artifactory/$(pac_uri_location)
+          - name: version
+            value: $[ dependencies.initialize.outputs['artifact_version.version'] ]
+          - name: validate_image
+            value: $[ dependencies.docker.outputs['goldenImageTask.validate_run'] ]
+        dependsOn:
+          - build
+          - docker
+          - publish_qfaas
+          - gitops
+          - initialize
+        condition: failed()
+        steps:
+          - task: PimsTask@1
+            inputs:
+              containerRegistry: 'enterprise_docker_stage_docker_pncint_net'
+              policyAsCodeService: 'enterprise_pac_events_host'
+              result: FAILURE
+            env:
+              NODE_TLS_REJECT_UNAUTHORIZED: 0

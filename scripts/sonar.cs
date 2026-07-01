@@ -615,9 +615,6 @@ sealed record PipelineVariables(string ProjectKey, string Version, string Restor
         );
         // The generic test execution sensor hard-fails on a missing report file
         // (unlike coverage sensors, which merely warn) — pass only what exists.
-        return
-        [
-            .. props.Where(p => p.Key != "sonar.testExecutionReportPaths" || p.Value.Split(',').All(File.Exists)),
-        ];
+        return [.. props.Where(p => p.Key != "sonar.testExecutionReportPaths" || p.Value.Split(',').All(File.Exists))];
     }
 }
